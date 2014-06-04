@@ -1,0 +1,13 @@
+<div class='row'>
+	<div id="categories" class="span4">
+		<b>Категории</b>
+		<hr>
+		<% @categories.each do |category| %>
+			<p><%= link_to category.title, category %></p>
+		<% end %>
+		<p> <%= link_to "Add", new_category_path %> </p>
+	</div><div id="queries" class="span8">
+		<b> Запросы</b>
+		<hr>
+	</div>
+</div>
