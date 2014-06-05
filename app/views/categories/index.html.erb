@@ -1,13 +1,45 @@
-<div class='row'>
-	<div id="categories" class="span4">
+<div id="main" class='row'>
+	<div id="categories" class="col-md-4">
 		<b>Категории</b>
 		<hr>
+		<ul class="empty">
 		<% @categories.each do |category| %>
-			<p><%= link_to category.title, category %></p>
+			<li>
+			<%= link_to category do %>
+				<% if params[:id] and params[:id].to_i == category.id %>
+					<button type="button" class="btn btn-success btn-lg btn-block"><%= category.title %></button>
+				<% else %>
+					<button type="button" class="btn btn-primary btn-lg btn-block"><%= category.title %></button>
+				<% end %>
+			<% end %> 
+			&nbsp; 
+			<%= link_to 'Delete', category_path(category.id), :method => :delete, data: {confirm: "Уверены?"} %></li>
 		<% end %>
-		<p> <%= link_to "Add", new_category_path %> </p>
-	</div><div id="queries" class="span8">
+		</ul>
+		<p> <%= link_to "Добавить категорию", new_category_path %> </p>
+	</div>
+	<div id="queries" class="col-md-6">
 		<b> Запросы</b>
 		<hr>
+		<div id="queries_accord">
+			<% @queries.each do |query| %>
+				<h3><%= query.body %></h3>
+				<div>
+					<p>
+						Поисковая система: <%= query.search_engine %>
+					</p>
+					<p>
+						Максимальное число запросов: <%= query.max_count %>
+					</p>
+				</div>
+				
+
+			<% end %> 
+		</div>
+		<% if params[:id] %>
+			<p> <%= link_to "Добавить запрос", new_category_query_path(params[:id]) %> </p>
+		<% else %>
+			<p> <%= link_to "Добавить запрос", new_query_path %> </p>
+		<% end %>
 	</div>
 </div>

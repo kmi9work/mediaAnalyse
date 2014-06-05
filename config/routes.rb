@@ -1,5 +1,12 @@
 MediaAnalyse::Application.routes.draw do
-  resources :categories
+  get '/categories/:id' => 'categories#index'
+  get '/queries/new(.:format)' => 'queries#new', as: :new_query
+  match "/queries" => 'queries#create', via: :post, as: :queries
+
+  resources :categories do
+    resources :queries  
+  end
+  
   root 'categories#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

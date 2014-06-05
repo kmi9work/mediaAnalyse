@@ -1,0 +1,36 @@
+<div class="col-md-4">
+<%= form_for(@query) do |f| %>
+  <% if @query.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@query.errors.count, "error") %> prohibited this query from being saved:</h2>
+
+      <ul>
+      <% @query.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div>
+  <!-- .form-group !!! -->
+    <% unless @category %>
+      Категория: <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :title) %> <br>
+    <% else %>
+      <%= hidden_field_tag :category_id, params[:category_id] %> 
+    <% end %>
+    Запрос: <%= f.text_field :body, class: "form-control" %>
+    Поисковая система: <%= f.select :search_engine, options_for_select([ "Yandex", "Google" ], "Yandex"), class: "form-control" %>
+    <br>
+    Максимальное число запросов: <%= f.text_field :max_count, class: "form-control", value: 0 %>
+
+<!--       t.string :sort, default: 't'
+      t.date :from
+      t.date :to
+      t.integer :g_period_num
+      t.integer :timeout, default: 120 -->
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+</div>
