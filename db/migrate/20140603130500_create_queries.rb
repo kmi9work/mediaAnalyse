@@ -10,6 +10,7 @@ class CreateQueries < ActiveRecord::Migration
     	t.date :to
     	t.integer :g_period_num
     	t.integer :timeout, default: 120
+        t.boolean :track, default: false
 
         t.timestamps
     end

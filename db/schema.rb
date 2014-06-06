@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140603131259) do
+ActiveRecord::Schema.define(version: 20140605075830) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -24,6 +24,22 @@ ActiveRecord::Schema.define(version: 20140603131259) do
     t.integer "query_id"
   end
 
+  create_table "delayed_jobs", force: true do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
+
   create_table "queries", force: true do |t|
     t.string   "body"
     t.string   "search_engine"
@@ -33,6 +49,7 @@ ActiveRecord::Schema.define(version: 20140603131259) do
     t.date     "to"
     t.integer  "g_period_num"
     t.integer  "timeout",       default: 120
+    t.boolean  "track",         default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
