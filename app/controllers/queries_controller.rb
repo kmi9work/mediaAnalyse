@@ -39,7 +39,10 @@ class QueriesController < ApplicationController
 
 	def show
 		@query = Query.find(params[:id])
-		@texts = @query.texts
+		respond_to do |format|
+			format.html { render :show, layout: false}
+			format.js { render :show}
+		end
 	end
 	private
 	def query_params

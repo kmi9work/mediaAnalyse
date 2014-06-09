@@ -77,7 +77,7 @@ class Query < ActiveRecord::Base
 						# Необходимо просмотреть следующую страницу
 					end
 					i = 0
-					while i < rand(100)
+					while i < rand(600)
 						i += 10
 						sleep(10)
 						self.reload
@@ -96,7 +96,7 @@ class Query < ActiveRecord::Base
 					browser.navigate.refresh
 				end
 			end
-		elsif search_engine == "Yandex News"
+		elsif search_engine == "Yandex Новости"
 			puts "Yandex News"
 			browser.get "http://news.yandex.ru/"
 			wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}

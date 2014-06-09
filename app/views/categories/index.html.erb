@@ -32,7 +32,7 @@
 						Максимальное число запросов: <%= query.max_count %>
 					</p>
 					<p>
-						Число текстов: <%= query.texts.count %> <%= link_to "Смотреть", query_path(query.id) %>
+						Число текстов: <%= query.texts.count %> <%= link_to "Смотреть", '#anctexts', id: "query_show_#{query.id}", class: "query_show", queryid: query.id %>
 					</p>
 					<div id="track_button<%= query.id %>">
 						<% if query.track? %>

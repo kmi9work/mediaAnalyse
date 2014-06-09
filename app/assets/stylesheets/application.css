@@ -52,6 +52,10 @@ ul.empty li{
 	margin: 10px;
 }
 
+#texts a{
+	word-wrap: break-word;
+}
+
 /*
 #categories{
 	width: 30%;

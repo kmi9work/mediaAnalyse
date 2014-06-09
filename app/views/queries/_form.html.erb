@@ -19,7 +19,7 @@
       <%= hidden_field_tag :category_id, params[:category_id] %> 
     <% end %>
     Запрос: <%= f.text_field :body, class: "form-control" %>
-    Поисковая система: <%= f.select :search_engine, options_for_select([ "Yandex", "Google" ], "Yandex"), class: "form-control" %>
+    Поисковая система: <%= f.select :search_engine, options_for_select([ "Yandex News", "Yandex Blogs", "Google"], "Google"), class: "form-control" %>
     <br>
     Максимальное число запросов: <%= f.text_field :max_count, class: "form-control", value: 0 %>
 

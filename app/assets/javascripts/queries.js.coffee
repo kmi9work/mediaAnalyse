@@ -8,3 +8,7 @@ window.trackOn = (id) ->
 window.trackOff = (id) -> 
 	$.ajax(url: "/queries/" + id + "/stop_work").done (html) ->
   		$("#track_button" + id).html("<button type=\"button\" class=\"btn btn-primary btn-lg btn-block\" onclick=\"trackOn(" + id + ")\">Отслеживать</button>")
+
+$ -> $(".query_show").click -> 
+	$.ajax(url: "/queries/" + $(this).attr('queryid')).done (html) ->
+		$('#texts').html(html)
