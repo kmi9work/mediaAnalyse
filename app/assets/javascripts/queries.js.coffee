@@ -12,3 +12,4 @@ window.trackOff = (id) ->
 $ -> $(".query_show").click -> 
 	$.ajax(url: "/queries/" + $(this).attr('queryid')).done (html) ->
 		$('#texts').html(html)
+		false

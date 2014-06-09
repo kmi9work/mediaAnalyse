@@ -11,14 +11,10 @@ class Query < ActiveRecord::Base
 	RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 	def track!
-		self.reload
-		unless track?
-			return
-		end
 		browser = Selenium::WebDriver.for :chrome
 		wait = Selenium::WebDriver::Wait.new(:timeout => 10)
 		puts "Started"
-		
+
 		if search_engine == "Yandex Blogs"
 			puts "Yandex Blogs"
 			browser.get "http://blogs.yandex.ru/"
@@ -39,9 +35,7 @@ class Query < ActiveRecord::Base
 			# body > table.l-page-search > tbody > tr > td.l-page-search-l > div.Ppb-c-SearchStatistics > div:nth-child(1) > h3 > a
 			locator = {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div h3 a"}
 			wait.until {browser.find_elements(locator).count > 0}
-
-			get_links_in_loop 200, [locator], browser
-
+			get_links_in_loop 200, [locator]
 		elsif search_engine == "Yandex News"
 			puts "Yandex News"
 			browser.get "http://news.yandex.ru/"
@@ -66,9 +60,61 @@ class Query < ActiveRecord::Base
 			# 
 			locator = {css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}
 			wait.until {browser.find_elements(locator).count > 0}
-
-			get_links_in_loop 600, [locator], browser
-
+			
+			catch :done do
+				loop do
+					i = 0
+					while i < 80
+						i += 3
+						sleep(3)
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+					end
+					ls = browser.find_elements(locator).map{|i| i.attribute('href')}
+					fl = true
+					ls.each do |link|
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+						puts "Processing #{link}"
+						unless link_exists?(link)
+							title, content = nil, nil
+							unless (arr = get_link_content(link))
+								next
+							else
+								title, content = *arr
+							end
+							save_text(link, title, content)
+							fl = false
+						end
+					end
+					self.reload
+					unless track?
+						browser.quit
+						throw :done 
+					end
+					if fl
+						# Необходимо просмотреть следующую страницу
+					end
+					i = 0
+					while i < rand(600)
+						i += 10
+						sleep(10)
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+					end
+					browser.navigate.refresh
+					puts "Browser refresh"
+				end
+			end
 		elsif search_engine == "Google"
 			puts "Google engine"
 			browser.get "http://google.ru"
@@ -95,13 +141,65 @@ class Query < ActiveRecord::Base
 			browser.find_element(xpath: "//div[@aria-label='По релевантности']").click 
 			sleep(1)
 			browser.find_element(css: "#sbd_1 a").click
-			locator = {css: "#rso div li div h3 a"}
-			get_links_in_loop 180, [locator], browser
+			catch :done do
+				loop do
+					i = 0
+					while i < 80
+						i += 3
+						sleep(3)
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+					end
+					ls = browser.find_elements(css: "#rso div li div h3 a").map{|i| i.attribute('href')}
+					fl = true
+					ls.each do |link|
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+						puts "Processing #{link}"
+						unless link_exists?(link)
+							title, content = nil, nil
+							unless (arr = get_link_content(link))
+								next
+							else
+								title, content = *arr
+							end
+							save_text(link, title, content)
+							fl = false
+						end
+					end
+					self.reload
+					unless track?
+						browser.quit
+						throw :done 
+					end
+					if fl
+						# Необходимо просмотреть следующую страницу
+					end
+					i = 0
+					while i < rand(100)
+						i += 3
+						sleep(3)
+						self.reload
+						unless track?
+							browser.quit
+							throw :done 
+						end
+					end
+					browser.navigate.refresh
+					puts "Browser refresh"
+				end
+			end
 		end
 	end
 	private
 
-	def get_links_in_loop interval, locators, browser
+	def get_links_in_loop interval, locators
 		catch :done do
 			loop do
 				i = 0
