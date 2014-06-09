@@ -1,0 +1,18 @@
+<h2> Новости по запросу "<%= @query.body %>" </h2>
+<% i = 0 %>
+<% @texts.each do |text| %>
+	<p>
+		<%= link_to "#anc#{text.id}" do %>
+			<b> <%= text.title %> </b> (<%= text.url %>)
+		<% end %>
+	</p>
+<% end %>
+
+<% i = 0 %>
+<% @texts.each do |text| %>
+	<div class="article">
+		<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
+		<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+		<p> <%= text.content %> </p>
+	</div>
+<% end %>

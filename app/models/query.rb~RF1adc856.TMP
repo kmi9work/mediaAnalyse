@@ -22,82 +22,14 @@ class Query < ActiveRecord::Base
 			input.send_keys(body)
 			input.submit
 			sleep(1)
-			if browser.find_elements(xpath: '//a[contains(text(), "по времени") and @class="b-link"]').count > 0
-				browser.find_element(xpath: '//a[contains(text(), "по времени") and @class="b-link"]').click
-			end
-			sleep(1)
-			if browser.find_elements(xpath: '//a[contains(text(), "сегодня") and @class="b-link"]').count > 0
-				browser.find_element(xpath: '//a[contains(text(), "сегодня") and @class="b-link"]').click
-			end
-			sleep(1)
-			if browser.find_elements(xpath: '//a[contains(text(), "не группировать по сюжетам")]').count > 0
-				browser.find_element(xpath: '//a[contains(text(), "не группировать по сюжетам")]').click
-			end
-			sleep(1)
-			# .format(text) не группировать по сюжетам //*[@id="js"]/body/div[2]/div[3]/table/tbody/tr/td[2]/div[1]/table/tbody/tr/td[10]/div/a
-			# 
-			locator = {css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}
+			browser.find_element(xpath: '//div[contains(text(), "по дате") and @class="b-link"]').click 
+			# .format(text)
+			locator = {css: "a.b-link.b-link_ajax_yes.b-pager__link"}
 			wait.until {browser.find_elements(locator).count > 0}
-			
-			catch :done do
-				loop do
-					i = 0
-					while i < 80
-						i += 3
-						sleep(3)
-						self.reload
-						unless track?
-							browser.quit
-							throw :done 
-						end
-					end
-					ls = browser.find_elements(locator).map{|i| i.attribute('href')}
-					fl = true
-					ls.each do |link|
-						self.reload
-						unless track?
-							browser.quit
-							throw :done 
-						end
-						puts "Processing #{link}"
-						unless link_exists?(link)
-							title, content = nil, nil
-							unless (arr = get_link_content(link))
-								next
-							else
-								title, content = *arr
-							end
-							save_text(link, title, content)
-							fl = false
-						end
-					end
-					self.reload
-					unless track?
-						browser.quit
-						throw :done 
-					end
-					if fl
-						# Необходимо просмотреть следующую страницу
-					end
-					i = 0
-					while i < rand(600)
-						i += 10
-						sleep(10)
-						self.reload
-						unless track?
-							browser.quit
-							throw :done 
-						end
-					end
-					browser.navigate.refresh
-					puts "Browser refresh"
-				end
-			end
-			catch :done do
-				loop do
-					sleep(rand(100)+ 80)
-					browser.navigate.refresh
-				end
+			browser.find_element(locator).click
+			loop do
+				sleep(rand(100)+ 80)
+				browser.navigate.refresh
 			end
 		elsif search_engine == "Google"
 			puts "Google engine"
@@ -114,7 +46,6 @@ class Query < ActiveRecord::Base
 			input.send_keys(body)
 			sleep(1)
 			input.submit
-			browser.find_element(id: "gbqfb", name: "btnG").click
 			wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
 			browser.find_element(id: "hdtb_tls").click
 			sleep(1)

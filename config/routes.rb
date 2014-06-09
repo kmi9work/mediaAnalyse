@@ -1,4 +1,5 @@
 MediaAnalyse::Application.routes.draw do
+  get '/categories/new' => 'categories#new'
   get '/categories/:id' => 'categories#index'
   get '/queries/new(.:format)' => 'queries#new', as: :new_query
   get '/queries/:query_id/start_work' => 'queries#start_work', as: :start_work

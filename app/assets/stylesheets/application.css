@@ -43,7 +43,13 @@ ul.empty li{
   	/* edit: fixes overlap error in IE7/8, 
 	 make sure you have an empty gif */
   	/*background-image: url('empty.gif');*/
+}
 
+.article{
+	background-color: #EEDFAC;
+	border-radius: 15px;
+	padding: 10px;
+	margin: 10px;
 }
 
 /*

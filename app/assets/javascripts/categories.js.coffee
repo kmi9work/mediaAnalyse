@@ -3,7 +3,3 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 $ -> $('#queries_accord').accordion();
-
-$ -> $( "#queries_accord" ).on( "accordionactivate", ( event, ui ) -> 
-	alert( $(ui.newPanel).attr('queryid')) 
-);
