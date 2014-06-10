@@ -15,8 +15,6 @@ $ -> $(".query_show").click ->
 		false
 
 $ -> $(".get_text").click ->
-	alert(1)
-	$.ajax(url: "/texts/" + $(this).attr('textsid') + "/get_text").done (html) ->
-		$(this).append("<hr>" + html)
+	$.ajax(url: "/texts/" + $(this).attr('textsid')).done (html) ->
+		$(this).append(html)
 		false
-

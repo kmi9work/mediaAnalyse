@@ -1,4 +1,4 @@
-<div id="main" class='row'>
+<div id="main" class="col-md-12">
 	<div id="categories" class="col-md-4">
 		<b>Категории</b>
 		<hr>
@@ -20,6 +20,8 @@
 	</div>
 	<div id="queries" class="col-md-6">
 		<b> Запросы</b>
+		<%= link_to "Правила составления запросов в Yandex.", "http://help.yandex.ru/search/query-language/crib-sheet.xml", target: "_blank" %>
+		<%= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %><br>
 		<hr>
 		<div id="queries_accord">
 			<% @queries.each do |query| %>

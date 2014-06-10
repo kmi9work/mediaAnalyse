@@ -1,3 +1,5 @@
+# http://glava.openregion71.ru/vote/
+
 class CategoriesController < ApplicationController
 	def index
 		@categories = Category.all

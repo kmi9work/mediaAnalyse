@@ -14,5 +14,6 @@
 		<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
 		<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
 		<p> <%= text.content %> </p>
+		<a href="#anc<%= text.id %>" id="get_text_<%= text.id %>" class="get_text" textid="<%= text.id %>"> Получить текст </a>
 	</div>
 <% end %>
