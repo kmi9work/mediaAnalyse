@@ -4,6 +4,7 @@ class CreateTexts < ActiveRecord::Migration
     	t.string :title
     	t.text :content
     	t.string :url
+    	t.boolean :novel, default: true
         t.timestamps
     end
   end

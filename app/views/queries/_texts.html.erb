@@ -1,0 +1,18 @@
+<% @query.texts.each do |text| %>
+	<p>
+		<%= link_to "#anc#{text.id}" do %>
+			<b> <%= text.title %> </b> (<%= text.url %>)
+		<% end %>
+	</p>
+<% end %>
+
+<% @query.texts.each do |text| %>
+	<div class="article">
+		<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], @query.id, text.id) %>'">Выделить сущности</button>
+		<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
+		<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+		<p> <%= text.content %> </p>
+		<a href="#anc<%= text.id %>" id="get_text_<%= text.id %>" class="get_text" textid="<%= text.id %>"> Получить текст </a>
+		<a href="#anc<%= text.id %>" id="get_emot_<%= text.id %>" class="get_emot" textid="<%= text.id %>"> Оценить эмоциональность </a>
+	</div>
+<% end %>

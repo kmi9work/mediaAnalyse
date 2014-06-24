@@ -1,0 +1,1 @@
+$("#texts").html("<%= escape_javascript(render :template => 'queries/show', :locals => {:query => @query}, :layout => false, :method => :html) %>">

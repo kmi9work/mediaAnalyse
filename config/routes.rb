@@ -1,5 +1,19 @@
 MediaAnalyse::Application.routes.draw do
-  resources :categories
+  match '/texts/:id/add_essence' => 'texts#add_essence', via: :post, as: :add_essence
+  get '/texts/:id/get_text' => 'texts#get_text', as: :get_text
+  get '/texts/:id/get_emot' => 'texts#get_emot', as: :get_emot
+  get '/queries/new(.:format)' => 'queries#new', as: :new_query
+  match "/queries" => 'queries#create', via: :post, as: :queries
+  get '/queries/:query_id/start_work' => 'queries#start_work', as: :start_work
+  get '/queries/:query_id/stop_work' => 'queries#stop_work', as: :stop_work
+  
+
+  resources :categories do
+    resources :queries do 
+      resources :texts
+    end
+  end
+  
   root 'categories#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

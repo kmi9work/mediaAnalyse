@@ -1,0 +1,4 @@
+--- 
+open_files: 
+  - Gemfile
+  - app/views/texts/show.html.erb

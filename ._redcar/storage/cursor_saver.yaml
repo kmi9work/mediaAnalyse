@@ -1,0 +1,9 @@
+--- 
+cursor_positions: 
+  - :path: Gemfile
+    :cursor_offset: 0
+    :timestamp: 2014-06-18 17:50:13.649000 +04:00
+  - :path: app/views/texts/show.html.erb
+    :cursor_offset: 768
+    :timestamp: 2014-06-19 17:31:41.466000 +04:00
+files_to_retain: 0

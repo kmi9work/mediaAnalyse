@@ -1,0 +1,25 @@
+<% @queries.each do |query| %>
+	<h3><%= query.body %></h3>
+	<div queryid="<%= query.id %>">
+		<p>
+			Поисковая система: <%= query.search_engine %>
+		</p>
+		<p>
+			Максимальное число запросов: <%= query.max_count %>
+		</p>
+		<p>
+			Число текстов: <%= query.texts.count %> <%= link_to "Смотреть", category_query_path(params[:category_id] || params[:id], query.id), id: "query_show_#{query.id}", class: "query_show", queryid: query.id %>
+			&nbsp; | &nbsp; <%= link_to 'Delete', category_query_path(params[:id], query.id), :method => :delete, data: {confirm: "Уверены?"} %>
+		</p>
+		<div id="track_button<%= query.id %>">
+			<% if query.track? %>
+				<button type="button" class="btn btn-success btn-lg btn-block" onclick="trackOff(<%= query.id %>)">Отслеживать</button>
+			<% else %>
+				<button type="button" class="btn btn-primary btn-lg btn-block" onclick="trackOn(<%= query.id %>)">Отслеживать</button>
+			<% end %>
+		</div>
+		<!-- to btn-info -->
+	</div>
+<% end %> 
+
+

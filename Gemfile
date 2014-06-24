@@ -10,7 +10,7 @@ gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
 
-# Use Uglifier as compressor for JavaScript assets
+# Use Uglifier as com	essor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 
 # Use CoffeeScript for .js.coffee assets and views
@@ -38,7 +38,9 @@ end
 
 # mygems
 gem 'delayed_job_active_record'
-
+gem 'selenium-webdriver'
+gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
+# gem 'pg'
 # gem 'websocket-rails'
 
 # Use ActiveModel has_secure_password

@@ -12,5 +12,29 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.turbolinks
 //= require turbolinks
+//= require jquery-ui-1.10.4.custom.min
 //= require_tree .
+
+/*
+var trackOff, trackOn;
+
+trackOn = function(id) {
+  return $.ajax({
+    url: "/queries/" + id + "/start_work"
+  }).done(function(html) {
+    return $("#track_button").html("<button type=\"button\" class=\"btn btn-success btn-lg btn-block\" onclick=\"trackOff(" + id + ")\">Отслеживать</button>");
+  });
+};
+
+trackOff = function(id) {
+  return $.ajax({
+    url: "/queries/" + id + "/stop_work"
+  }).done(function(html) {
+    return $("#track_button").html("<button type=\"button\" class=\"btn btn-primary btn-lg btn-block\" onclick=\"trackOn(" + id + ")\">Отслеживать</button>");
+  });
+
+*/
+
+
