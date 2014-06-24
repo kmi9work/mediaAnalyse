@@ -7,8 +7,7 @@ gem 'rails', '4.0.0'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3'
 
-gem 'mysql2'
-gem 'daemons'
+
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -43,6 +42,10 @@ end
 gem 'delayed_job_active_record'
 gem 'selenium-webdriver'
 gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
+gem 'mysql2'
+gem 'daemons'
+gem 'headless'
+
 # gem 'pg'
 # gem 'websocket-rails'
 
