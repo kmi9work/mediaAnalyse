@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20140619111938) do
     t.datetime "updated_at"
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
   create_table "essences", force: true do |t|
     t.string   "title"
@@ -71,6 +71,7 @@ ActiveRecord::Schema.define(version: 20140619111938) do
     t.string   "title"
     t.text     "content"
     t.string   "url"
+    t.boolean  "novel",      default: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
