@@ -1,5 +1,4 @@
-<div class="col-md-4">
-<%= form_for(@query) do |f| %>
+<%= form_for(@query, class: "form-horizontal", role: "form") do |f| %>
   <% if @query.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@query.errors.count, "error") %> prohibited this query from being saved:</h2>
@@ -11,26 +10,37 @@
       </ul>
     </div>
   <% end %>
-  <div>
-  <!-- .form-group !!! -->
+  <div class="form-group">
     <% unless @category %>
-      Категория: <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :title) %> <br>
+      <label class="col-sm-6 control-label" style="padding: 20px 0px"> Категория:</label>
+      <div class="col-sm-6">
+        <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :title) %>
+      </div>
     <% else %>
       <%= hidden_field_tag :category_id, params[:category_id] %> 
     <% end %>
-    Запрос: <%= f.text_field :body, class: "form-control" %>
-    Поисковая система: <%= f.select :search_engine, options_for_select([ "Yandex News", "Yandex Blogs", "Google"], "Google"), class: "form-control" %>
-    <br>
-    Максимальное число запросов: <%= f.text_field :max_count, class: "form-control", value: 0 %>
-
-<!--       t.string :sort, default: 't'
-      t.date :from
-      t.date :to
-      t.integer :g_period_num
-      t.integer :timeout, default: 120 -->
   </div>
-  <div class="actions">
-    <%= f.submit %>
+  <div class="form-group" style="padding: 20px 0px">
+    <label class="col-sm-6 control-label">Запрос:</label>
+    <div class="col-sm-6">
+      <%= f.text_field :body, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group" style="padding: 20px 0px">
+    <label class="col-sm-6 control-label">Максимальное число запросов:</label>
+    <div class="col-sm-6">
+      <%= f.text_field :max_count, class: "form-control", value: 0 %>
+    </div>
+  </div>  
+  <div class="form-group" style="padding: 20px 0px">
+    <label class="col-sm-6 control-label">Поисковая система:</label>
+    <div class="col-sm-6">
+      <%= f.select :search_engine, options_for_select([ "Yandex News", "Yandex Blogs", "Google"], "Google"), class: "form-control" %>
+    </div>
+  </div>   
+  <div class="form-group" style="padding: 20px 0px">
+    <div class="col-sm-offset-6 col-sm-6">
+      <%= f.submit class: "btn btn-default" %>
+    </div>
   </div>
 <% end %>
-</div>

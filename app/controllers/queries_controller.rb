@@ -1,8 +1,11 @@
 class QueriesController < ApplicationController
 	def new
+		@categories = Category.all	
 		if params[:category_id]
 			@category = Category.find(params[:category_id])
+			@queries = @category.queries
 			@query = @category.queries.build
+			
 		else
 			@category = nil
 			@categories = Category.all
@@ -38,12 +41,25 @@ class QueriesController < ApplicationController
 	end
 
 	def show
+		@categories = Category.all
+		@category = Category.find(params[:category_id])
+		@queries = @category.queries
 		@query = Query.find(params[:id])
 		respond_to do |format|
-			format.html { render :show, layout: false}
+			format.html { render :show}
 			format.js { render :show}
 		end
 	end
+
+	def destroy
+		@category = Category.find(params[:category_id])
+		@query = Query.find(params[:id])
+    	@query.destroy
+    	respond_to do |format|
+      		format.html { redirect_to @category }
+      		format.json { head :no_content }
+    	end
+  	end
 	private
 	def query_params
 		params.require(:query).permit(:id, :title, :body, :search_engine, :max_count)

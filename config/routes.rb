@@ -1,15 +1,17 @@
 MediaAnalyse::Application.routes.draw do
+  match '/texts/:id/add_essence' => 'texts#add_essence', via: :post, as: :add_essence
   get '/texts/:id/get_text' => 'texts#get_text', as: :get_text
-  get '/categories/new' => 'categories#new'
-  get '/categories/:id' => 'categories#index'
+  get '/texts/:id/get_emot' => 'texts#get_emot', as: :get_emot
   get '/queries/new(.:format)' => 'queries#new', as: :new_query
+  match "/queries" => 'queries#create', via: :post, as: :queries
   get '/queries/:query_id/start_work' => 'queries#start_work', as: :start_work
   get '/queries/:query_id/stop_work' => 'queries#stop_work', as: :stop_work
-  get '/queries/:id' => 'queries#show', as: :query
-  match "/queries" => 'queries#create', via: :post, as: :queries
+  
 
   resources :categories do
-    resources :queries  
+    resources :queries do 
+      resources :texts
+    end
   end
   
   root 'categories#index'

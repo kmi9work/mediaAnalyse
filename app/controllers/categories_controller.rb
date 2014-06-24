@@ -12,6 +12,7 @@ class CategoriesController < ApplicationController
 	end
 
 	def new
+		@categories = Category.all
 		@category = Category.new
 	end
 
@@ -19,7 +20,6 @@ class CategoriesController < ApplicationController
 		@categories = Category.all
 		@category = Category.find(params[:id])
 		@queries = @category.queries
-		render action: 'index'
 	end
 
 	def create

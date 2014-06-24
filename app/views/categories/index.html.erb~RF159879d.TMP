@@ -5,6 +5,11 @@
 
 <%= content_for :queries do %>
 	<div id="queries_accord">
+			
 	</div>
-	<p> <%= link_to "Добавить запрос", new_query_path %> </p>
+	<% if params[:id] %>
+		<p> <%#= link_to "Добавить запрос", new_category_query_path(params[:id]) %> </p>
+	<% else %>
+		<p> <%#= link_to "Добавить запрос", new_query_path %> </p>
+	<% end %>
 <% end %>

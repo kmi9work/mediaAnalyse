@@ -11,10 +11,27 @@
 <div class="page-header" style="position:relative; background-color: #eeeeee; border-radius: 15px">
 	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа СМИ</h1>
 </div>
+
+<div id="main" class="col-md-12">
+	<div id="categories" class="col-md-4">
+		<b>Категории</b>
+		<hr>
+		<%= yield :categories %>
+	</div>
+	<div id="queries" class="col-md-6">
+		<b> Запросы</b>
+		<%= link_to "Правила составления запросов в Yandex.", "http://help.yandex.ru/search/query-language/crib-sheet.xml", target: "_blank" %>
+		<%= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %><br>
+		<hr>
+		<%= yield :queries %>
+	</div>
+</div>
+
 <%= yield %>
 
-<div id="texts" class="col-md-offset-2 col-md-8">
+<div id="texts" class="col-md-offset-1 col-md-10">
 	<a name="anctexts"></a>
+	<%= yield :main %>
 </div>
 </body>
 </html>

@@ -9,14 +9,20 @@ window.trackOff = (id) ->
 	$.ajax(url: "/queries/" + id + "/stop_work").done (html) ->
   		$("#track_button" + id).html("<button type=\"button\" class=\"btn btn-primary btn-lg btn-block\" onclick=\"trackOn(" + id + ")\">Отслеживать</button>")
 
-$ -> $(".query_show").click -> 
-	$.ajax(url: "/queries/" + $(this).attr('queryid')).done (html) ->
-		$('#texts').html(html)
-		false
+# $ -> $(".query_show").click -> 
+# 	$.ajax(url: "/queries/" + $(this).attr('queryid')).done (html) ->
+# 		$('#texts').html(html)
+# 		false
 
 $ -> $(".get_text").click ->
-	alert(1)
-	$.ajax(url: "/texts/" + $(this).attr('textsid') + "/get_text").done (html) ->
-		$(this).append("<hr>" + html)
-		false
+	id = $(this).attr('textid')
+	$.ajax(url: "/texts/" + id + "/get_text").done (html) ->
+		$("#get_text_" + id).parent().append("<hr> <p>" + html + "</p>")
+	false
 
+$ -> $(".get_emot").click ->
+	id = $(this).attr('textid')
+	$.ajax(url: "/texts/" + id + "/get_emot").done (html) ->
+		$("#get_emot_" + id).parent().append("<hr>" + html)
+	false
+	

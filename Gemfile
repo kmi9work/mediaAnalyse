@@ -39,6 +39,8 @@ end
 # mygems
 gem 'delayed_job_active_record'
 gem 'selenium-webdriver'
+gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
+# gem 'pg'
 # gem 'websocket-rails'
 
 # Use ActiveModel has_secure_password

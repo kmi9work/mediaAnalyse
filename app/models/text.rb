@@ -1,7 +1,17 @@
+require 'net/http'
+
 class Text < ActiveRecord::Base
 	has_and_belongs_to_many :queries
+	has_many :essences
+	def get_emot
+		query = {"text" => title + "\n" + content}
+		uri = URI('http://emot.zaelab.ru/analyze.json')
+		response = Net::HTTP.post_form(uri, query)
+		return JSON.parse(response.body)
+	end
+
 	def get_text
-		if (html = open_url(this.url))
+		if (html = open_url(self.url))
 			doc = Nokogiri::HTML(html)	
 			return doc.text
 		else
