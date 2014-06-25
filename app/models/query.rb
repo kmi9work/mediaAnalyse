@@ -2,6 +2,7 @@ require 'cgi'
 require 'open-uri'
 require 'uri'
 require "selenium-webdriver"
+require 'headless'
 
 class Query < ActiveRecord::Base
 
@@ -11,11 +12,17 @@ class Query < ActiveRecord::Base
 	RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 	def track!
+		puts "Tracking started"
 		self.reload
 		unless track?
+			puts "Track complete."
 			return
 		end
-		browser = Selenium::WebDriver.for :chrome
+		if Rails.env.production?
+			headless = Headless.new
+			headless.start
+		end
+		browser = Selenium::WebDriver.for :firefox
 		wait = Selenium::WebDriver::Wait.new(:timeout => 10)
 		puts "Started"
 		
@@ -98,6 +105,7 @@ class Query < ActiveRecord::Base
 			locator = {css: "#rso div li div h3 a"}
 			get_links_in_loop 180, [locator], browser
 		end
+		headless.destroy
 	end
 	private
 
@@ -110,6 +118,7 @@ class Query < ActiveRecord::Base
 					sleep(interval/20)
 					self.reload
 					unless track?
+						puts "Track complete."
 						browser.quit
 						throw :done 
 					end
@@ -122,6 +131,7 @@ class Query < ActiveRecord::Base
 				ls.each do |link|
 					self.reload
 					unless track?
+						puts "Track complete."
 						browser.quit
 						throw :done 
 					end
@@ -139,6 +149,7 @@ class Query < ActiveRecord::Base
 				end
 				self.reload
 				unless track?
+					puts "Track complete."
 					browser.quit
 					throw :done 
 				end
@@ -151,6 +162,7 @@ class Query < ActiveRecord::Base
 					sleep(interval/20)
 					self.reload
 					unless track?
+						puts "Track complete."
 						browser.quit
 						throw :done 
 					end
