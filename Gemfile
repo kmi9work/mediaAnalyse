@@ -36,6 +36,7 @@ gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
 gem 'daemons'
 gem 'headless'
+gem 'net-ssh-gateway'
 
 # gem 'pg'
 # gem 'websocket-rails'
@@ -47,7 +48,7 @@ gem 'headless'
 # gem 'unicorn'
 
 # Use Capistrano for deployment
-# gem 'capistrano', group: :development
+gem 'capistrano', group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
