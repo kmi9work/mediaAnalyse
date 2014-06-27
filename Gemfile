@@ -32,7 +32,7 @@ end
 gem 'nokogiri'
 gem 'delayed_job_active_record'
 gem 'selenium-webdriver'
-gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
+# gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
 gem 'daemons'
 gem 'headless'

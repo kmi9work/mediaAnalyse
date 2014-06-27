@@ -13,9 +13,10 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
-/tmp
+/tmp/*
 
 /Gemfile.lock
 /vendor/*
 *.TMP
 /public/assets/*
+/net_ssh.rb
