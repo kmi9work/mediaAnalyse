@@ -1,0 +1,6 @@
+$('#essences_table tbody').append('\
+  <tr id="essence_<%= @essence.id %>">\
+    <td><%= @essence.title %></td>\
+    <td><%= @essence.rating %></td>\
+    <td><%= link_to "remove", essence_path(@essence.id), method: :delete, remote: true %></td>\
+  </tr>')

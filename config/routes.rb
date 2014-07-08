@@ -1,15 +1,24 @@
 MediaAnalyse::Application.routes.draw do
-  match '/texts/:id/add_essence' => 'texts#add_essence', via: :post, as: :add_essence
+  resources :user_sessions
+  resources :users
+  get 'login' => 'user_sessions#new', as: :login
+  match 'logout' => 'user_sessions#destroy', via: :post, as: :logout
+
+  mount Delayed::Web::Engine, at: '/jobs'
+  delete '/essence/:id' => 'essences#destroy', as: :essence
+  match '/texts/:id/commit_essence' => 'essences#commit_essence', via: :post, as: :commit_essence
   get '/texts/:id/get_text' => 'texts#get_text', as: :get_text
   get '/texts/:id/get_emot' => 'texts#get_emot', as: :get_emot
   get '/queries/new(.:format)' => 'queries#new', as: :new_query
   match "/queries" => 'queries#create', via: :post, as: :queries
   get '/queries/:query_id/start_work' => 'queries#start_work', as: :start_work
   get '/queries/:query_id/stop_work' => 'queries#stop_work', as: :stop_work
-  
+  get '/texts/get_new_links' => 'texts#get_new_links', as: :get_new_links
+  get '/disable_tracking' => 'application#disable_tracking', as: :disable_tracking
+  get '/enable_tracking' => 'application#enable_tracking', as: :enable_tracking
 
   resources :categories do
-    resources :queries do 
+    resources :queries do
       resources :texts
     end
   end

@@ -1,8 +1,9 @@
 GIT
-  remote: https://github.com/dmchk/myaso.git
-  revision: 51a1ecfc3a55899595feff3bbdf7eaa47ab324c8
+  remote: https://github.com/thebestday/delayed-web.git
+  revision: ce98c42140c689dd712878290bfa7ede58341cc9
   specs:
-    myaso (0.4.0.pre2)
+    delayed-web (0.0.1)
+      rails (>= 3.2.13, < 4.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -32,6 +33,8 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     arel (4.0.2)
+    bcrypt (3.1.7)
+    bcrypt (3.1.7-x86-mingw32)
     builder (3.1.4)
     capistrano (3.2.1)
       i18n
@@ -55,6 +58,8 @@ GEM
       delayed_job (>= 3.0, < 4.1)
     erubis (2.7.0)
     execjs (2.2.0)
+    faraday (0.9.0)
+      multipart-post (>= 1.2, < 3)
     ffi (1.9.3)
     ffi (1.9.3-x86-mingw32)
     headless (1.0.2)
@@ -70,6 +75,7 @@ GEM
       railties (>= 3.1.0)
       turbolinks
     json (1.8.1)
+    jwt (1.0.0)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -77,6 +83,8 @@ GEM
     mini_portile (0.6.0)
     minitest (4.7.5)
     multi_json (1.10.1)
+    multi_xml (0.5.5)
+    multipart-post (2.0.0)
     mysql2 (0.3.16)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -87,6 +95,13 @@ GEM
       mini_portile (= 0.6.0)
     nokogiri (1.6.2.1-x86-mingw32)
       mini_portile (= 0.6.0)
+    oauth (0.4.7)
+    oauth2 (0.9.4)
+      faraday (>= 0.8, < 0.10)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      multi_xml (~> 0.5)
+      rack (~> 1.2)
     polyglot (0.3.5)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -122,6 +137,10 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0.4)
+    sorcery (0.8.6)
+      bcrypt (~> 3.1)
+      oauth (~> 0.4, >= 0.4.4)
+      oauth2 (>= 0.8.0, < 1.0.0)
     sprockets (2.11.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -159,12 +178,12 @@ DEPENDENCIES
   capistrano
   coffee-rails (~> 4.0.0)
   daemons
+  delayed-web!
   delayed_job_active_record
   headless
   jbuilder (~> 1.2)
   jquery-rails
   jquery-turbolinks
-  myaso!
   mysql2
   net-ssh-gateway
   nokogiri
@@ -172,6 +191,7 @@ DEPENDENCIES
   sass-rails (~> 4.0.0)
   sdoc
   selenium-webdriver
+  sorcery
   sqlite3
   turbolinks
   uglifier (>= 1.3.0)

@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 window.trackOn = (id) -> 
 	$.ajax(url: "/queries/" + id + "/start_work").done (html) ->
-  		$("#track_button" + id).html("<button type=\"button\" class=\"btn btn-success btn-lg btn-block\" onclick=\"trackOff(" + id + ")\">Отслеживать</button>")
+  		$("#track_button" + id).html("<button type=\"button\" class=\"btn btn-success btn-lg btn-block\" onclick=\"trackOff(" + id + ")\">Остановить</button>")
 
 window.trackOff = (id) -> 
 	$.ajax(url: "/queries/" + id + "/stop_work").done (html) ->
@@ -23,6 +23,6 @@ $ -> $(".get_text").click ->
 $ -> $(".get_emot").click ->
 	id = $(this).attr('textid')
 	$.ajax(url: "/texts/" + id + "/get_emot").done (html) ->
-		$("#get_emot_" + id).parent().append("<hr>" + html)
+		$("#get_emot_" + id).parent().html("<hr>" + html)
 	false
 	

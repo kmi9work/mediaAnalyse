@@ -6,6 +6,14 @@
 <% end %>
 
 <%= content_for :queries do %>
+  <h2 style="display: inline-block"><%= @category.title %></h2> 
+  &nbsp;
+  <%= 
+    link_to image_tag('edit.png'), edit_category_path(@category.id), :method => :get 
+  -%><%= 
+    link_to image_tag('delete.png'), category_path(@category.id), :method => :delete, data: {confirm: "Уверены?"} 
+  %>
+  
 	<div id="queries_accord">
 		<%= render partial: 'queries', locals: {queries: @queries} %>
 	</div>

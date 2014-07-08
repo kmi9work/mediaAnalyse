@@ -22,25 +22,17 @@
 		</div>
 		<div id="essences" class="col-md-6">
 			<table id="essences_table">
-				<% @text.essences.each do |essence| %>
-					<tr id="essence_<%= essence.id %>">
-						<td><%= essence.title %></td>
-						<td><%= essence.rating %></td>
-					</tr>
-				<% end %>
+				<tbody>
+					<% @text.essences.each do |essence| %>
+						<tr id="essence_<%= essence.id %>">
+							<td><%= essence.title %></td>
+							<td><%= essence.rating %></td>
+							<td><%= link_to 'remove', essence_path(essence.id), method: :delete, remote: true %></td>
+						</tr>
+					<% end %>
+				</tbody>
 			</table>
-			<form class="form-inline" role="form">
-			<div id="essence_fields">
-				<%= render 'essence' %>
-			</div>
-			</form>
-			<br>
-			<p>
-				<%= button_to "Добавить", add_essence_path(@text.id), remote: true, class: "btn btn-success essence" %>
-				&nbsp;
-				<button type="button" class="btn btn-danger essence" onclick="deleteEssence();">Удалить</button>
-			</p>
-			
+			<%= render 'essence', text: @text %>
 		</div>
 	</div>
 <% end %>

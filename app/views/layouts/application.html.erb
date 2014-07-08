@@ -9,19 +9,37 @@
 <body>
 
 <div class="page-header" style="position:relative; background-color: #eeeeee; border-radius: 15px">
-	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа СМИ</h1>
+	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа данных интернет-ресурсов</h1>
 </div>
-
+<div id="nav">
+  <% if current_user %>
+    <%= link_to "Edit Profile", edit_user_path(current_user.id) %>
+    <%= link_to "Logout", :logout, method: :post %>
+  <% else %>
+    <%= link_to "Register", new_user_path %> |
+    <%= link_to "Login", :login %>
+  <% end %>
+</div>
+<div>
+  <p id="notice"><%= flash[:notice] %></p>
+  <p id="alert"><%= flash[:alert] %></p>
+</div>
 <div id="main" class="col-md-12">
 	<div id="categories" class="col-md-4">
 		<b>Категории</b>
 		<hr>
 		<%= yield :categories %>
 	</div>
-	<div id="queries" class="col-md-6">
+	<div id="queries" class="col-md-8">
 		<b> Запросы</b>
 		<%= link_to "Правила составления запросов в Yandex.", "http://help.yandex.ru/search/query-language/crib-sheet.xml", target: "_blank" %>
-		<%= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %><br>
+		<%= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %>
+    <% if session[:track_on] %>
+      <%= button_to 'Отключить трэкинг', disable_tracking_path, method: :get, remote: true, id: 'tracking' %>
+    <% else %>
+      <%= button_to 'Включить трэкинг', enable_tracking_path, method: :get, remote: true, id: 'tracking' %>
+    <% end %>
+    <br>
 		<hr>
 		<%= yield :queries %>
 	</div>
@@ -29,9 +47,15 @@
 
 <%= yield %>
 
-<div id="texts" class="col-md-offset-1 col-md-10">
+<div id="texts" class="col-md-12">
 	<a name="anctexts"></a>
 	<%= yield :main %>
 </div>
+<%= yield :specific_js %>
+<% unless session[:track_on] %>
+  <%= javascript_tag do %>
+    window.track_on = false;
+  <% end %>
+<% end %>
 </body>
 </html>

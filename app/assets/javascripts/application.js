@@ -15,5 +15,6 @@
 //= require jquery.turbolinks
 //= require turbolinks
 //= require jquery-ui-1.10.4.custom.min
+//= require jquery.toastmessage
 //= require_tree .
 

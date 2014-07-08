@@ -11,17 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140619111938) do
+ActiveRecord::Schema.define(version: 20140707122532) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "categories_queries", force: true do |t|
-    t.integer "category_id"
-    t.integer "query_id"
   end
 
   create_table "delayed_jobs", force: true do |t|
@@ -49,31 +44,60 @@ ActiveRecord::Schema.define(version: 20140619111938) do
   end
 
   create_table "queries", force: true do |t|
+    t.string   "title"
     t.string   "body"
-    t.string   "search_engine"
-    t.integer  "max_count",     default: 0
-    t.string   "sort",          default: "t"
+    t.integer  "max_count",        default: 0
+    t.string   "sort",             default: "t"
     t.date     "from"
     t.date     "to"
     t.integer  "g_period_num"
-    t.integer  "timeout",       default: 120
-    t.boolean  "track",         default: false
+    t.integer  "timeout",          default: 3600
+    t.boolean  "track",            default: false
+    t.integer  "search_engine_id"
+    t.integer  "category_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "queries_texts", force: true do |t|
-    t.integer "text_id"
-    t.integer "query_id"
+  create_table "query_search_engines", force: true do |t|
+    t.integer  "query_id"
+    t.integer  "search_engine_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "search_engines", force: true do |t|
+    t.string   "title"
+    t.string   "engine_type",   default: "google"
+    t.integer  "timeout",       default: 120
+    t.integer  "tracked_count", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "is_tracking"
   end
 
   create_table "texts", force: true do |t|
     t.string   "title"
     t.text     "content"
     t.string   "url"
-    t.boolean  "novel",      default: true
+    t.integer  "query_id"
+    t.integer  "search_engine_id"
+    t.boolean  "novel",            default: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "users", force: true do |t|
+    t.string   "username",                     null: false
+    t.string   "crypted_password",             null: false
+    t.string   "salt",                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "remember_me_token"
+    t.datetime "remember_me_token_expires_at"
+  end
+
+  add_index "users", ["remember_me_token"], name: "index_users_on_remember_me_token"
+  add_index "users", ["username"], name: "index_users_on_username", unique: true
 
 end

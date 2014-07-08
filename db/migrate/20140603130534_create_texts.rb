@@ -4,8 +4,10 @@ class CreateTexts < ActiveRecord::Migration
     	t.string :title
     	t.text :content
     	t.string :url
+      t.belongs_to :query
+      t.belongs_to :search_engine
     	t.boolean :novel, default: true
-        t.timestamps
+      t.timestamps
     end
   end
 end

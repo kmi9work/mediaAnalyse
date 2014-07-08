@@ -2,4 +2,7 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-$ -> $('#queries_accord').accordion();
+$ -> $('#queries_accord').accordion({
+  collapsible: true,
+  active: false
+});

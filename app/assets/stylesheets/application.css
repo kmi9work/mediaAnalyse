@@ -11,6 +11,7 @@
  *= require_self
  *= require bootstrap.min
  *= require jquery-ui-1.10.4.custom.min
+ *= require jquery.toastmessage
  */
 
 #main{
@@ -71,6 +72,22 @@ ul.empty li{
 	padding: 2px 5px;
 }
 
+#essences{
+	min-width: 520px;
+}
+
+#track_switcher{
+	position: static;
+	padding: 5px;
+	width: 100px;
+	height: 40px;
+	left: 20px;
+	bottom: 20px;
+	background-color: #3276B1;/* #47A447; */
+	box-shadow: 5px 5px 3px #888888;
+	border-radius: 5px;
+	color: white;
+}
 
 
 

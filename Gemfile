@@ -31,10 +31,14 @@ end
 
 gem 'nokogiri'
 gem 'delayed_job_active_record'
-gem 'selenium-webdriver'
+gem 'delayed-web', git: 'https://github.com/thebestday/delayed-web.git'
+gem 'daemons'
+gem 'sorcery'
+
+
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
-gem 'daemons'
+gem 'selenium-webdriver'
 gem 'headless'
 gem 'net-ssh-gateway'
 
@@ -52,3 +56,4 @@ gem 'capistrano', group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+

@@ -6,6 +6,13 @@
 <% end %>
 
 <% if @queries %>
+	<%= content_for :specific_js do %>
+		<%= javascript_tag id: "specific_js" do %>
+			$('#queries_accord').ready(function() {
+				$('#queries_accord').accordion( "option", "active", <%= @queries.index(@query) %> );
+			});		
+		<% end %>
+	<% end %>
 	<%= content_for :queries do %>
 		<div id="queries_accord">
 			<%= render partial: 'categories/queries', locals: {queries: @queries} %>
@@ -14,9 +21,9 @@
 	<% end %>
 <% end %>
 
-<h2> Новости по запросу "<%= @query.body %>" </h2>
+
 <%= content_for :main do %>
-	<%= render partial: 'texts', locals: {query: @query} %>
+	<%= render partial: 'texts', locals: {query: @query, texts: @texts} %>
 <% end %>
 
 

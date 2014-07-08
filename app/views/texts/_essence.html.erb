@@ -1,24 +1,29 @@
-<div id="essence">
-	<input type="text" class="form-control" placeholder="Text input">
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox1" value="option1"> -3
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox2" value="option2"> -2
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox3" value="option3"> -1
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox4" value="option4"> 0
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox5" value="option5"> 1
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox4" value="option4"> 2
-	</label>
-	<label class="radio-inline">
-		<input name="essence_1" type="radio" id="inlineCheckbox5" value="option5"> 3
-	</label>
-</div>
+<%= form_tag commit_essence_path(text.id), class: "form-inline", role: 'form', remote: true do %>
+	<div id="essence_fields">
+		<div id="essence">
+			<%= text_field_tag 'essence[title]', nil, class: 'form-control', placeholder: "Text input" %>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', -3 %> -3
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', -2 %> -2
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', -1 %> -1
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', 0 %> 0
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', 1 %> 1
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', 2 %> 2
+			</label>
+			<label class="radio-inline">
+				<%= radio_button_tag 'essence[rating]', 3 %> 3
+			</label>
+			<%= submit_tag "Ок" %>
+		</div>
+	</div>
+<% end %>

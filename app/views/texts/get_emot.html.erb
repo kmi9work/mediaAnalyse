@@ -2,31 +2,23 @@
   <table>
     <tr>
       <td>&nbsp;</td>
-      <td>Положительно</td>
-      <td>Отрицательно</td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
-      <td>Абсолютно:</td>
-      <td id="positive-score"><%= @data['positive']['score'] %></td>
-      <td id="negative-score"><%= @data['negative']['score'] %></td>
+      <td>Положительно:</td>
+      <td id="positive-score"><%= @data['positive'] %></td>
     </tr>
     <tr>
-      <td>Относительно:</td>
-      <td id="positive-comparative"><%= @data['positive']['comparative'].round(4) %></td>
-      <td id="negative-comparative"><%= @data['negative']['comparative'].round(4) %></td>
+      <td>Отрицательно:</td>
+      <td id="positive-comparative"><%= @data['negative'] %></td>
     </tr>
     <tr>
       <td>Слова:</td>
-      <td id="positive-words"><%= @data['positive']['words'].join(', ') %></td>
-      <td id="negative-words"><%= @data['negative']['words'].join(', ') %></td>
-    </tr>
-    <tr>
-      <td>Итого абсолютно:</td>
-      <td id="score" colspan="2" class="center"><%= @data['score'] %></td>
-    </tr>
-    <tr>
-      <td>Итого относительно:</td>
-      <td id="comparative" colspan="2" class="center"><%= @data['comparative'].round(4) %></td>
+      <td id="positive-words">
+        <%= @data['features'].map{|fs| 
+          fs.map{|f| "#{f['token']} #{f['strength']}"}.join('<br>')
+        }.join(" ").html_safe %>
+      </td>
     </tr>
   </table>      
 </div>

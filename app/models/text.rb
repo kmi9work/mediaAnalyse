@@ -1,7 +1,8 @@
 require 'net/http'
 
 class Text < ActiveRecord::Base
-	has_and_belongs_to_many :queries
+	belongs_to :query
+	belongs_to :search_engine
 	has_many :essences
 	def get_emot
 		query = {"text" => title + "\n" + content}
