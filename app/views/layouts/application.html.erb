@@ -12,14 +12,14 @@
 	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа данных интернет-ресурсов</h1>
 </div>
 
-
+<!-- 
 <div id="nav">
     <% if session[:track_on] %>
       <%= link_to 'Отключить трэкинг', disable_tracking_path, remote: true, id: 'tracking', class: 'knopka off' %>
     <% else %>
       <%= link_to 'Включить трэкинг', enable_tracking_path, remote: true, id: 'tracking', class: 'knopka on' %>
     <% end %>
-    <!-- 
+    
   <% if current_user %>
     <%= link_to "Edit Profile", edit_user_path(current_user.id) %>
     <%= link_to "Logout", :logout, method: :post %>

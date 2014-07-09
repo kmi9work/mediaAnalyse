@@ -3,7 +3,8 @@
 <% @texts.each do |text| %>
 	<p>
 		<%= link_to "#anc#{text.id}" do %>
-			<b> <%= text.title %> </b> (<%= text.url %>)
+			<b> <%= text.title %> </b> 
+			(<%= text.url.length > 20 ? text.url[0..20] + "..." : text.url %>)
 		<% end %>
 	</p>
 <% end %>
@@ -18,6 +19,7 @@
 			<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
 			<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
 			<p> <%= text.content %> </p>
+			<p align="right"> Новость от: <%= text.created_at.strftime("%H:%M:%S") %></p>
 			<hr>
 			<div id="emotion_<%= text.id %>">
 				Эмоциональность: <%= text.emot %>

@@ -10,9 +10,6 @@
 					Поисковые системы: <%= query.search_engines.map{|i| i.title}.join(', ') %>
 				</p>
 				<p>
-					Максимальное число запросов: <%= query.max_count %>
-				</p>
-				<p>
 					Число текстов:  <span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 														<%= query.texts.count %>
 													</span> 
