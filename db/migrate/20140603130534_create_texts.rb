@@ -7,6 +7,7 @@ class CreateTexts < ActiveRecord::Migration
       t.belongs_to :query
       t.belongs_to :search_engine
     	t.boolean :novel, default: true
+      t.integer :emot
       t.timestamps
     end
   end

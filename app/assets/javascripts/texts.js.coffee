@@ -14,3 +14,7 @@ window.getNewLinks = () ->
       $('.qtexts_count').each (span) ->
         $(this).html(respond.counts[$(this).attr('id')])
     setTimeout(getNewLinks, 7000)
+
+$ -> $(".feedback").on("ajax:success", (e, data, status, xhr) ->
+  $(this).remove();
+)

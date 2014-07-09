@@ -1,5 +1,6 @@
-$('#tracking').attr('value', "Отключить трэкинг");
-$('#tracking').closest("form").attr('action', "<%= disable_tracking_path %>");
+$('#tracking').html("Отключить трэкинг");
+$('#tracking').attr('href', "<%= disable_tracking_path %>");
+$('#tracking').attr('class', "knopka off");
 window.track_on = true;
 $(function() {
   return setTimeout(getNewLinks, 3000);

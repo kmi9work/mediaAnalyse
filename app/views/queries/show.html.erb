@@ -17,6 +17,7 @@
 		<div id="queries_accord">
 			<%= render partial: 'categories/queries', locals: {queries: @queries} %>
 		</div>
+		<hr>
 		<p> <%= link_to "Добавить запрос", new_category_query_path(params[:category_id]) %> </p>
 	<% end %>
 <% end %>

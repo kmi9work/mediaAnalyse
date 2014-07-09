@@ -1,3 +1,4 @@
-$('#tracking').attr('value', "Включить трэкинг")
-$('#tracking').closest("form").attr('action', "<%= enable_tracking_path %>")
-window.track_on = false
+$('#tracking').html("Включить трэкинг");
+$('#tracking').attr('href', "<%= enable_tracking_path %>");
+$('#tracking').attr('class', "knopka on");
+window.track_on = false;

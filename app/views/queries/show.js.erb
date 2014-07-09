@@ -1,4 +1,4 @@
-$("#texts").html("<%= escape_javascript(render 'show') %>");
+$("#texts").html("<%= escape_javascript(render 'texts') %>");
 $("#specific_js").html("\
   $('#queries_accord').ready(function() {\
     $('#queries_accord').accordion( 'option', 'active', <%= @queries.index(@query) %> );\

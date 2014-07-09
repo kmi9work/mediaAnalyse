@@ -19,6 +19,9 @@
 	<div id="text">
 		<div id="content" class="col-md-6">
 			<%= @text.content %>
+			<div id="emotion_<%= @text.id %>">
+				Эмоциональность: <%= @text.emot %>
+			</div>
 		</div>
 		<div id="essences" class="col-md-6">
 			<table id="essences_table">

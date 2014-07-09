@@ -13,5 +13,7 @@
 				<%= button_to category.title, category, method: :get, class: "btn btn-primary btn-lg btn-block" %>
 			<% end %>
 		<% end %>
+		<%= link_to "Настройки", edit_category_path(category.id) %>
 	&nbsp; 
 <% end %>
+<hr>

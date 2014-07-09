@@ -1,4 +1,4 @@
-<%= form_for(@category) do |f| %>
+<%= form_for(@category, class: 'form-horizontal', html: {role: 'form'}) do |f| %>
   <% if @category.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@category.errors.count, "error") %> prohibited this category from being saved:</h2>
@@ -10,10 +10,9 @@
       </ul>
     </div>
   <% end %>
-  <div>
-    <%= f.text_field :title, class: "form-control" %>
+  <div class="form-group">
+      <%= f.text_field :title, class: "form-control" %>
   </div>
-  <div class="actions">
-    <%= f.submit "Готово" %>
-  </div>
+  <%= f.submit "Готово", class: "btn btn-default col-md-offset-1 col-md-3" %>
+  <%= link_to 'Отмена', :back, class: 'col-md-offset-4 col-md-3 btn btn-default' %>
 <% end %>

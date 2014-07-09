@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140707122532) do
+ActiveRecord::Schema.define(version: 20140704115352) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -73,7 +73,6 @@ ActiveRecord::Schema.define(version: 20140707122532) do
     t.integer  "tracked_count", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "is_tracking"
   end
 
   create_table "texts", force: true do |t|
@@ -83,6 +82,7 @@ ActiveRecord::Schema.define(version: 20140707122532) do
     t.integer  "query_id"
     t.integer  "search_engine_id"
     t.boolean  "novel",            default: true
+    t.integer  "emot"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -8,10 +8,18 @@
 </head>
 <body>
 
-<div class="page-header" style="position:relative; background-color: #eeeeee; border-radius: 15px">
+<div class="page-header" style="position:relative; background-color: #eeeeee;">
 	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа данных интернет-ресурсов</h1>
 </div>
+
+
 <div id="nav">
+    <% if session[:track_on] %>
+      <%= link_to 'Отключить трэкинг', disable_tracking_path, remote: true, id: 'tracking', class: 'knopka off' %>
+    <% else %>
+      <%= link_to 'Включить трэкинг', enable_tracking_path, remote: true, id: 'tracking', class: 'knopka on' %>
+    <% end %>
+    <!-- 
   <% if current_user %>
     <%= link_to "Edit Profile", edit_user_path(current_user.id) %>
     <%= link_to "Logout", :logout, method: :post %>
@@ -19,27 +27,24 @@
     <%= link_to "Register", new_user_path %> |
     <%= link_to "Login", :login %>
   <% end %>
+   -->
 </div>
+
 <div>
   <p id="notice"><%= flash[:notice] %></p>
   <p id="alert"><%= flash[:alert] %></p>
 </div>
+
 <div id="main" class="col-md-12">
-	<div id="categories" class="col-md-4">
-		<b>Категории</b>
+	<div id="categories" class="col-md-4" style="padding: 0px 10px 10px 10px">
+		<h2 align="center">Категории</h2>
 		<hr>
 		<%= yield :categories %>
 	</div>
 	<div id="queries" class="col-md-8">
-		<b> Запросы</b>
-		<%= link_to "Правила составления запросов в Yandex.", "http://help.yandex.ru/search/query-language/crib-sheet.xml", target: "_blank" %>
-		<%= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %>
-    <% if session[:track_on] %>
-      <%= button_to 'Отключить трэкинг', disable_tracking_path, method: :get, remote: true, id: 'tracking' %>
-    <% else %>
-      <%= button_to 'Включить трэкинг', enable_tracking_path, method: :get, remote: true, id: 'tracking' %>
-    <% end %>
-    <br>
+		<h2 align="center"> Запросы</h2>
+		<%#= link_to "Правила составления запросов в Yandex.", "http://help.yandex.ru/search/query-language/crib-sheet.xml", target: "_blank" %>
+		<%#= link_to "Правила составления запросов в Google.", "http://www.diacr.ru/zametki/20-kak-pravilno-iskat-v-google/kak-pravilno-iskat-v-google.htm", target: "_blank" %>
 		<hr>
 		<%= yield :queries %>
 	</div>

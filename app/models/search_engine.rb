@@ -99,7 +99,7 @@ private
       # body > table.l-page-search > tbody > tr > td.l-page-search-l > div.Ppb-c-SearchStatistics > div:nth-child(1) > h3 > a
       locator = {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div h3 a"}
       fl = wait.until {browser.find_elements(locator).count > 0}
-      Delayed::Worker.logger.debug("Can't find locator in ya_blogs.") unless fl
+      Delayed::Worker.logger.error("Can't find locator in ya_blogs.") unless fl
     elsif type == "ya_news"
       browser.get "http://news.yandex.ru/"
       wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
@@ -133,7 +133,7 @@ private
         end
       end
       ### Selenium::WebDriver::Error::TimeOutError: timed out after 120 seconds
-      Delayed::Worker.logger.debug("Can't find locator in ya_news.") unless fl
+      Delayed::Worker.logger.error("Can't find locator in ya_news.") unless fl
     elsif type == "google"
       browser.get "http://google.ru"
       browser.manage.timeouts.page_load = 300
@@ -159,7 +159,33 @@ private
       browser.find_element(css: "#sbd_1 a").click
       locator = {css: "#rso div li div h3 a"}
       fl = wait.until {browser.find_elements(locator).count > 0}
-      Delayed::Worker.logger.debug("Can't find locator in google.") unless fl
+      Delayed::Worker.logger.error("Can't find locator in google.") unless fl
+    elsif type == "vk"
+      browser.get "http://google.ru"
+      browser.manage.timeouts.page_load = 300
+      unless wait.until {browser.find_elements(id: "gbqfq").count > 0}
+        puts "Error in find element gbqfq"
+      end
+      input = browser.find_element(id: "gbqfq")
+      input.send_keys("site:http://vk.com " + body)
+      s 2
+      input.submit
+      wait.until {browser.find_elements(id: "gbqfb").count > 0}
+      browser.find_element(id: "gbqfb", name: "btnG").click
+      s 2
+      wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
+      browser.find_element(id: "hdtb_tls").click
+      s 2
+      browser.find_element(xpath: "//div[@aria-label='За всё время']").click 
+      s 2
+      browser.find_element(css: "#qdr_d a").click
+      s 2
+      browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
+      s 2
+      browser.find_element(css: "#sbd_1 a").click
+      locator = {css: "#rso div li div h3 a"}
+      fl = wait.until {browser.find_elements(locator).count > 0}
+      Delayed::Worker.logger.error("Can't find locator in google.") unless fl
     end
     Delayed::Worker.logger.debug "Page opened. #{fl}"
     return [locator]
@@ -180,6 +206,7 @@ private
       Delayed::Worker.logger.debug "No links"
       return
     end
+    emot = {}
     ls.each do |link|
       Delayed::Worker.logger.debug "Processing #{link}"
       unless link_exists?(query, link)
@@ -189,7 +216,8 @@ private
         else
           next
         end
-        save_text(query, link, title, content)
+        emot = get_emot title, content
+        save_text query, link, title, content, emot['overall']
         fl = false
       else
         Delayed::Worker.logger.debug "Link exists."
@@ -217,9 +245,9 @@ private
     query.texts.where(url: link).count > 0 # May be slow???
   end
 
-  def save_text query, link, title, content
+  def save_text query, link, title, content, emot
     Delayed::Worker.logger.debug "Saving text..."
-    text = Text.new(url: link, title: title, content: content)
+    text = Text.new(url: link, title: title, content: content, emot: emot)
     text.query = query
     text.search_engine = self
     if text.save
@@ -270,5 +298,11 @@ private
         browser.navigate.refresh
       end
     end
+  end
+  def get_emot title, content
+    query = {"text" => title + "\n" + content}
+    uri = URI('http://emot.zaelab.ru/analyze.json')
+    response = Net::HTTP.post_form(uri, query)
+    return JSON.parse(response.body)
   end
 end

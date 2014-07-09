@@ -10,18 +10,36 @@
 
 <% @texts.each do |text| %>
 	<% if text.novel %> 
-	<div class="article" style="background-color: #fff">
+		<div class="article" style="background-color: #fff">
 	<% else %>
-	<div class="article">
+		<div class="article">
 	<% end %>
-		<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], @query.id, text.id) %>'">Выделить сущности</button>
-		<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
-		<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-		<p> <%= text.content %> </p>
-		<div id="emotion_<%= text.id %>">
-			<a href="#anc<%= text.id %>" id="get_text_<%= text.id %>" class="get_text" textid="<%= text.id %>"> </a> &nbsp; &nbsp; 
-			<a href="#anc<%= text.id %>" id="get_emot_<%= text.id %>" class="get_emot" textid="<%= text.id %>"> Оценить эмоциональность </a>
+			<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], @query.id, text.id) %>'">Выделить сущности</button>
+			<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
+			<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+			<p> <%= text.content %> </p>
+			<hr>
+			<div id="emotion_<%= text.id %>">
+				Эмоциональность: <%= text.emot %>
+			</div>
+			<form id="feedback_<%= text.id %>" action="http://emot.zaelab.ru/feedback.json" method="POST" style="display: block;" data-remote="true" class="feedback">
+			  <input type="hidden" name="text" value="<%= text.content %>">
+			  <input type="hidden" name="revision" value="2">
+			  <input type="hidden" name="score" value="">
+			  <p><strong>Как вы бы сами оценили этот текст?</strong></p>
+			  <input type="submit" value="(-3) критический" onclick="setFeedbackScore(<%= text.id %>,-3);">
+			  <input type="submit" value="(-2) негативный" onclick="setFeedbackScore(<%= text.id %>,-2);">
+			  <input type="submit" value="(-1) неблагоприятный" onclick="setFeedbackScore(<%= text.id %>,-1);">
+			  <input type="submit" value="(0) нейтральный" onclick="setFeedbackScore(<%= text.id %>,0);">
+			  <input type="submit" value="(+1) благоприятный" onclick="setFeedbackScore(<%= text.id %>,1);">
+			  <input type="submit" value="(+2) позитивный" onclick="setFeedbackScore(<%= text.id %>,2);">
+			  <input type="submit" value="(+3) прекрасный" onclick="setFeedbackScore(<%= text.id %>,3);">
+			  <script type="text/javascript">
+			    function setFeedbackScore(id, score) {
+			      document.forms['feedback_' + id]['score'].value = score
+			      return true
+			    }
+			  </script>
+			</form>
 		</div>
-		
-	</div>
 <% end %>
