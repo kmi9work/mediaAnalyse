@@ -40,9 +40,11 @@ class SearchEngine < ActiveRecord::Base
                 Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                 refresh_browser browsers[i], query.title
               end
+              throw :done unless track?
               s 2
               fl = false
-              while !fl
+              i = 0
+              while !fl || i > 10
                 begin
                   Delayed::Worker.logger.debug "Finding locator..."
                   wait.until {browsers[i].find_elements(locators[0]).count > 0}
@@ -52,6 +54,8 @@ class SearchEngine < ActiveRecord::Base
                   s 10
                   refresh_browser browsers[i], query.title
                 end
+                i += 1
+                throw :done unless track?
               end
               get_links query, locators, browsers[i]
               t = rand(timeout) + timeout / 2
@@ -123,7 +127,8 @@ private
       # 
       locator = {css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}
       fl = false
-      while !fl
+      i = 0
+      while !fl || i > 10
         begin
           fl = wait.until {browser.find_elements(locator).count > 0} 
         rescue Selenium::WebDriver::Error::TimeOutError
@@ -131,6 +136,8 @@ private
           s 10 
           refresh_browser browser, body
         end
+        i += 1
+        throw :done unless track?
       end
       ### Selenium::WebDriver::Error::TimeOutError: timed out after 120 seconds
       Delayed::Worker.logger.error("Can't find locator in ya_news.") unless fl
@@ -288,7 +295,7 @@ private
   def refresh_browser browser, title
     fl = false
     refresh_times = 0
-    while !fl
+    while !fl || refresh_times > 10
       begin
         browser.navigate.refresh ### Net::ReadTimeout
         fl = true
@@ -297,6 +304,8 @@ private
         Delayed::Worker.logger.error "Can't refresh '#{title}'. Retrying #{refresh_times}..." 
         browser.navigate.refresh
       end
+      refresh_times += 1
+      throw :done unless track?
     end
   end
   def get_emot title, content
