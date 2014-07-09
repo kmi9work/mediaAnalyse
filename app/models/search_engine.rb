@@ -24,7 +24,7 @@ class SearchEngine < ActiveRecord::Base
     current_index = nil
     current_name = nil
     begin
-      catch :done  do
+      catch :done do
         loop do
           tqueries = queries.where(track: true)
           tqueries.each_with_index do |query, i|
@@ -43,8 +43,8 @@ class SearchEngine < ActiveRecord::Base
               throw :done unless track?
               s 2
               fl = false
-              i = 0
-              while !fl || i > 10
+              trying_count = 0
+              while !fl || trying_count > 10
                 begin
                   Delayed::Worker.logger.debug "Finding locator..."
                   wait.until {browsers[i].find_elements(locators[0]).count > 0}
@@ -54,7 +54,7 @@ class SearchEngine < ActiveRecord::Base
                   s 10
                   refresh_browser browsers[i], query.title
                 end
-                i += 1
+                trying_count += 1
                 throw :done unless track?
               end
               get_links query, locators, browsers[i]
@@ -127,8 +127,8 @@ private
       # 
       locator = {css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}
       fl = false
-      i = 0
-      while !fl || i > 10
+      trying_count = 0
+      while !fl || trying_count > 10
         begin
           fl = wait.until {browser.find_elements(locator).count > 0} 
         rescue Selenium::WebDriver::Error::TimeOutError
@@ -136,7 +136,7 @@ private
           s 10 
           refresh_browser browser, body
         end
-        i += 1
+        trying_count += 1
         throw :done unless track?
       end
       ### Selenium::WebDriver::Error::TimeOutError: timed out after 120 seconds
