@@ -14,6 +14,13 @@
 			<% end %>
 		<% end %>
 		<%= link_to "Настройки", edit_category_path(category.id) %>
+		<%= link_to "Удалить", category_path(category.id), 
+													 :method => :delete, 
+													 data: {confirm: "Уверены?"}, 
+													 style: 'float: right;' %>
 	&nbsp; 
 <% end %>
 <hr>
+<% if not_new %>
+<p> <%= link_to "Добавить категорию", new_category_path, class: 'btn btn-default' %> </p>
+<% end %>

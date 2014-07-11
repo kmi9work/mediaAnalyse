@@ -1,16 +1,9 @@
 <% if @categories %>
 	<%= content_for :categories do %>
-		<%= render partial: 'categories', locals: {categories: @categories} %>
-		<p> <%= link_to "Добавить категорию", new_category_path %> </p>
+		<%= render partial: 'categories', locals: {categories: @categories, not_new: true} %>
 	<% end %>
 <% end %>
 
 <%= content_for :queries do %>
-  <h2 style="display: inline-block"><%= @category.title %></h2>
-  
-	<div id="queries_accord">
-		<%= render partial: 'queries', locals: {queries: @queries} %>
-	</div>
-  <hr>
-	<p> <%= link_to "Добавить запрос", new_category_query_path(params[:id]) %> </p>
+  <%= render partial: 'queries', locals: {queries: @queries, category_id: params[:id], not_new: true} %>
 <% end %>

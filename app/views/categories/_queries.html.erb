@@ -1,39 +1,58 @@
 <% if @queries %>
-	<% @queries.each do |query| %>
-		<% if query.id %>
-			<h3><%= query.title %></h3>
-			<div queryid="<%= query.id %>">
-				<p>
-					Запрос: <%= query.body %>
-				</p>
-				<p>
-					Поисковые системы: <%= query.search_engines.map{|i| i.title}.join(', ') %>
-				</p>
-				<p>
-					Число текстов:  <span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-														<%= query.texts.count %>
-													</span> 
-					<%= link_to "Смотреть", 
-											category_query_path(params[:category_id] || params[:id], query.id), 
-											remote: true, 
-											id: "query_show_#{query.id}", 
-											class: "query_show", 
-											queryid: query.id %>
-					&nbsp; | &nbsp; 
-					<%= link_to 'Удалить', 
-											category_query_path(params[:category_id] || params[:id], query.id), 
-											:method => :delete, 
-											data: {confirm: "Уверены?"} %>
-				</p>
-				<div id="track_button<%= query.id %>">
-					<% if query.track? %>
-						<button type="button" class="btn btn-success btn-lg btn-block" onclick="trackOff(<%= query.id %>)">Остановить</button>
-					<% else %>
-						<button type="button" class="btn btn-primary btn-lg btn-block" onclick="trackOn(<%= query.id %>)">Отслеживать</button>
-					<% end %>
+	<% unless @queries.empty? %>
+		<div id="queries_accord">	
+		<% @queries.each do |query| %>
+			<% if query.id %>
+				<h3><%= query.title %> <div class="emot emot_<%= query.integral_emot + 3 %>"> <%= query.integral_emot %> </div> </h3>
+				<div queryid="<%= query.id %>">
+					<p>
+						Запрос: <%= query.body %>
+					</p>
+					<p>
+						Поисковые системы: <%= query.search_engines.map{|i| i.title}.join(', ') %>
+					</p>
+					<p>
+						Число текстов:  <span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+															<%= query.texts.count %>
+														</span> 
+						<%= link_to "Смотреть", 
+												category_query_path(params[:category_id] || params[:id], query.id), 
+												remote: true, 
+												id: "query_show_#{query.id}", 
+												class: "query_show", 
+												queryid: query.id %>
+						&nbsp; | &nbsp; 
+						<%= link_to 'Удалить', 
+												category_query_path(params[:category_id] || params[:id], query.id), 
+												:method => :delete, 
+												data: {confirm: "Уверены?"} %>
+					</p>
+					<div id="track_button<%= query.id %>" class="track_button">
+						<% if query.track? %>
+							<button type="button" class="btn btn-success" onclick="trackOff(<%= query.id %>)">Остановить</button>
+						<% else %>
+							<button type="button" class="btn btn-primary" onclick="trackOn(<%= query.id %>)">Отслеживать</button>
+						<% end %>
+					</div>
+					<!-- to btn-info -->
 				</div>
-				<!-- to btn-info -->
-			</div>
+			<% end %>
 		<% end %>
-	<% end %> 
+		</div>
+	<% else %>
+		<p>
+			Нет запросов.
+		</p>	 
+	<% end %>
 <% end %>
+
+<hr>
+<p>
+	<% if not_new %>
+		<% if category_id %> 
+			<%= link_to("Добавить запрос", new_category_query_path(category_id), class: 'btn btn-default') %> 
+		<% else %>
+			<%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %> 
+		<% end %>
+	<% end %>
+</p>

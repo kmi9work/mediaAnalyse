@@ -101,12 +101,16 @@ private
       s 2
       # .format(text) не группировать по сюжетам //*[@id="js"]/body/div[2]/div[3]/table/tbody/tr/td[2]/div[1]/table/tbody/tr/td[10]/div/a
       # body > table.l-page-search > tbody > tr > td.l-page-search-l > div.Ppb-c-SearchStatistics > div:nth-child(1) > h3 > a
-      locator = {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div h3 a"}
-      fl = wait.until {browser.find_elements(locator).count > 0}
+      locators = [{css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div h3 a"},
+                  {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div div div.short.ItemMore-Text div a"}]
+      fl = wait.until {browser.find_elements(locators[0]).count > 0 or browser.find_elements(locators[1]).count > 0}
       Delayed::Worker.logger.error("Can't find locator in ya_blogs.") unless fl
     elsif type == "ya_news"
+      Delayed::Worker.logger.debug "get http://news.yandex.ru/"
       browser.get "http://news.yandex.ru/"
+      Delayed::Worker.logger.debug "Wait form."
       wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
+      Delayed::Worker.logger.debug "Form found."
       input = browser.find_element(name: "text", class: "b-form-input__input")
       input.send_keys(body)
       input.submit
