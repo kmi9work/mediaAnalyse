@@ -3,7 +3,7 @@
 		<div id="queries_accord">	
 		<% @queries.each do |query| %>
 			<% if query.id %>
-				<h3><%= query.title %> <div class="emot emot_<%= query.integral_emot + 3 %>"> <%= query.integral_emot %> </div> </h3>
+				<h3><%= query.title %> <div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div> </h3>
 				<div queryid="<%= query.id %>">
 					<p>
 						Запрос: <%= query.body %>
