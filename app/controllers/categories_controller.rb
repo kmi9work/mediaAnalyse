@@ -50,6 +50,12 @@ class CategoriesController < ApplicationController
   	end
 	end
 
+	def negative_category
+		@categories = Category.all
+		@texts = Text.where("emot < ?", 0)
+		render 'queries/show'
+	end
+
 	private
 	def category_params
 		params.require(:category).permit(:id, :title)

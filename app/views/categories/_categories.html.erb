@@ -20,7 +20,12 @@
 													 style: 'float: right;' %>
 	&nbsp; 
 <% end %>
+<% if params[:action] == 'negative_category' %>
+	<%= button_to 'МЧС Негатив', negative_category_path + "#anctexts", method: :get, class: "btn btn-success btn-lg btn-block" %>
+<% else %>
+	<%= button_to 'МЧС Негатив', negative_category_path + "#anctexts", method: :get, class: "btn btn-primary btn-lg btn-block" %>
+<% end %>
 <hr>
 <% if not_new %>
-<p> <%= link_to "Добавить категорию", new_category_path, class: 'btn btn-default' %> </p>
+	<p> <%= link_to "Добавить категорию", new_category_path, class: 'btn btn-default' %> </p>
 <% end %>

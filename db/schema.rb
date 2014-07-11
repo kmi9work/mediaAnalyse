@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140704115352) do
+ActiveRecord::Schema.define(version: 20140711130933) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -77,11 +77,11 @@ ActiveRecord::Schema.define(version: 20140704115352) do
 
   create_table "texts", force: true do |t|
     t.string   "title"
-    t.text     "content"
+    t.text     "content",          limit: 16777215
     t.string   "url"
     t.integer  "query_id"
     t.integer  "search_engine_id"
-    t.boolean  "novel",            default: true
+    t.boolean  "novel",                             default: true
     t.integer  "emot"
     t.datetime "created_at"
     t.datetime "updated_at"

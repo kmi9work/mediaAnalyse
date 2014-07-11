@@ -1,7 +1,7 @@
 <%= content_for :categories do %>
-	<%= render partial: 'categories', :locals => {categories: @categories, not_new: true} %>
+	<%= render partial: 'categories/categories', :locals => {categories: @categories, not_new: true} %>
 <% end %>
 
 <%= content_for :queries do %>
-  <%= render partial: 'queries', locals: {queries: [], category_id: nil, not_new: true} %>
+  <%= render partial: 'categories/queries', locals: {queries: [], category_id: nil, not_new: true} %>
 <% end %>

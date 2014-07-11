@@ -1,5 +1,6 @@
-<h2> Новости по запросу "<%= @query.title %>" </h2>
-
+<% if @query %>
+	<h2> Новости по запросу "<%= @query.title %>" </h2>
+<% end %>
 <% @texts.each do |text| %>
 	<p>
 		<%= link_to "#anc#{text.id}" do %>
@@ -15,7 +16,7 @@
 	<% else %>
 		<div class="article">
 	<% end %>
-			<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], @query.id, text.id) %>'">Выделить сущности</button>
+			<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], text.query.id, text.id) %>'">Выделить сущности</button>
 			<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
 			<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
 			<p> <%= text.content %> </p>
