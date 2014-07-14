@@ -19,7 +19,7 @@ class SearchEngine < ActiveRecord::Base
     end
     wait = Selenium::WebDriver::Wait.new(:timeout => 120)
     tqueries = queries.where(track: true)
-    browsers = Array.new(tqueries.size, nil)
+    browsers = {}
     locators = []
     current_index = nil
     current_name = nil
@@ -27,57 +27,41 @@ class SearchEngine < ActiveRecord::Base
       catch :done do
         loop do
           tqueries = queries.where(track: true)
-          tqueries.each_with_index do |query, i|
-            current_index = i
-            current_name = query.title
+          tqueries.each do |query|
+            current_name =  "id: #{query.id} #{query.title}"
             if query.track?
-              unless browsers[i]
+              unless browsers[query.id]
                 s 15
                 Delayed::Worker.logger.debug "Track '#{query.title}' started."
-                browsers[i] = Selenium::WebDriver.for :firefox
-                locators = open_page browsers[i], wait, engine_type, query.body
+                browsers[query.id] = Selenium::WebDriver.for :firefox
+                locators = open_page browsers[query.id], wait, engine_type, query.body
               else
                 Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
-                refresh_browser browsers[i], query.title
+                refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
+                  browsers[query.id].navigate.refresh if pos == :main
+                end
               end
               throw :done unless track?
               s 2
-              fl = false
-              trying_count = 0
-              while !fl || trying_count > 10
-                begin
-                  Delayed::Worker.logger.debug "Finding locator..."
-                  wait.until {browsers[i].find_elements(locators[0]).count > 0}
-                  fl = true
-                rescue Selenium::WebDriver::Error::TimeOutError
-                  Delayed::Worker.logger.error "Can't find locator ya_news '#{query.title}'. Refreshing" 
-                  s 10
-                  refresh_browser browsers[i], query.title
-                end
-                trying_count += 1
-                throw :done unless track?
-              end
-              get_links query, locators, browsers[i]
+              get_links query, locators, browsers[query.id]
               t = rand(timeout) + timeout / 2
               Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
               sleep(t)
             else
-              if browsers[i]
-                browsers[i].quit
-                browsers[i] = nil
+              if browsers[query.id]
+                browsers[query.id].quit
+                browsers[query.id] = nil
                 Delayed::Worker.logger.debug "Track '#{query.title}' complete."
               end
             end
-            if i == 0
-              throw :done unless track?
-            end
+            throw :done unless track?
           end
         end
       end
     ensure
-      browsers.each {|b| b.quit if b}
+      browsers.each {|_, b| b.quit if b}
       headless.destroy if headless
-      Delayed::Worker.logger.debug "#{current_index}'s query '#{current_name}' raised."
+      Delayed::Worker.logger.debug "Query '#{current_name}' raised."
     end
     puts "#{Time.now}: Tracking #{title} done."
   end
@@ -86,7 +70,9 @@ private
     fl = false
     if type == "ya_blogs"
       browser.get "http://blogs.yandex.ru/"
-      wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
+      refresher browser, "Can't find input text field in ya_blogs #{body}." do
+        wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
+      end
       input = browser.find_element(name: "text", class: "b-form-input__input")
       input.send_keys(body)
       input.submit
@@ -103,14 +89,22 @@ private
       # body > table.l-page-search > tbody > tr > td.l-page-search-l > div.Ppb-c-SearchStatistics > div:nth-child(1) > h3 > a
       locators = [{css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div h3 a"},
                   {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div div div.short.ItemMore-Text div a"}]
-      fl = wait.until {browser.find_elements(locators[0]).count > 0 or browser.find_elements(locators[1]).count > 0}
-      Delayed::Worker.logger.error("Can't find locator in ya_blogs.") unless fl
+      refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
+        if pos == :main
+          Delayed::Worker.logger.debug "Finding locators..."
+          wait.until {browser.find_elements(locators[0]).count > 0 or 
+                      browser.find_elements(locators[1]).count > 0}
+        elsif pos == :no_locator_on_page
+          Delayed::Worker.logger.debug "Maybe no links?"
+          return if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
+        end
+      end
     elsif type == "ya_news"
       Delayed::Worker.logger.debug "get http://news.yandex.ru/"
       browser.get "http://news.yandex.ru/"
-      Delayed::Worker.logger.debug "Wait form."
-      wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
-      Delayed::Worker.logger.debug "Form found."
+      refresher browser, "Can't find input text field in ya_news #{body}." do
+        wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
+      end
       input = browser.find_element(name: "text", class: "b-form-input__input")
       input.send_keys(body)
       input.submit
@@ -129,77 +123,107 @@ private
       s 2
       # .format(text) не группировать по сюжетам //*[@id="js"]/body/div[2]/div[3]/table/tbody/tr/td[2]/div[1]/table/tbody/tr/td[10]/div/a
       # 
-      locator = {css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}
-      fl = false
-      trying_count = 0
-      while !fl || trying_count > 10
-        begin
-          fl = wait.until {browser.find_elements(locator).count > 0} 
-        rescue Selenium::WebDriver::Error::TimeOutError
-          Delayed::Worker.logger.error "Can't find locator in ya_news '#{body}'. Refreshing" 
-          s 10 
-          refresh_browser browser, body
+      locators = [{css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}]
+      refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
+        if pos == :main
+          Delayed::Worker.logger.debug "Finding locators..."
+          wait.until {browser.find_elements(locators[0]).count > 0}
+        elsif pos == :no_locator_on_page
+          Delayed::Worker.logger.debug "Maybe no links?"
+          return if browser.page_source.include? 'Извините, по вашему запросу не найдено записей' 
         end
-        trying_count += 1
-        throw :done unless track?
       end
-      ### Selenium::WebDriver::Error::TimeOutError: timed out after 120 seconds
-      Delayed::Worker.logger.error("Can't find locator in ya_news.") unless fl
     elsif type == "google"
       browser.get "http://google.ru"
       browser.manage.timeouts.page_load = 300
-      unless wait.until {browser.find_elements(id: "gbqfq").count > 0}
-        puts "Error in find element gbqfq"
+      refresher browser, "Can't find input text field in google #{body}." do
+        wait.until {browser.find_elements(id: "gbqfq").count > 0}
       end
       input = browser.find_element(id: "gbqfq")
       input.send_keys(body)
       s 2
       input.submit
-      wait.until {browser.find_elements(id: "gbqfb").count > 0}
+      refresher browser, "Can't find button ok in google #{body}." do
+        wait.until {browser.find_elements(id: "gbqfb").count > 0}
+      end
       browser.find_element(id: "gbqfb", name: "btnG").click
       s 2
-      wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
+      refresher browser, "Can't find 'Инструменты поиска' in google #{body}." do
+        wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
+      end
       browser.find_element(id: "hdtb_tls").click
       s 2
-      browser.find_element(xpath: "//div[@aria-label='За всё время']").click 
+      browser.find_element(xpath: "//div[@aria-label='За всё время']").click
       s 2
       browser.find_element(css: "#qdr_d a").click
       s 2
       browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
       s 2
       browser.find_element(css: "#sbd_1 a").click
-      locator = {css: "#rso div li div h3 a"}
-      fl = wait.until {browser.find_elements(locator).count > 0}
-      Delayed::Worker.logger.error("Can't find locator in google.") unless fl
+      locators = [{css: "#rso div li div h3 a"}]
+      unless refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
+          if pos == :main
+            Delayed::Worker.logger.debug "Finding locators..."
+            wait.until {browser.find_elements(locators[0]).count > 0}
+            if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
+              return nil
+            end
+          elsif pos == :no_locator_on_page
+            Delayed::Worker.logger.debug "Maybe no links?"
+            return nil if browser.page_source.include?('По запросу') and 
+                      browser.page_source.include?('ничего не найдено') and 
+                      browser.page_source.include?('Рекомендации:')
+          end
+        end
+        return nil
+      end
     elsif type == "vk"
       browser.get "http://google.ru"
       browser.manage.timeouts.page_load = 300
-      unless wait.until {browser.find_elements(id: "gbqfq").count > 0}
-        puts "Error in find element gbqfq"
+      refresher browser, "Can't find input text field in google #{body}." do
+        wait.until {browser.find_elements(id: "gbqfq").count > 0}
       end
       input = browser.find_element(id: "gbqfq")
-      input.send_keys("site:http://vk.com " + body)
+      input.send_keys("site:http://vk.com " + body = " -inurl:away")
       s 2
       input.submit
-      wait.until {browser.find_elements(id: "gbqfb").count > 0}
+      refresher browser, "Can't find button ok in google #{body}." do
+        wait.until {browser.find_elements(id: "gbqfb").count > 0}
+      end
       browser.find_element(id: "gbqfb", name: "btnG").click
       s 2
-      wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
+      refresher browser, "Can't find 'Инструменты поиска' in google #{body}." do
+        wait.until {browser.find_elements(id: "hdtb_tls").count > 0}
+      end
       browser.find_element(id: "hdtb_tls").click
       s 2
-      browser.find_element(xpath: "//div[@aria-label='За всё время']").click 
+      browser.find_element(xpath: "//div[@aria-label='За всё время']").click
       s 2
       browser.find_element(css: "#qdr_d a").click
       s 2
       browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
       s 2
       browser.find_element(css: "#sbd_1 a").click
-      locator = {css: "#rso div li div h3 a"}
-      fl = wait.until {browser.find_elements(locator).count > 0}
-      Delayed::Worker.logger.error("Can't find locator in google.") unless fl
+      locators = [{css: "#rso div li div h3 a"}]
+      unless refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
+          if pos == :main
+            Delayed::Worker.logger.debug "Finding locators..."
+            wait.until {browser.find_elements(locators[0]).count > 0}
+            if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
+              return nil
+            end
+          elsif pos == :no_locator_on_page
+            Delayed::Worker.logger.debug "Maybe no links?"
+            return nil if browser.page_source.include?('По запросу') and 
+                      browser.page_source.include?('ничего не найдено') and 
+                      browser.page_source.include?('Рекомендации:')
+          end
+        end
+        return nil
+      end
     end
     Delayed::Worker.logger.debug "Page opened. #{fl}"
-    return [locator]
+    return locators
   end
 
   def s k
@@ -215,7 +239,7 @@ private
     fl = true
     if ls.size == 0
       Delayed::Worker.logger.debug "No links"
-      return
+      return []
     end
     emot = {}
     ls.each do |link|
@@ -264,7 +288,7 @@ private
     if text.save
       Delayed::Worker.logger.debug "Url #{link} saved."
     else
-      Delayed::Worker.logger.debug "Url #{link} CANNOT BE saved."
+      Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
     end
   end
 
@@ -292,30 +316,51 @@ private
     end
     return doc
   end
+
   def track?
     self.reload
     tracked_count > 0
   end
-  def refresh_browser browser, title
-    fl = false
+
+  def refresher browser, no_locator_on_page, msg
     refresh_times = 0
-    while !fl || refresh_times > 10
+    while refresh_times < 5
       begin
-        browser.navigate.refresh ### Net::ReadTimeout
-        fl = true
-      rescue Net::ReadTimeout
-        s((Math.log(refresh_times,2) ** 4))
-        Delayed::Worker.logger.error "Can't refresh '#{title}'. Retrying #{refresh_times}..." 
+        yield :main
+        return true
+      rescue StandardError, Timeout::Error => e
+        if no_locator_on_page
+          yield :no_locator_on_page
+        end
+        s(Math.log(refresh_times,2) ** 4)
+        Delayed::Worker.logger.error "#{e.message}\n" + msg + " Refreshing #{refresh_times}"
         browser.navigate.refresh
       end
       refresh_times += 1
-      throw :done unless track?
+      unless track?
+        Delayed::Worker.logger.debug 'THROW DONE.'
+        throw :done 
+      end
     end
+    raise StandardError.new("Refresh doesn't helps. #{msg}.")
   end
+
   def get_emot title, content
     query = {"text" => title + "\n" + content}
     uri = URI('http://emot.zaelab.ru/analyze.json')
     response = Net::HTTP.post_form(uri, query)
-    return JSON.parse(response.body)
+    if (response.value)
+      s 15
+      3.times do |i| 
+        Delayed::Worker.logger.error "#{response.value} to emot.zaelab.ru. Retrying #{i}..."
+        s 15
+      end
+    end
+    unless response.value
+      return JSON.parse(response.body)
+    else
+      Delayed::Worker.logger.error "Can't get information from emot.zaelab.ru. Error: #{response.value}."
+      return nil
+    end
   end
 end
