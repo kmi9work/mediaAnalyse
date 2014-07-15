@@ -40,4 +40,10 @@ class TextsController < ApplicationController
 		@data = @text.get_emot
 		render 'get_emot', layout: false
 	end
+	def feedback
+		text = Text.find(params[:id])
+		text.my_emot = params[:score]
+		text.save
+		render nothing: true
+	end
 end

@@ -16,5 +16,13 @@ window.getNewLinks = () ->
     setTimeout(getNewLinks, 7000)
 
 $ -> $(".feedback").on("ajax:success", (e, data, status, xhr) ->
-  $(this).remove();
+  id = $(this).attr('textid')
+  my_this = this
+  score = document.forms['feedback_' + id]['score'].value
+  $.ajax(url: "/texts/" + id + "/feedback?score=" + score).done (respond) ->
+    $(my_this).after('Реальная эмоциональность: <div class="emot emot_'+ (parseInt(score) + 3).toString() + '"> ' + score + ' </div>')
+    $(my_this).remove()
 )
+
+    
+  
