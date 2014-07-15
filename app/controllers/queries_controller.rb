@@ -25,7 +25,6 @@ class QueriesController < ApplicationController
 		@query.save
 		ses = @query.search_engines
 		ses.each do |se|
-			se.tracked_count = se.queries.where(track: true).count
 			se.save
 			if Delayed::Job.count == 0 #|| se.tracked_count == 1
 				puts "Track started.\n\n\n\n"
@@ -44,7 +43,6 @@ class QueriesController < ApplicationController
 		@query.save
 		ses = @query.search_engines
 		ses.each do |se|
-			se.tracked_count = se.queries.where(track: true).count
 			se.save
 		end
 		respond_to do |format|

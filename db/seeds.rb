@@ -11,9 +11,9 @@ cat1 = Category.create(title: "Руководство МЧС")
 cat2 = Category.create(title: "Президент России")
 
 g = SearchEngine.create(title: "Google", engine_type: 'google', timeout: 180)
-# yb = SearchEngine.create(title: "Yandex Blogs", engine_type: 'ya_blogs', timeout: 180)
-# yn = SearchEngine.create(title: "Yandex News", engine_type: 'ya_news', timeout: 180)
-# vk = SearchEngine.create(title: "Vk.com", engine_type: 'vk', timeout: 180)
+yb = SearchEngine.create(title: "Yandex Blogs", engine_type: 'ya_blogs', timeout: 180)
+yn = SearchEngine.create(title: "Yandex News", engine_type: 'ya_news', timeout: 180)
+vk = SearchEngine.create(title: "Vk.com", engine_type: 'vk', timeout: 180)
 
 q1 = Query.new(title: "Пучков МЧС", body: "Пучков МЧС", max_count: 100)
 q1.search_engines << g;

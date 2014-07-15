@@ -67,11 +67,14 @@ class SearchEngine < ActiveRecord::Base
           throw :done unless track?
         end
       end
+      track! if track?
     ensure
       browsers.each {|_, b| b.quit if b}
       headless.destroy if headless
       Delayed::Worker.logger.debug "Query '#{current_name}' done."
+      track! if track?
     end
+    track! if track?
     puts "#{Time.now}: Tracking #{title} done."
   end
 private
@@ -291,6 +294,9 @@ private
     Delayed::Worker.logger.debug "Saving text..."
     text = Text.new(url: link, title: title, content: content, emot: emot)
     text.query = query
+    unless query
+      Delayed::Worker.logger.error "FATAL! Query is nil!"
+    end
     text.search_engine = self
     if text.save
       Delayed::Worker.logger.debug "Url #{link} saved."
@@ -325,8 +331,8 @@ private
   end
 
   def track?
-    self.reload
-    tracked_count > 0
+    Delayed::Worker.logger.debug "QUERIES: #{queries.where(track: true).count}"
+    queries.where(track: true).count > 0
   end
 
   def refresher browser, msg
