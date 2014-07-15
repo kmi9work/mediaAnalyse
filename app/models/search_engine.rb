@@ -17,7 +17,7 @@ class SearchEngine < ActiveRecord::Base
       headless.start
       Delayed::Worker.logger.debug "Headless started."
     end
-    wait = Selenium::WebDriver::Wait.new(:timeout => 120)
+    wait = Selenium::WebDriver::Wait.new(:timeout => 60)
     tqueries = queries.where(track: true)
     browsers = {}
     locators = []
@@ -29,9 +29,8 @@ class SearchEngine < ActiveRecord::Base
           tqueries = queries.where(track: true)
           tqueries.each do |query|
             current_name =  "id: #{query.id} #{query.title}"
-            if query.track?
+            if query.reload.track?
               unless browsers[query.id]
-                s 15
                 Delayed::Worker.logger.debug "Track '#{query.title}' started."
                 browsers[query.id] = Selenium::WebDriver.for :firefox
                 locators = open_page browsers[query.id], wait, engine_type, query.body
@@ -40,10 +39,19 @@ class SearchEngine < ActiveRecord::Base
                 refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
                   browsers[query.id].navigate.refresh if pos == :main
                 end
+                # ***
               end
               throw :done unless track?
               s 2
-              get_links query, locators, browsers[query.id]
+              if locators
+                get_links query, locators, browsers[query.id]  #Каким-то образом установить, что ссылки закончились. Может быть здесь: ***
+              else
+                Delayed::Worker.logger.debug "No search results in query #{query.title}."
+                if browsers[query.id] # КОСТЫЛЬ!!! ***
+                  browsers[query.id].quit
+                  browsers[query.id] = nil
+                end
+              end
               t = rand(timeout) + timeout / 2
               Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
               sleep(t)
@@ -56,12 +64,13 @@ class SearchEngine < ActiveRecord::Base
             end
             throw :done unless track?
           end
+          throw :done unless track?
         end
       end
     ensure
       browsers.each {|_, b| b.quit if b}
       headless.destroy if headless
-      Delayed::Worker.logger.debug "Query '#{current_name}' raised."
+      Delayed::Worker.logger.debug "Query '#{current_name}' done."
     end
     puts "#{Time.now}: Tracking #{title} done."
   end
@@ -96,7 +105,7 @@ private
                       browser.find_elements(locators[1]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links?"
-          return if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
+          return nil if browser.page_source.include? 'Извините, по вашему запросу не найдено записей' 
         end
       end
     elsif type == "ya_news"
@@ -124,13 +133,13 @@ private
       # .format(text) не группировать по сюжетам //*[@id="js"]/body/div[2]/div[3]/table/tbody/tr/td[2]/div[1]/table/tbody/tr/td[10]/div/a
       # 
       locators = [{css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}]
-      refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
+      refresher browser, "Can't find locator ya_news '#{body}'." do |pos|
         if pos == :main
           Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links?"
-          return if browser.page_source.include? 'Извините, по вашему запросу не найдено записей' 
+          return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
         end
       end
     elsif type == "google"
@@ -161,21 +170,19 @@ private
       s 2
       browser.find_element(css: "#sbd_1 a").click
       locators = [{css: "#rso div li div h3 a"}]
-      unless refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
-          if pos == :main
-            Delayed::Worker.logger.debug "Finding locators..."
-            wait.until {browser.find_elements(locators[0]).count > 0}
-            if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
-              return nil
-            end
-          elsif pos == :no_locator_on_page
-            Delayed::Worker.logger.debug "Maybe no links?"
-            return nil if browser.page_source.include?('По запросу') and 
-                      browser.page_source.include?('ничего не найдено') and 
-                      browser.page_source.include?('Рекомендации:')
+      refresher browser, "Can't find locator google '#{body}'." do |pos|
+        if pos == :main
+          Delayed::Worker.logger.debug "Finding locators..."
+          wait.until {browser.find_elements(locators[0]).count > 0}
+          if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
+            return nil
           end
+        elsif pos == :no_locator_on_page
+          Delayed::Worker.logger.debug "Maybe no links?"
+          return nil if browser.page_source.include?('По запросу') and 
+                    browser.page_source.include?('ничего не найдено') and 
+                    browser.page_source.include?('Рекомендации:')
         end
-        return nil
       end
     elsif type == "vk"
       browser.get "http://google.ru"
@@ -184,7 +191,7 @@ private
         wait.until {browser.find_elements(id: "gbqfq").count > 0}
       end
       input = browser.find_element(id: "gbqfq")
-      input.send_keys("site:http://vk.com " + body = " -inurl:away")
+      input.send_keys("site:http://vk.com " + body + " -inurl:away")
       s 2
       input.submit
       refresher browser, "Can't find button ok in google #{body}." do
@@ -205,21 +212,21 @@ private
       s 2
       browser.find_element(css: "#sbd_1 a").click
       locators = [{css: "#rso div li div h3 a"}]
-      unless refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
-          if pos == :main
-            Delayed::Worker.logger.debug "Finding locators..."
-            wait.until {browser.find_elements(locators[0]).count > 0}
-            if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
-              return nil
-            end
-          elsif pos == :no_locator_on_page
-            Delayed::Worker.logger.debug "Maybe no links?"
-            return nil if browser.page_source.include?('По запросу') and 
-                      browser.page_source.include?('ничего не найдено') and 
-                      browser.page_source.include?('Рекомендации:')
+      refresher browser, "Can't find locator vk '#{body}'." do |pos|
+        if pos == :main
+          Delayed::Worker.logger.debug "Finding locators..."
+          wait.until {browser.find_elements(locators[0]).count > 0}
+          if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
+            Delayed::Worker.logger.debug "No results found."
+            return nil
           end
+        elsif pos == :no_locator_on_page
+          Delayed::Worker.logger.debug "Maybe no links?"
+          Delayed::Worker.logger.debug "No results found. return nil"
+          return nil if browser.page_source.include?('По запросу') and 
+                    browser.page_source.include?('ничего не найдено') and 
+                    browser.page_source.include?('Рекомендации:')
         end
-        return nil
       end
     end
     Delayed::Worker.logger.debug "Page opened. #{fl}"
@@ -227,7 +234,7 @@ private
   end
 
   def s k
-    sleep(rand(k * 100)/100.0 + 0.2)
+    sleep(rand(k * 100)/100.0 + rand(100)/100.0)
   end
     
   def get_links query, locators, browser  
@@ -322,16 +329,14 @@ private
     tracked_count > 0
   end
 
-  def refresher browser, no_locator_on_page, msg
-    refresh_times = 0
-    while refresh_times < 5
+  def refresher browser, msg
+    refresh_times = 1
+    while refresh_times <= 5
       begin
         yield :main
         return true
       rescue StandardError, Timeout::Error => e
-        if no_locator_on_page
-          yield :no_locator_on_page
-        end
+        yield :no_locator_on_page
         s(Math.log(refresh_times,2) ** 4)
         Delayed::Worker.logger.error "#{e.message}\n" + msg + " Refreshing #{refresh_times}"
         browser.navigate.refresh
@@ -342,7 +347,7 @@ private
         throw :done 
       end
     end
-    raise StandardError.new("Refresh doesn't helps. #{msg}.")
+    raise StandardError.new("Refresh doesn't helps. Maybe Captcha #{msg}.")
   end
 
   def get_emot title, content
