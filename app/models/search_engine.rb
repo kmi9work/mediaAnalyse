@@ -121,8 +121,8 @@ private
       input.send_keys(body)
       input.submit
       s 2
-      if browser.find_elements(xpath: '//a[contains(text(), "по времени") and @class="b-link"]').count > 0
-        browser.find_element(xpath: '//a[contains(text(), "по времени") and @class="b-link"]').click
+      if browser.find_elements(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').count > 0
+        browser.find_element(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').click
       end
       s 2
       if browser.find_elements(xpath: '//a[contains(text(), "сегодня") and @class="b-link"]').count > 0
