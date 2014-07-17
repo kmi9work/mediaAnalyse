@@ -1,8 +1,0 @@
-<% if @categories %>
-	<%= content_for :categories %>
-		<%= render partial: :categories, locals: {categories: @categories} %>
-	<% end %>
-<% end %>
-<%= content_for :queries %>
-	<%= render partial: :queries, locals: {queries: @queries} %>
-<% end %>

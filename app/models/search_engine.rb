@@ -43,8 +43,12 @@ class SearchEngine < ActiveRecord::Base
               end
               throw :done unless track?
               s 2
-              if locators
+              if locators.class == Array
                 get_links query, locators, browsers[query.id]  #Каким-то образом установить, что ссылки закончились. Может быть здесь: ***
+              elsif locators == :captcha
+                Delayed::Worker.logger.error "Captcha returned in query #{query.title}."
+                Delayed::Worker.logger.debug "Let's take some coffee. About 10 min."
+                s 1000
               else
                 Delayed::Worker.logger.debug "No search results in query #{query.title}."
                 if browsers[query.id] # КОСТЫЛЬ!!! ***
@@ -108,6 +112,7 @@ private
                       browser.find_elements(locators[1]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links?"
+          return :captcha if browser.page_source.include? "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
           return nil if browser.page_source.include? 'Извините, по вашему запросу не найдено записей' 
         end
       end
@@ -142,6 +147,7 @@ private
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links?"
+          return :captcha if browser.page_source.include? "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
           return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
         end
       end

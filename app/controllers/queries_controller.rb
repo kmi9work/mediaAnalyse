@@ -87,7 +87,6 @@ class QueriesController < ApplicationController
 		fst = texts[0].created_at
 		chdata = []
 		for i in 1...texts.count
-			puts "--------", texts[i].created_at, fst, "========="
 			if texts[i].created_at - fst > 3600 # Все новости за час.
 				chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n]
 				fst = texts[i].created_at
