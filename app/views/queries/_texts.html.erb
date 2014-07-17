@@ -1,17 +1,22 @@
-<div id="chart" class="col-md-10 col-md-offset-1" style="height: 400px;"></div>
-
-<% if @query %>
-	<h2> Новости по запросу "<%= @query.title %>" </h2>
-<% end %>
-<% @texts.each do |text| %>
-	<p>
-		<%= link_to "#anc#{text.id}" do %>
-			<b> <%= text.title %> </b> 
-			(<%= text.url.length > 20 ? text.url[0..20] + "..." : text.url %>)
+<div class="row">
+	<div id="chart" class="col-md-10 col-md-offset-1" style="height: 400px;"></div>	
+</div>
+<div class="row">
+	<div class="col-md-10 col-md-offset-1">
+		<% if @query %>
+			<h2> Новости по запросу "<%= @query.title %>" </h2>
 		<% end %>
-	</p>
-<% end %>
-
+		<% @texts.each do |text| %>
+			<p>
+				<%= link_to "#anc#{text.id}" do %>
+					<b> <%= text.title %> </b> 
+					(<%= text.url.length > 20 ? text.url[0..20] + "..." : text.url %>)
+				<% end %>
+			</p>
+		<% end %>
+	</div>	
+</div>
+<div class="row">
 <% @texts.each do |text| %>
 		<div class="article">
 			<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], text.query.id, text.id) %>'">Выделить сущности</button>
@@ -117,8 +122,8 @@
       },
 
       series: [{}]
-    };
-  });
+  	};//Options
+  });//function
 	parseDate = function (s) {
     var match = s[0].match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2}) ([0-9]{1,2}):([0-9]{1,2})$/);
     if (match) {
@@ -131,6 +136,24 @@
 		$.ajax({
   		url: '/queries/<%= @query.id %>/chart_data'
 		}).done(function(data) {
+			Highcharts.setOptions({
+            lang: {
+                loading: 'Загрузка...',
+                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                shortMonths: ['Янв', 'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сент', 'Окт', 'Нояб', 'Дек'],
+                exportButtonTitle: "Экспорт",
+                printButtonTitle: "Печать",
+                rangeSelectorFrom: "С",
+                rangeSelectorTo: "По",
+                rangeSelectorZoom: "Период",
+                downloadPNG: 'Скачать PNG',
+                downloadJPEG: 'Скачать JPEG',
+                downloadPDF: 'Скачать PDF',
+                downloadSVG: 'Скачать SVG',
+                printChart: 'Напечатать график'
+            }
+    });
 			var parsed_data = data.map(parseDate);
 			console.log(parsed_data);
 			window.options.series[0].data = parsed_data;
@@ -138,3 +161,4 @@
 		});
 	});  
 <% end %>
+</div>
