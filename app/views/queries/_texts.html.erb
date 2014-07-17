@@ -2,6 +2,16 @@
 	<div id="chart" class="col-md-10 col-md-offset-1" style="height: 400px;"></div>	
 </div>
 <div class="row">
+	<script>
+  $(function() {
+    $( "#datepicker" ).datepicker( $.datepicker.regional[ "fr" ] );
+    $( "#locale" ).change(function() {
+      $( "#datepicker" ).datepicker( "option",
+        $.datepicker.regional[ $( this ).val() ] );
+    });
+  });
+  </script>
+  <p>Date: <input type="text" id="datepicker">&nbsp;
 	<div class="col-md-10 col-md-offset-1">
 		<% if @query %>
 			<h2> Новости по запросу "<%= @query.title %>" </h2>

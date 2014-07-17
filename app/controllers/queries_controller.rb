@@ -59,7 +59,7 @@ class QueriesController < ApplicationController
 		@category = Category.find(params[:category_id])
 		@queries = @category.queries
 		@query = Query.find(params[:id])
-		@texts = @query.texts
+		@texts = @query.from_to(params[:from], params[:to])
 		# @query.texts.where(novel: true).each{|t| t.novel = false; t.save}
 		respond_to do |format|
 			format.html { render :show}

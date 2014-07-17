@@ -44,12 +44,17 @@ class SearchEngine < ActiveRecord::Base
               throw :done unless track?
               s 2
               if locators.class == Array
-                get_links query, locators, browsers[query.id]  #Каким-то образом установить, что ссылки закончились. Может быть здесь: ***
-              elsif locators == :captcha
+                locators = get_links query, locators, browsers[query.id]  #Каким-то образом установить, что ссылки закончились. Может быть здесь: ***
+              end
+              if locators == :captcha
                 Delayed::Worker.logger.error "Captcha returned in query #{query.title}."
                 Delayed::Worker.logger.debug "Let's take some coffee. About 10 min."
                 s 1000
-              else
+                if browsers[query.id] # КОСТЫЛЬ!!! ***
+                  browsers[query.id].quit
+                  browsers[query.id] = nil
+                end
+              elsif !locators
                 Delayed::Worker.logger.debug "No search results in query #{query.title}."
                 if browsers[query.id] # КОСТЫЛЬ!!! ***
                   browsers[query.id].quit
@@ -146,7 +151,7 @@ private
           Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
-          Delayed::Worker.logger.debug "Maybe no links?"
+          Delayed::Worker.logger.debug "Maybe no links or captcha?"
           captcha_text = "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
           return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
           return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
@@ -256,7 +261,11 @@ private
     end
     fl = true
     if ls.size == 0
-      Delayed::Worker.logger.debug "No links"
+      Delayed::Worker.logger.debug "Maybe no links or captcha?"
+      captcha_text = "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
+      return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
+      return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
+      Delayed::Worker.logger.debug "I don't know why there is no links... <<<-------------"
       return []
     end
     emot = {}
@@ -279,6 +288,7 @@ private
     if fl
       # Необходимо просмотреть следующую страницу
     end
+    return ls
   end
 
   def get_link_content link

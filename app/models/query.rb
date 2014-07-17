@@ -20,4 +20,15 @@ class Query < ActiveRecord::Base
     return 0 if n == 0 
     return sum / n
   end
+  def from_to from, to
+    if from and to
+      return texts.where(created_at: from..to)
+    elsif from
+      return texts.where('created_at > ?', from)
+    elsif to
+      return texts.where('created_at < ?', to)
+    else
+      return texts
+    end
+  end
 end
