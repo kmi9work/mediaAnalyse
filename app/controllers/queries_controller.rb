@@ -60,7 +60,7 @@ class QueriesController < ApplicationController
 		@queries = @category.queries
 		@query = Query.find(params[:id])
 		@texts = @query.texts
-		@query.texts.where(novel: true).each{|t| t.novel = false; t.save}
+		# @query.texts.where(novel: true).each{|t| t.novel = false; t.save}
 		respond_to do |format|
 			format.html { render :show}
 			format.js { render :show}
@@ -75,6 +75,31 @@ class QueriesController < ApplicationController
     		format.html { redirect_to @category }
     		format.json { head :no_content }
   	end
+	end
+
+	def chart_data
+		query = Query.find(params[:id])
+		texts = query.texts.order(:created_at)
+		#Faster with right sql-query: select emot, created_at from texts
+		return render(json: [[]].to_json) if texts.empty?
+		med = texts[0].my_emot || texts[0].emot
+		n = 1.0
+		fst = texts[0].created_at
+		chdata = []
+		for i in 1...texts.count
+			puts "--------", texts[i].created_at, fst, "========="
+			if texts[i].created_at - fst > 3600 # Все новости за час.
+				chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n]
+				fst = texts[i].created_at
+				med = texts[i].my_emot || texts[i].emot
+				n = 1.0
+			else
+				med += texts[i].my_emot || texts[i].emot
+				n += 1.0
+			end
+		end
+		chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n]
+		render json: chdata.to_json
 	end
 	private
 	def query_params

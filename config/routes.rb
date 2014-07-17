@@ -5,6 +5,7 @@ MediaAnalyse::Application.routes.draw do
   match 'logout' => 'user_sessions#destroy', via: :post, as: :logout
 
   mount Delayed::Web::Engine, at: '/jobs'
+  get 'queries/:id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
   delete '/essence/:id' => 'essences#destroy', as: :essence
