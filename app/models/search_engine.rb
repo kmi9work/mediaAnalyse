@@ -147,10 +147,12 @@ private
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links?"
-          return :captcha if browser.page_source.include? "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
+          captcha_text = "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
+          return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
           return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
         end
       end
+
     elsif type == "google"
       browser.get "http://google.ru"
       browser.manage.timeouts.page_load = 300
