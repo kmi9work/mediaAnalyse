@@ -4,14 +4,23 @@
 <div class="row">
 	<script>
   $(function() {
-    $( "#datepicker" ).datepicker( $.datepicker.regional[ "fr" ] );
-    $( "#locale" ).change(function() {
-      $( "#datepicker" ).datepicker( "option",
-        $.datepicker.regional[ $( this ).val() ] );
-    });
+    $( "#datepicker_from" ).datetimepicker({lang:'ru', format:'d.m.Y H:i'});
+  });
+  $(function() {
+    $( "#datepicker_to" ).datetimepicker({lang:'ru', format:'d.m.Y H:i'});
   });
   </script>
-  <p>Date: <input type="text" id="datepicker">&nbsp;
+  <div class="col-md-10 col-md-offset-1">
+	  <form action="<%= category_query_path(params[:category_id], @query.id) %>">
+		  <p>
+		  	С: <input type="text" id="datepicker_from" name="from" value="<%= 6.hours.ago.strftime("%d.%m.%Y %H:%M") %>">&nbsp;
+		  	По: <input type="text" id="datepicker_to" name="to" value="<%= DateTime.now.strftime("%d.%m.%Y %H:%M") %>">
+		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
+		  </p>
+	  </form>
+  </div>	
+ </div>
+ <div class="row">
 	<div class="col-md-10 col-md-offset-1">
 		<% if @query %>
 			<h2> Новости по запросу "<%= @query.title %>" </h2>
