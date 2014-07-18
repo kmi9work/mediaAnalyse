@@ -1,5 +1,5 @@
 <div class="row">
-	<div id="chart" class="col-md-10 col-md-offset-1" style="height: 400px;"></div>	
+	<div id="chart" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>	
 </div>
 <div class="row">
 	<script>
@@ -13,7 +13,7 @@
   <div class="col-md-10 col-md-offset-1">
 	  <form action="<%= category_query_path(params[:category_id], @query.id) %>">
 		  <p>
-		  	С: <input type="text" id="datepicker_from" name="from" value="<%= 6.hours.ago.strftime("%d.%m.%Y %H:%M") %>">&nbsp;
+		  	С: <input type="text" id="datepicker_from" name="from" value="<%= DateTime.now.beginning_of_day.strftime("%d.%m.%Y %H:%M") %>">&nbsp;
 		  	По: <input type="text" id="datepicker_to" name="to" value="<%= DateTime.now.strftime("%d.%m.%Y %H:%M") %>">
 		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
 		  </p>
@@ -81,7 +81,8 @@
 	  window.options = {
 	    chart: {
 	      renderTo: 'chart',
-	      type: 'spline'
+	      type: 'spline',
+	      plotBackgroundImage: '/assets/chart_back.png'
 	    },
 		  title: {
         text: 'Эмоциональность статей'

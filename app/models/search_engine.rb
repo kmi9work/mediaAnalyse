@@ -259,6 +259,7 @@ private
     locators.each do |l|
       ls += browser.find_elements(l).map{|i| i.attribute('href')}
     end
+    Delayed::Worker.logger.debug "There is #{ls.size} links"
     fl = true
     if ls.size == 0
       Delayed::Worker.logger.debug "Maybe no links or captcha?"

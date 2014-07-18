@@ -57,10 +57,5 @@
 	<%= yield :main %>
 </div>
 <%= yield :specific_js %>
-<% unless session[:track_on] %>
-  <%= javascript_tag do %>
-    window.track_on = false;
-  <% end %>
-<% end %>
 </body>
 </html>

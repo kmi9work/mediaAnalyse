@@ -28,7 +28,7 @@ class Query < ActiveRecord::Base
     elsif to
       return texts.where('created_at < ?', DateTime.strptime(to, "%d.%m.%Y %H:%M"))
     else
-      return texts.where('created_at > ?', 6.hours.ago)
+      return texts.where('created_at > ?', DateTime.now.beginning_of_day)
     end
   end
 end
