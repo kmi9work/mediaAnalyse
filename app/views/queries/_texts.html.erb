@@ -82,8 +82,11 @@
 	    chart: {
 	      renderTo: 'chart',
 	      type: 'spline',
+	      spacingBottom: 30,
+	      marginTop: 60,
 	      plotBackgroundImage: '/assets/chart_back.png'
 	    },
+
 		  title: {
         text: 'Эмоциональность статей'
       },
@@ -114,7 +117,7 @@
           y: 16,
           format: '{value:.,0f}'
         },
-        showFirstLabel: false,
+        showFirstLabel: true,
         min: -3,
         max: 3
       }],

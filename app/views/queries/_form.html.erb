@@ -42,6 +42,12 @@
       <% end %>
     </div>
   </div>
+  <div class="form-group" style="padding: 60px 0px">
+    <label class="col-sm-6 control-label">Сортировка:</label>
+    <div class="col-sm-6">
+      <%= f.select "sort_by_date", [["По времени",true],["По релевантности",false]], {}, class: "form-control" %>
+    </div>
+  </div>  
   <%= f.submit "Готово", class: "btn btn-default col-md-offset-2 col-md-2" %>
   <%= link_to 'Отмена', :back, class: 'col-md-offset-4 col-md-2 btn btn-default' %>
 <% end %>

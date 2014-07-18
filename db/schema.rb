@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140715143840) do
+ActiveRecord::Schema.define(version: 20140718120053) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20140715143840) do
     t.integer  "category_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "sort_by_date",     default: true
   end
 
   create_table "query_search_engines", force: true do |t|

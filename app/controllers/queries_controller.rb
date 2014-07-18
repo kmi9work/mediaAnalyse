@@ -102,6 +102,6 @@ class QueriesController < ApplicationController
 	end
 	private
 	def query_params
-		params.require(:query).permit(:id, :title, :body, :max_count, search_engine_ids: [])
+		params.require(:query).permit(:id, :title, :body, :max_count, :sort_by_date, search_engine_ids: [])
 	end
 end

@@ -33,7 +33,7 @@ class SearchEngine < ActiveRecord::Base
               unless browsers[query.id]
                 Delayed::Worker.logger.debug "Track '#{query.title}' started."
                 browsers[query.id] = Selenium::WebDriver.for :firefox
-                locators = open_page browsers[query.id], wait, engine_type, query.body
+                locators = open_page browsers[query.id], wait, engine_type, query.body, query.sort_by_date
               else
                 Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                 refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
@@ -87,7 +87,7 @@ class SearchEngine < ActiveRecord::Base
     puts "#{Time.now}: Tracking #{title} done."
   end
 private
-  def open_page browser, wait, type, body
+  def open_page browser, wait, type, body, sort_by_date
     fl = false
     if type == "ya_blogs"
       browser.get "http://blogs.yandex.ru/"
@@ -98,8 +98,14 @@ private
       input.send_keys(body)
       input.submit
       s 2
-      if browser.find_elements(xpath: '//a[contains(text(), "по дате")]').count > 0
-        browser.find_element(xpath: '//a[contains(text(), "по дате")]').click
+      if sort_by_date
+        if browser.find_elements(xpath: '//a[contains(text(), "по дате")]').count > 0
+          browser.find_element(xpath: '//a[contains(text(), "по дате")]').click
+        end
+      else
+        if browser.find_elements(xpath: '//a[contains(text(), "по релевантности")]').count > 0
+          browser.find_element(xpath: '//a[contains(text(), "по релевантности")]').click
+        end 
       end
       s 2
       if browser.find_elements(xpath: '//a[contains(text(), "без группировки")]').count > 0
@@ -131,8 +137,14 @@ private
       input.send_keys(body)
       input.submit
       s 2
-      if browser.find_elements(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').count > 0
-        browser.find_element(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').click
+      if sort_by_date
+        if browser.find_elements(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').count > 0
+          browser.find_element(xpath: '//a[contains(text(), "по дате") and @class="b-link"]').click
+        end
+      else
+        if browser.find_elements(xpath: '//a[contains(text(), "по релевантности") and @class="b-link"]').count > 0
+          browser.find_element(xpath: '//a[contains(text(), "по релевантности") and @class="b-link"]').click
+        end
       end
       s 2
       if browser.find_elements(xpath: '//a[contains(text(), "сегодня") and @class="b-link"]').count > 0
@@ -181,10 +193,12 @@ private
       browser.find_element(xpath: "//div[@aria-label='За всё время']").click
       s 2
       browser.find_element(css: "#qdr_d a").click
-      s 2
-      browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
-      s 2
-      browser.find_element(css: "#sbd_1 a").click
+      if sort_by_date
+        s 2
+        browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
+        s 2
+        browser.find_element(css: "#sbd_1 a").click
+      end
       locators = [{css: "#rso div li div h3 a"}]
       refresher browser, "Can't find locator google '#{body}'." do |pos|
         if pos == :main
@@ -223,10 +237,12 @@ private
       browser.find_element(xpath: "//div[@aria-label='За всё время']").click
       s 2
       browser.find_element(css: "#qdr_d a").click
-      s 2
-      browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
-      s 2
-      browser.find_element(css: "#sbd_1 a").click
+      if sort_by_date
+        s 2
+        browser.find_element(xpath: "//div[@aria-label='По релевантности']").click
+        s 2
+        browser.find_element(css: "#sbd_1 a").click
+      end
       locators = [{css: "#rso div li div h3 a"}]
       refresher browser, "Can't find locator vk '#{body}'." do |pos|
         if pos == :main

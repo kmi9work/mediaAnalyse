@@ -1,5 +1,5 @@
 <%= content_for :categories do %>
-	<%= render partial: 'categories/categories', :locals => {categories: @categories, not_new: true} %>
+	<%= render partial: 'categories/categories', locals: {categories: @categories, not_new: true} %>
 <% end %>
 
 <%= content_for :queries do %>
