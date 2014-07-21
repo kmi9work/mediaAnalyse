@@ -20,5 +20,4 @@
 *.TMP
 /public/assets/*
 /net_ssh.rb
-/db/schema.rb
-/db/schema.rb.orig
+/db/schema*

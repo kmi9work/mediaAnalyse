@@ -23,6 +23,7 @@ class SearchEngine < ActiveRecord::Base
     locators = []
     current_index = nil
     current_name = nil
+    captcha_timeout = 1000
     begin
       catch :done do
         loop do
@@ -35,8 +36,8 @@ class SearchEngine < ActiveRecord::Base
                 browsers[query.id] = Selenium::WebDriver.for :firefox
                 locators = open_page browsers[query.id], wait, engine_type, query.body, query.sort_by_date
               else
-                Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                 refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
+                  Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                   browsers[query.id].navigate.refresh if pos == :main
                 end
                 # ***
@@ -48,8 +49,9 @@ class SearchEngine < ActiveRecord::Base
               end
               if locators == :captcha
                 Delayed::Worker.logger.error "Captcha returned in query #{query.title}."
-                Delayed::Worker.logger.debug "Let's take some coffee. About 10 min."
-                s 1000
+                Delayed::Worker.logger.debug "Let's take some coffee. About #{captcha_timeout} seconds."
+                s captcha_timeout
+                captcha_timeout *= 2
                 if browsers[query.id] # КОСТЫЛЬ!!! ***
                   browsers[query.id].quit
                   browsers[query.id] = nil
@@ -60,6 +62,9 @@ class SearchEngine < ActiveRecord::Base
                   browsers[query.id].quit
                   browsers[query.id] = nil
                 end
+                captcha_timeout = 1000
+              else
+                captcha_timeout = 1000
               end
               t = rand(timeout) + timeout / 2
               Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
@@ -283,7 +288,7 @@ private
       return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
       return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
       Delayed::Worker.logger.debug "I don't know why there is no links... <<<-------------"
-      return []
+      return locators
     end
     emot = {}
     ls.each do |link|
@@ -305,7 +310,7 @@ private
     if fl
       # Необходимо просмотреть следующую страницу
     end
-    return ls
+    return locators
   end
 
   def get_link_content link
@@ -366,7 +371,7 @@ private
   end
 
   def track?
-    Delayed::Worker.logger.debug "QUERIES: #{queries.where(track: true).count}"
+    Delayed::Worker.logger.debug "track? QUERIES: #{queries.where(track: true).count}"
     queries.where(track: true).count > 0
   end
 

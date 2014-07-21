@@ -22,13 +22,13 @@ class Query < ActiveRecord::Base
   end
   def from_to from, to
     if from and to
-      return texts.where(created_at: DateTime.strptime(from, "%d.%m.%Y %H:%M")..DateTime.strptime(to, "%d.%m.%Y %H:%M"))
+      return texts.where(created_at: DateTime.strptime(from, "%d.%m.%Y %H:%M")..DateTime.strptime(to, "%d.%m.%Y %H:%M")).load
     elsif from
-      return texts.where('created_at > ?', DateTime.strptime(from, "%d.%m.%Y %H:%M"))
+      return texts.where('created_at > ?', DateTime.strptime(from, "%d.%m.%Y %H:%M")).load
     elsif to
-      return texts.where('created_at < ?', DateTime.strptime(to, "%d.%m.%Y %H:%M"))
+      return texts.where('created_at < ?', DateTime.strptime(to, "%d.%m.%Y %H:%M")).load
     else
-      return texts.where('created_at > ?', DateTime.now.beginning_of_day)
+      return texts.where('created_at > ?', DateTime.now.beginning_of_day).load
     end
   end
 end

@@ -55,11 +55,17 @@ class QueriesController < ApplicationController
 	end
 
 	def show
+		puts "Get categories"
 		@categories = Category.all
+		puts "Get category"
 		@category = Category.find(params[:category_id])
+		puts "Get queries @category.queries"
 		@queries = @category.queries
+		puts "Get query Query.find(params[:id])"
 		@query = Query.find(params[:id])
+		puts "Get query Query.find(params[:id])"
 		@texts = @query.from_to(params[:from], params[:to])
+		puts "------------"
 		# @query.texts.where(novel: true).each{|t| t.novel = false; t.save}
 		respond_to do |format|
 			format.html { render :show}

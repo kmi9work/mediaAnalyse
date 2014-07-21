@@ -4,7 +4,7 @@
 
 $ -> setTimeout(getNewLinks, 3000)
 
-window.track_on = true
+window.track_on = false
 
 window.getNewLinks = () -> 
   if track_on 

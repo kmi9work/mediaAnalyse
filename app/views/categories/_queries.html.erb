@@ -12,7 +12,7 @@
 						Поисковые системы: <%= query.search_engines.map{|i| i.title}.join(', ') %>
 					</p>
 					<p>
-						Сортировка: <%= query.sort_by_date ? "По времени." : "По релевантности" %>
+						Сортировка: <%= query.sort_by_date ? "По времени" : "По релевантности" %>
 					</p>
 					<p>
 						Число текстов:  <span id="qtexts_count_<%= query.id %>" class="qtexts_count">

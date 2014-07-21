@@ -13,7 +13,7 @@ class TextsController < ApplicationController
 		else
 			texts.each do |t| 
 				respond[:html] << {
-					content: "<a href='#{category_query_path(t.query.category.id, t.query.id)}'><strong> #{t.query.title} </strong></a> <br> <a href='#{t.url}'>#{t.title}</a>", 
+					content: "<a href='#{category_query_path(t.query.category_id, t.query_id)}'><strong> #{t.query.title} </strong></a> <br> <a href='#{t.url}'>#{t.title}</a>", 
 					type: t.search_engine.engine_type
 				}
 			end
