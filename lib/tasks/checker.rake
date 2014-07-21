@@ -6,8 +6,8 @@ namespace :checker do
     my_logger = Logger.new("#{Rails.root}/log/check_dj.log")
     my_logger.debug "-------- #{DateTime.now.strftime('%d.%m.%Y %H:%M')}: Checking dj started. "
     my_logger.debug "Is process running?"
-    str = `ps axu | grep delayed_job`
-    if str.lines.count <= 1
+    str = `pidof delayed_job`
+    if str.lines.count <= 0
       puts "Delayed Job isn't working. Running."
       `#{remote_app_path}/bin/delayed_job start`
     else
