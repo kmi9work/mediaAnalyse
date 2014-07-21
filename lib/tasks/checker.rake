@@ -18,6 +18,10 @@ namespace :checker do
     if Delayed::Job.count > 0
       Delayed::Job.find_each do |dj|
         if dj.failed_at
+          if dj.last_error =~ /Xvfb/
+            xpids = `pidof Xvfb`
+            `kill #{xpids}`
+          end
           my_logger.error "DJ failed at #{dj.failed_at.strftime('%d.%m.%Y %H:%M')}."
           my_logger.debug "======="
           my_logger.debug dj.last_error
@@ -28,7 +32,10 @@ namespace :checker do
         end
       end
     else
+      #check if there is any Queries with track: true
     end
+
+    puts "Check "
   end
 
   desc "Test task"

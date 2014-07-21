@@ -36,9 +36,16 @@ class SearchEngine < ActiveRecord::Base
                 browsers[query.id] = Selenium::WebDriver.for :firefox
                 locators = open_page browsers[query.id], wait, engine_type, query.body, query.sort_by_date
               else
-                refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
+                status = refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
                   Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                   browsers[query.id].navigate.refresh if pos == :main
+                end
+                unless status
+                  if browsers[query.id]
+                    browsers[query.id].quit
+                    browsers[query.id] = nil
+                  end
+                  next
                 end
                 # ***
               end
@@ -381,6 +388,9 @@ private
       begin
         yield :main
         return true
+      rescue Errno::ECONNREFUSED => e
+        Delayed::Worker.logger.error "#{e.message}\n" + msg + " closing browser."
+        return false
       rescue StandardError, Timeout::Error => e
         yield :no_locator_on_page
         s(Math.log(refresh_times,2) ** 4)
