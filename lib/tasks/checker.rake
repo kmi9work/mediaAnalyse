@@ -16,26 +16,38 @@ namespace :checker do
     end
     puts "Check DJ DB."
     if Delayed::Job.count > 0
+      my_logger.debug "DJ count: #{Delayed::Job.count}"
       Delayed::Job.find_each do |dj|
         if dj.failed_at
-          if dj.last_error =~ /Xvfb/
-            xpids = `pidof Xvfb`
-            `kill #{xpids}`
-          end
           my_logger.error "DJ failed at #{dj.failed_at.strftime('%d.%m.%Y %H:%M')}."
           my_logger.debug "======="
           my_logger.debug dj.last_error
           my_logger.debug "======="
+          if dj.last_error =~ /Xvfb/
+            my_logger.debug "Restarting Xvfb..."
+            xpids = `pidof Xvfb`
+            `kill #{xpids}`
+            `/usr/bin/Xvfb :1 -screen 0 1024x768x24 & export DISPLAY=:1 echo 'display is set' firefox &`
+          end
           my_logger.debug "Erase failed status."
           dj.failed_at = nil
           dj.save
         end
       end
     else
-      #check if there is any Queries with track: true
+      puts "Check if there are queries with track: true. Start DJ's if there are."
+      Query.where(track: true).each do |q|
+        ses = q.search_engines
+        ses.each do |se|
+          fl = (se.tracked_count == 0)
+          se.tracked_count = se.queries.where(track: true).count
+          se.save
+          if Delayed::Job.count == 0 or (fl and se.tracked_count == 1)
+            se.delay.track!
+          end
+        end
+      end
     end
-
-    puts "Check "
   end
 
   desc "Test task"
