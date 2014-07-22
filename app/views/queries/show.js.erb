@@ -4,3 +4,17 @@ $("#specific_js").html("\
     $('#queries_accord').accordion( 'option', 'active', <%= @queries.index(@query) %> );\
   });")
 history.pushState(null, "", '<%= request.original_fullpath %>');
+$(function() {
+  return $(".feedback").on("ajax:success", function(e, data, status, xhr) {
+    var id, my_this, score;
+    id = $(this).attr('textid');
+    my_this = this;
+    score = document.forms['feedback_' + id]['score'].value;
+    return $.ajax({
+      url: "/texts/" + id + "/feedback?score=" + score
+    }).done(function(respond) {
+      $(my_this).after('Реальная эмоциональность: <div class="emot emot_' + (parseInt(score) + 3).toString() + '"> ' + score + ' </div>');
+      return $(my_this).remove();
+    });
+  });
+});
