@@ -6,8 +6,76 @@ class SearchEngine < ActiveRecord::Base
   RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
   def track!
+    if engine_type.include? "api"
+      api_track!
+    else
+      browser_track!
+    end
+  end
+
+  def api_track!
     Delayed::Worker.logger.debug "---"
-    Delayed::Worker.logger.debug "#{Time.now}: Tracking #{title} started"
+    Delayed::Worker.logger.debug "Tracking #{title} started"
+
+    catch :done do
+      loop do
+        tqueries = queries.where(track: true)
+        tqueries.each do |query|
+          if engine_type == "vk_api"
+            url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&count=140"
+            Delayed::Worker.logger.debug "Get vk api url: #{url}"
+            str = open_url(url)
+            if str
+              resp = JSON.parse str.read
+              if resp['response']
+                for i in 1...resp['response'].size
+                  set = resp['response'][i]
+                  unless set['text'].strip.empty?
+                    link = set['owner_id'].to_s + "_" + set['id'].to_s
+                    unless link_exists?(query, link)
+                      save_text query, link, "No title", set['text'], get_emot('', set['text'])['overall']
+                      sleep 0.01
+                    end
+                  end
+                end
+              end
+            else 
+              s 10
+            end
+          elsif engine_type == "ya_blogs_api"
+            url = URI.escape "http://blogs.yandex.ru/search.rss?text=#{query.body}&ft=blog"
+            Delayed::Worker.logger.debug "Get yandex blogs api url: #{url}"
+            str = open_url(url)
+            if str
+              resp = Hash.from_xml str.read
+              if resp['rss'] and resp['rss']['channel'] and resp['rss']['channel']['item']
+                resp['rss']['channel']['item'].each do |item|
+                  if item['link'] and !link_exists?(query, item['link'])
+                    title = item['title'] ? item['title'] : ''#--- title
+                    if (arr = get_link_content(item['link'], title))
+                      title, content = *arr
+                      save_text query, item['link'], title, content, get_emot(title, content)['overall']
+                      sleep 0.01
+                    end
+                  end
+                end
+              end
+            else
+              s 10
+            end
+          end
+          t = rand(timeout) + timeout / 2
+          Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
+          sleep(t)
+          throw :done unless track?
+        end
+      end #loop
+    end #catch
+  end
+
+  def browser_track!
+    Delayed::Worker.logger.debug "---"
+    Delayed::Worker.logger.debug "Tracking #{title} started"
     unless track?
       Delayed::Worker.logger.debug "Track complete."
       return
@@ -24,18 +92,21 @@ class SearchEngine < ActiveRecord::Base
     current_index = nil
     current_name = nil
     captcha_timeout = 1000
-    begin
+    begin #ensure
       catch :done do
         loop do
           tqueries = queries.where(track: true)
           tqueries.each do |query|
             current_name =  "id: #{query.id} #{query.title}"
             if query.reload.track?
+
+              #in function or in if.
               unless browsers[query.id]
                 Delayed::Worker.logger.debug "Track '#{query.title}' started."
                 browsers[query.id] = Selenium::WebDriver.for :firefox
                 locators = open_page browsers[query.id], wait, engine_type, query.body, query.sort_by_date
               else
+                #refresh
                 status = refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
                   Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
                   browsers[query.id].navigate.refresh if pos == :main
@@ -49,11 +120,14 @@ class SearchEngine < ActiveRecord::Base
                 end
                 # ***
               end
+
               throw :done unless track?
               s 2
               if locators.class == Array
                 locators = get_links query, locators, browsers[query.id]  #Каким-то образом установить, что ссылки закончились. Может быть здесь: ***
               end
+
+              #captcha or nothing on page.
               if locators == :captcha
                 Delayed::Worker.logger.error "Captcha returned in query #{query.title}."
                 Delayed::Worker.logger.debug "Let's take some coffee. About #{captcha_timeout} seconds."
@@ -73,6 +147,7 @@ class SearchEngine < ActiveRecord::Base
               else
                 captcha_timeout = 1000
               end
+
               t = rand(timeout) + timeout / 2
               Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
               sleep(t)
@@ -86,16 +161,16 @@ class SearchEngine < ActiveRecord::Base
             throw :done unless track?
           end
           throw :done unless track?
-        end
-      end
-      track! if track?
+        end #loop
+      end #catch :done
+      browser_track! if track?
     ensure
       browsers.each {|_, b| b.quit if b}
       headless.destroy if headless
       Delayed::Worker.logger.debug "Query '#{current_name}' done."
-      track! if track?
+      browser_track! if track?
     end
-    track! if track?
+    browser_track! if track?
     puts "#{Time.now}: Tracking #{title} done."
   end
 private
@@ -272,6 +347,10 @@ private
                     browser.page_source.include?('Рекомендации:')
         end
       end
+    elsif type == "vk_api"
+
+    elsif type == "ya_blogs_api"
+
     end
     Delayed::Worker.logger.debug "Page opened. #{fl}"
     return locators
@@ -320,13 +399,15 @@ private
     return locators
   end
 
-  def get_link_content link
+  def get_link_content link, def_title = ""
+    Delayed::Worker.logger.debug "Getting rich content."
     yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
     doc = open_url(yandex_rich_url, "URL: #{link}")
+    s 0.1
     if (doc)
       doc = doc.readlines.join
       rich_ret = JSON.parse(doc)
-      return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : "", rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
+      return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
     else
       Delayed::Worker.logger.debug "Can't download #{link}. -----------------"
       return nil
@@ -334,11 +415,15 @@ private
   end
 
   def link_exists? query, link
-    query.texts.where(url: link).count > 0 # May be slow???
+    return true if !link or link.empty?
+    t = Time.now
+    fl = query.texts.where(url: link).count > 0 # May be slow???
+    Delayed::Worker.logger.debug "link_exists? takes #{t - Time.now} seconds. #{fl}"
+    return fl
   end
 
   def save_text query, link, title, content, emot
-    Delayed::Worker.logger.debug "Saving text..."
+    Delayed::Worker.logger.debug "Saving text... #{emot}"
     text = Text.new(url: link, title: title, content: content, emot: emot)
     text.query = query
     unless query
@@ -366,10 +451,10 @@ private
       rescue Exception => e
         doc = nil
         k = rand(15) + 5
-        $stderr.puts "#{url} was not open. Sleep(#{k}). #{i}"
-        $stderr.puts e.message
-        $stderr.puts err_text
-        $stderr.puts 
+        Delayed::Worker.logger.error "#{url} was not open. Sleep(#{k}). #{i}"
+        Delayed::Worker.logger.error e.message
+        Delayed::Worker.logger.error err_text
+        Delayed::Worker.logger.error ''
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
       end
@@ -410,6 +495,7 @@ private
     query = {"text" => title + "\n" + content}
     uri = URI('http://emot.zaelab.ru/analyze.json')
     response = Net::HTTP.post_form(uri, query)
+    Delayed::Worker.logger.debug response
     if (response.value)
       s 15
       3.times do |i| 

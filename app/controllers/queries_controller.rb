@@ -96,7 +96,7 @@ class QueriesController < ApplicationController
 				n += 1.0
 			end
 		end
-		chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n]
+		chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n, n]
 		render json: chdata.to_json
 	end
 	private
