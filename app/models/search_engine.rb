@@ -16,7 +16,7 @@ class SearchEngine < ActiveRecord::Base
   def api_track!
     Delayed::Worker.logger.debug "---"
     Delayed::Worker.logger.debug "Tracking #{title} started"
-
+    return unless track?
     catch :done do
       loop do
         tqueries = queries.where(track: true)
@@ -64,11 +64,13 @@ class SearchEngine < ActiveRecord::Base
               s 10
             end
           end
+          throw :done unless track?
           t = rand(timeout) + timeout / 2
           Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
           sleep(t)
           throw :done unless track?
         end
+        throw :done unless track?
       end #loop
     end #catch
   end
