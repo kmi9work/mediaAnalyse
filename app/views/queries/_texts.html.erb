@@ -1,40 +1,48 @@
-<div class="row">
-	<div id="chart" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>	
+<div style="text-align: center">
+  <% if @query %>
+    <span class="text_header"><%= @query.title %></span>  
+  <% end %>
+  &nbsp; &nbsp; &nbsp;
+  <%= link_to 'СМИ', category_query_path(params[:category_id], @query.id, source: 'smi', from: params[:from], to: params[:to]) %> &nbsp; | &nbsp; 
+  <%= link_to 'Соц. сети', category_query_path(params[:category_id], @query.id, source: 'sn', from: params[:from], to: params[:to]) %> &nbsp; | &nbsp; 
+  <%= link_to 'Блоги', category_query_path(params[:category_id], @query.id, source: 'blogs', from: params[:from], to: params[:to]) %>
 </div>
+
+<div class="row" style="padding-bottom: 20px">
+	<div id="chart_emot" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
+</div>
+
 <div class="row">
-	<script>
-  $(function() {
-    $( "#datepicker_from" ).datetimepicker({lang:'ru', format:'d.m.Y H:i'});
-  });
-  $(function() {
-    $( "#datepicker_to" ).datetimepicker({lang:'ru', format:'d.m.Y H:i'});
-  });
-  </script>
+  <div id="chart_count" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
+</div>
+<%= render 'scripts', query: @query %>
+<div class="row">
+  
   <div class="col-md-10 col-md-offset-1">
-	  <form action="<%= category_query_path(params[:category_id], @query.id) %>">
+	  <form action="<%= category_query_path(params[:category_id], @query.id) %>" method="get">
 		  <p>
+        <%= hidden_field_tag :source, params[:source] if params[:source] %>
 		  	С: <input type="text" id="datepicker_from" name="from" value="<%= params[:from] or DateTime.now.beginning_of_day.strftime("%d.%m.%Y %H:%M") %>">&nbsp;
 		  	По: <input type="text" id="datepicker_to" name="to" value="<%= params[:to] or DateTime.now.strftime("%d.%m.%Y %H:%M") %>">
 		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
 		  </p>
 	  </form>
-  </div>	
+  </div>
  </div>
+
  <div class="row">
 	<div class="col-md-10 col-md-offset-1">
-		<% if @query %>
-			<h2> Новости по запросу "<%= @query.title %>" </h2>
-		<% end %>
 		<% @texts.each do |text| %>
 			<p>
 				<%= link_to "#anc#{text.id}" do %>
-					<b> <%= text.title %> </b> 
+					<b> <%= text.title %> </b>
 					(<%= text.url.length > 20 ? text.url[0..20] + "..." : text.url %>)
 				<% end %>
 			</p>
 		<% end %>
-	</div>	
+	</div>
 </div>
+
 <div class="row">
 <% @texts.each do |text| %>
 		<div class="article">
@@ -51,137 +59,8 @@
 			</div>
 				<% else %>
 			</div>
-			
-				<form id="feedback_<%= text.id %>" action="http://emot.zaelab.ru/feedback.json" method="POST" style="display: block;" data-remote="true" class="feedback" textid="<%= text.id %>">
-				  <input type="hidden" name="text" value="<%= text.content %>">
-				  <input type="hidden" name="revision" value="2">
-				  <input type="hidden" name="score" value="">
-				  <p><strong>Как вы бы сами оценили этот текст?</strong></p>
-				  <input type="submit" value="(-3) критический" onclick="setFeedbackScore(<%= text.id %>,-3);">
-				  <input type="submit" value="(-2) негативный" onclick="setFeedbackScore(<%= text.id %>,-2);">
-				  <input type="submit" value="(-1) неблагоприятный" onclick="setFeedbackScore(<%= text.id %>,-1);">
-				  <input type="submit" value="(0) нейтральный" onclick="setFeedbackScore(<%= text.id %>,0);">
-				  <input type="submit" value="(+1) благоприятный" onclick="setFeedbackScore(<%= text.id %>,1);">
-				  <input type="submit" value="(+2) позитивный" onclick="setFeedbackScore(<%= text.id %>,2);">
-				  <input type="submit" value="(+3) прекрасный" onclick="setFeedbackScore(<%= text.id %>,3);">
-				  <script type="text/javascript">
-				    function setFeedbackScore(id, score) {
-				      document.forms['feedback_' + id]['score'].value = score
-				      return true
-				    }
-				  </script>
-				</form>
+			<%= render 'feedback', text: text %>
 			<% end %>
 		</div>
-<% end %>
-
-<%= javascript_tag do %>
-	$(function() {
-		Highcharts.setOptions(Highcharts.theme);
-	  window.options = {
-	    chart: {
-	      renderTo: 'chart',
-	      type: 'spline',
-	      spacingBottom: 30,
-	      marginTop: 60,
-	      zoomType: 'x'
-	    },
-
-		  title: {
-        text: 'Эмоциональность статей'
-      },
-
-      subtitle: {
-        text: null
-      },
-
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 24 * 3600 * 1000,
-        tickWidth: 0,
-        gridLineWidth: 1,
-        labels: {
-          align: 'left',
-          x: 3,
-          y: -3
-        }
-      },
-
-      yAxis: [{ // left y axis
-        title: {
-          text: null
-        },
-        labels: {
-          align: 'left',
-          x: 3,
-          y: 16,
-          format: '{value:.,0f}'
-        },
-        showFirstLabel: true,
-        min: -3,
-        max: 3
-      }],
-
-      legend: {
-        align: 'left',
-        verticalAlign: 'top',
-        y: 20,
-        floating: true,
-        borderWidth: 0
-      },
-
-      tooltip: {
-        shared: true,
-        crosshairs: true
-      },
-
-      plotOptions: {
-        series: {
-        	name: 'Эмоциональность',
-          cursor: 'pointer',
-          marker: {
-            lineWidth: 1
-          }
-        }
-      },
-
-      series: [{}]
-  	};//Options
-  });//function
-	parseDate = function (s) {
-    var match = s[0].match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2}) ([0-9]{1,2}):([0-9]{1,2})$/);
-    if (match) {
-      var d = Date.UTC(+('20' + match[3]), match[2] - 1, +match[1], +match[4], +match[5]);
-      return [d, s[1]];
-    }
-  }
-
-	$(function() {
-		$.ajax({
-  		url: '/queries/<%= @query.id %>/chart_data'
-		}).done(function(data) {
-			Highcharts.setOptions({
-            lang: {
-                loading: 'Загрузка...',
-                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-                weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-                shortMonths: ['Янв', 'Фев', 'Март', 'Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сент', 'Окт', 'Нояб', 'Дек'],
-                exportButtonTitle: "Экспорт",
-                printButtonTitle: "Печать",
-                rangeSelectorFrom: "С",
-                rangeSelectorTo: "По",
-                rangeSelectorZoom: "Период",
-                downloadPNG: 'Скачать PNG',
-                downloadJPEG: 'Скачать JPEG',
-                downloadPDF: 'Скачать PDF',
-                downloadSVG: 'Скачать SVG',
-                printChart: 'Напечатать график'
-            }
-    });
-			var parsed_data = data.map(parseDate);
-			window.options.series[0].data = parsed_data;
-	  	var chart = new Highcharts.Chart(window.options);
-		});
-	});  
 <% end %>
 </div>

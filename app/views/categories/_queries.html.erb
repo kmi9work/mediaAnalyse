@@ -1,46 +1,71 @@
 <% if @queries %>
 	<% unless @queries.empty? %>
 		<div id="queries_accord">	
-		<% @queries.each do |query| %>
-			<% if query.id %>
-				<h3><%= query.title %> <div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div> </h3>
-				<div queryid="<%= query.id %>">
-					<p>
-						Запрос: <%= query.body %>
-					</p>
-					<p>
-						Поисковые системы: <%= query.search_engines.map{|i| i.title}.join(', ') %>
-					</p>
-					<p>
-						Сортировка: <%= query.sort_by_date ? "По времени" : "По релевантности" %>
-					</p>
-					<p>
-						Число текстов:  <span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-															<%= query.texts.count %>
-														</span> 
-						<%= link_to "Смотреть", 
-												category_query_path(params[:category_id] || params[:id], query.id), 
-												remote: true, 
-												id: "query_show_#{query.id}", 
-												class: "query_show", 
-												queryid: query.id %>
-						&nbsp; | &nbsp; 
-						<%= link_to 'Удалить', 
-												category_query_path(params[:category_id] || params[:id], query.id), 
-												:method => :delete, 
-												data: {confirm: "Уверены?"} %>
-					</p>
-					<div id="track_button<%= query.id %>" class="track_button">
-						<% if query.track? %>
-							<button type="button" class="btn btn-success" onclick="trackOff(<%= query.id %>)">Остановить</button>
-						<% else %>
-							<button type="button" class="btn btn-primary" onclick="trackOn(<%= query.id %>)">Отслеживать</button>
+		<table id="queries_table">
+			<tbody>
+				<% @queries.each do |query| %>
+					<% if query.id %>
+						<tr style="margin-bottom: 40px">
+							<td>
+								<%= link_to query.title, 
+																category_query_path(params[:category_id] || params[:id], query.id), 
+																#remote: true, 
+																id: "query_show_#{query.id}", 
+																class: "query_show", 
+																queryid: query.id %> 
+								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+									<%= query.texts.count %>
+								</span> )
+							</td>
+							<td>										
+								Общее:
+								<div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div>
+							</td>
+							<td>
+								<% if query.track_with.include? 'smi' %>
+									<%= link_to 'СМИ', stop_work_path(query.id, source: 'smi'), class: 'btn btn-success' %>
+								<% else %>
+									<%= link_to 'СМИ', start_work_path(query.id, source: 'smi'), class: 'btn btn-primary' %>
+								<% end %>
+								<div class="emot emot_<%= query.integral_emot_smi.round + 3 %>"> <%= query.integral_emot_smi.round(2) %> </div>
+							</td>
+							<td>
+								<% if query.track_with.include? 'sn' %>
+									<%= link_to 'Соц. сети', stop_work_path(query.id, source: 'sn'), class: 'btn btn-success' %>
+								<% else %>
+									<%= link_to 'Соц. сети', start_work_path(query.id, source: 'sn'), class: 'btn btn-primary' %>
+								<% end %>
+								
+								<div class="emot emot_<%= query.integral_emot_sn.round + 3 %>"> <%= query.integral_emot_sn.round(2) %> </div>
+							</td>
+							<td>
+								<% if query.track_with.include? 'blogs' %>
+									<%= link_to 'Блоги', stop_work_path(query.id, source: 'blogs'), class: 'btn btn-success' %>
+								<% else %>
+									<%= link_to 'Блоги', start_work_path(query.id, source: 'blogs'), class: 'btn btn-primary' %>
+								<% end %>
+								<div class="emot emot_<%= query.integral_emot_blogs.round + 3 %>"> <%= query.integral_emot_blogs.round(2) %> </div>
+							</td>
+						</tr>
+						<% if params['action'] == 'show' and params['controller'] == 'queries' and params['id'] == query.id.to_s %>
+							<tr>
+								<td>
+									<p>
+										Запрос: <%= query.body %>
+									</p>
+									<p>
+										<%= link_to 'Удалить запрос', 
+																category_query_path(params[:category_id] || params[:id], query.id), 
+																:method => :delete, 
+																data: {confirm: "Уверены?"} %>
+									</p>
+								</td>
+							</tr>
 						<% end %>
-					</div>
-					<!-- to btn-info -->
-				</div>
-			<% end %>
-		<% end %>
+					<% end %>
+				<% end %>
+			</tbody>
+		</table>
 		</div>
 	<% else %>
 		<p>

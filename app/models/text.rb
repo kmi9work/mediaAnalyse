@@ -4,6 +4,29 @@ class Text < ActiveRecord::Base
 	belongs_to :query
 	belongs_to :search_engine
 	has_many :essences
+
+	def Text.source(ids)
+		where(search_engine_id: ids)
+	end
+
+	def Text.from_to from, to
+    if from and to
+      f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
+      t = DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z")
+      return where(created_at: f..t).load
+    elsif from
+      return where('created_at > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone)).load
+    elsif to
+      return where('created_at < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone)).load
+    else
+      return where('created_at > ?', DateTime.now.beginning_of_day).load
+    end
+  end
+
+  def Text.from_to_date from, to
+    return where(created_at: from..to).load
+  end
+
 	def get_emot
 		query = {"text" => title + "\n" + content}
 		uri = URI('http://emot.zaelab.ru/analyze.json')

@@ -494,6 +494,7 @@ private
   end
 
   def get_emot title, content
+    s 0
     query = {"text" => title + "\n" + content}
     uri = URI('http://emot.zaelab.ru/analyze.json')
     response = Net::HTTP.post_form(uri, query)

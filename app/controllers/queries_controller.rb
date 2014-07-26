@@ -20,16 +20,24 @@ class QueriesController < ApplicationController
 		redirect_to category_query_path(@category.id, @query.id)
 	end
 	def start_work
+		if params['source'] == 'smi'
+			ses = SearchEngine.where(engine_type: 'ya_news')
+		elsif params['source'] == 'sn'
+			ses = SearchEngine.where(engine_type: 'vk_api') #'vk', 
+		elsif params['source'] == 'blogs'
+			ses = SearchEngine.where(engine_type: 'ya_blogs_api') #['ya_blogs','ya_blogs_api']
+		else
+			ses = []
+		end
 		@query = Query.find(params[:query_id])
 		@query.track = true
+		@query.search_engine_ids += ses.map(&:id)
 		@query.save
-		ses = @query.search_engines
 		ses.each do |se|
 			fl = (se.tracked_count == 0)
 			se.tracked_count = se.queries.where(track: true).count
 			se.save
 			if Delayed::Job.count == 0 or (fl and se.tracked_count == 1)
-				puts "Track started.\n\n\n\n"
 				se.delay.track!
 			end
 		end
@@ -40,10 +48,19 @@ class QueriesController < ApplicationController
 	end
 
 	def stop_work
+		if params['source'] == 'smi'
+			ses = SearchEngine.where(engine_type: 'ya_news')
+		elsif params['source'] == 'sn'
+			ses = SearchEngine.where(engine_type: 'vk_api')
+		elsif params['source'] == 'blogs'
+			ses = SearchEngine.where(engine_type: 'ya_blogs_api')
+		else
+			ses = []
+		end
 		@query = Query.find(params[:query_id])
 		@query.track = false
+		@query.search_engine_ids -= ses.map(&:id)
 		@query.save
-		ses = @query.search_engines
 		ses.each do |se|
 			se.tracked_count = se.queries.where(track: true).count
 			se.save
@@ -59,7 +76,16 @@ class QueriesController < ApplicationController
 		@category = Category.find(params[:category_id])
 		@queries = @category.queries
 		@query = Query.find(params[:id])
-		@texts = @query.from_to(params[:from], params[:to])
+		if params['source'] == 'smi'
+			source_ses = SearchEngine.where(engine_type: 'ya_news')
+		elsif params['source'] == 'sn'
+			source_ses = SearchEngine.where(engine_type: ['vk', 'vk_api'])
+		elsif params['source'] == 'blogs'
+			source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
+		else
+			source_ses = SearchEngine.all
+		end
+		@texts = @query.texts.source(source_ses).from_to(params[:from], params[:to])
 		respond_to do |format|
 			format.html { render :show}
 			format.js { render :show}
@@ -80,23 +106,35 @@ class QueriesController < ApplicationController
 		query = Query.find(params[:id])
 		texts = query.texts.order(:created_at)
 		#Faster with right sql-query: select emot, created_at from texts
-		return render(json: [[]].to_json) if texts.empty?
 		med = texts[0].my_emot || texts[0].emot
 		n = 1.0
-		fst = texts[0].created_at
-		chdata = []
-		for i in 1...texts.count
-			if texts[i].created_at - fst > 3600 # Все новости за час.
-				chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n]
-				fst = texts[i].created_at
-				med = texts[i].my_emot || texts[i].emot
-				n = 1.0
+		fst = texts.first.created_at
+		cur = texts.first.created_at
+		lst = texts.last.created_at
+		chdata = {}
+		chdata['emot'] = []
+		chdata['count'] = []
+		return render(json: chdata.to_json) if texts.empty?
+		while cur <= lst
+			cur += 3600
+			n = 0
+			med = 0
+			texts.from_to_date(fst,cur).each do |t|
+				med += t.my_emot || t.emot
+				n += 1
+			end
+			fst = cur
+			if (n > 0)
+				chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med.to_f / n]
+				chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
 			else
-				med += texts[i].my_emot || texts[i].emot
-				n += 1.0
+				chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
+				chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
 			end
 		end
-		chdata << [fst.strftime("%d.%m.%y %H:%M"), med / n, n]
+		
+		chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med / n]
+		chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
 		render json: chdata.to_json
 	end
 	private
