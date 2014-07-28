@@ -432,7 +432,7 @@ private
       Delayed::Worker.logger.error "FATAL! Query is nil!"
     end
     text.search_engine = self
-    if text.save
+    if text.save!
       Delayed::Worker.logger.debug "Url #{link} saved."
     else
       Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
