@@ -8,13 +8,13 @@ namespace :checker do
     my_logger.debug "Is process running?"
     str = `pidof delayed_job`
     if str.lines.count <= 0
-      puts "Delayed Job isn't working. Running."
-      `#{remote_app_path}/bin/delayed_job start`
+      my_logger.error "Delayed Job isn't working. Running."
+      my_logger.debug `#{remote_app_path}/bin/delayed_job start`
     else
-      puts "It's running:"
-      puts str
+      my_logger.debug "It's running:"
+      my_logger.debug str
     end
-    puts "Check DJ DB."
+    my_logger.debug "Check DJ DB."
     if Delayed::Job.count > 0
       my_logger.debug "DJ count: #{Delayed::Job.count}"
       Delayed::Job.find_each do |dj|
@@ -25,9 +25,9 @@ namespace :checker do
           my_logger.debug "======="
           if dj.last_error =~ /Xvfb/
             my_logger.debug "Restarting Xvfb..."
-            xpids = `pidof Xvfb`
-            `kill #{xpids}`
-            `/usr/bin/Xvfb :1 -screen 0 1024x768x24 & export DISPLAY=:1 echo 'display is set' firefox &`
+            my_logger.debug xpids = `pidof Xvfb`
+            my_logger.debug `kill #{xpids}`
+            my_logger.debug `/usr/bin/Xvfb :1 -screen 0 1024x768x24 & export DISPLAY=:1 echo 'display is set' firefox &`
           end
           my_logger.debug "Erase failed status."
           dj.failed_at = nil
@@ -35,7 +35,7 @@ namespace :checker do
         end
       end
     else
-      puts "Check if there are queries with track: true. Start DJ's if there are."
+      my_logger.debug "Check if there are queries with track: true. Start DJ's if there are."
       Query.where(track: true).each do |q|
         ses = q.search_engines
         ses.each do |se|

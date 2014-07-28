@@ -497,20 +497,13 @@ private
     s 0
     query = {"text" => title + "\n" + content}
     uri = URI('http://emot.zaelab.ru/analyze.json')
-    response = Net::HTTP.post_form(uri, query)
-    Delayed::Worker.logger.debug response
-    if (response.value)
+    begin
+      response = Net::HTTP.post_form(uri, query)
+    rescue StandardError, Timeout::Error => e
       s 15
-      3.times do |i| 
-        Delayed::Worker.logger.error "#{response.value} to emot.zaelab.ru. Retrying #{i}..."
-        s 15
-      end
+      Delayed::Worker.logger.error "#{response.value} to emot.zaelab.ru. Retrying..."
+      return get_emot title, content
     end
-    unless response.value
-      return JSON.parse(response.body)
-    else
-      Delayed::Worker.logger.error "Can't get information from emot.zaelab.ru. Error: #{response.value}."
-      return nil
-    end
+    return JSON.parse(response.body)
   end
 end
