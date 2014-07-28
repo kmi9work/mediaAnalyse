@@ -17,10 +17,10 @@
 									<%= query.texts.count %>
 								</span> )
 							</td>
-							<td>										
+							<!-- <td>										
 								Общее:
 								<div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div>
-							</td>
+							</td> -->
 							<td>
 								<% if query.track_with.include? 'smi' %>
 									<%= link_to 'СМИ', stop_work_path(query.id, source: 'smi'), class: 'btn btn-success' %>

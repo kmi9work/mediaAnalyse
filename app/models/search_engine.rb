@@ -426,15 +426,21 @@ private
 
   def save_text query, link, title, content, emot
     Delayed::Worker.logger.debug "Saving text... #{emot}"
-    text = Text.new(url: link, title: title, content: content, emot: emot)
+    c = content.gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
+    t = title.gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
+    text = Text.new(url: link, title: title, content: c, emot: emot)
     text.query = query
     unless query
       Delayed::Worker.logger.error "FATAL! Query is nil!"
     end
     text.search_engine = self
-    if text.save!
+    begin
+    if text.save
       Delayed::Worker.logger.debug "Url #{link} saved."
     else
+      Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
+    end
+    rescue ActiveRecord::StatementInvalid
       Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
     end
   end
