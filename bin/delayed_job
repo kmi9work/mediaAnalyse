@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
-puts 1
 require 'delayed/command'
-puts 2
 Delayed::Command.new(ARGV).daemonize
-puts 3

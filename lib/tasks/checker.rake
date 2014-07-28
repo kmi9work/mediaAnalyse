@@ -4,6 +4,7 @@ namespace :checker do
   desc "Check for delayed_job is working right way"
   task delayed_job: :environment do
     my_logger = Logger.new("#{Rails.root}/log/check_dj.log")
+    my_logger.debug `whoami`
     my_logger.debug "-------- #{DateTime.now.strftime('%d.%m.%Y %H:%M')}: Checking dj started. "
     my_logger.debug "Is process running?"
     str = `pidof delayed_job`
