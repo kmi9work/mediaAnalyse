@@ -76,6 +76,7 @@ class QueriesController < ApplicationController
 		@category = Category.find(params[:category_id])
 		@queries = @category.queries
 		@query = Query.find(params[:id])
+		params['source'] = 'smi' unless params['source']
 		if params['source'] == 'smi'
 			source_ses = SearchEngine.where(engine_type: 'ya_news')
 		elsif params['source'] == 'sn'

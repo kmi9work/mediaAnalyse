@@ -15,9 +15,9 @@
     <%= emot_smi[:value] <= 0 ? emot_smi[:value].round(2) : "+" + emot_smi[:value].round(2).to_s %> 
   </div>
   <% if emot_smi[:rate] > 0 %>
-    <%= image_tag "arrow-up-grey.png" %>
+    &uarr;
   <% elsif emot_smi[:rate] < 0 %>
-    <%= image_tag "arrow-down-grey.png" %>
+    &darr;
   <% end %>
    &nbsp; | &nbsp;
 
@@ -31,9 +31,9 @@
     <%= emot_sn[:value] <= 0 ? emot_sn[:value].round(2) : "+" + emot_sn[:value].round(2).to_s %> 
   </div>
   <% if emot_sn[:rate] > 0 %>
-    <%= image_tag "arrow-up-grey.png" %>
+    &uarr;
   <% elsif emot_sn[:rate] < 0 %>
-    <%= image_tag "arrow-down-grey.png" %>
+    &darr;
   <% end %>
    &nbsp; | &nbsp; 
   
@@ -47,9 +47,9 @@
     <%= emot_blogs[:value] <= 0 ? emot_blogs[:value].round(2) : "+" + emot_blogs[:value].round(2).to_s %>
   </div>
   <% if emot_blogs[:rate] > 0 %>
-    <%= image_tag "arrow-up-grey.png" %>
+    &uarr;
   <% elsif emot_blogs[:rate] < 0 %>
-    <%= image_tag "arrow-down-grey.png" %>
+    &darr;
   <% end %>
   </span>
 </div>

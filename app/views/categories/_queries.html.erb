@@ -7,12 +7,17 @@
 					<% if query.id %>
 						<tr style="margin-bottom: 40px">
 							<td>
-								<%= link_to query.title, 
+								<% if params[:category_id] and params[:id] == query.id.to_s %>
+									<span style="font-size: 24px"> <%= query.title %> </span>
+								<% else %>
+									<%= link_to query.title, 
 																category_query_path(params[:category_id] || params[:id], query.id), 
 																#remote: true, 
 																id: "query_show_#{query.id}", 
 																class: "query_show", 
 																queryid: query.id %> 
+								<% end %>
+								
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.count %>
 								</span> )
@@ -47,6 +52,7 @@
 								<div class="emot emot_<%= query.integral_emot_blogs.round + 3 %>"> <%= query.integral_emot_blogs.round(2) %> </div>
 							</td>
 						</tr>
+						<!-- 
 						<% if params['action'] == 'show' and params['controller'] == 'queries' and params['id'] == query.id.to_s %>
 							<tr>
 								<td>
@@ -61,7 +67,7 @@
 									</p>
 								</td>
 							</tr>
-						<% end %>
+						<% end %> -->
 					<% end %>
 				<% end %>
 			</tbody>
