@@ -144,7 +144,80 @@ $(function() {
       },
 
       series: [{}]
-    };//Options emot
+    };//Options count
+    window.options_both = {
+      chart:  {
+                renderTo: 'chart_both',
+                spacingBottom: 30,
+                marginTop: 60,
+                zoomType: 'x'
+              },
+      title:  {
+                text: 'Общая динамика'
+              },
+      subtitle: {
+                text: null
+              },
+      xAxis:  {
+                type: 'datetime',
+                tickInterval: 24 * 3600 * 1000,
+                tickWidth: 0,
+                gridLineWidth: 1,
+                labels: {
+                  align: 'left',
+                  x: 3,
+                  y: -3
+                }
+              },
+      yAxis: [{ // Primary yAxis
+                labels: {
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'Количество статей',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                }
+              }, { // Secondary yAxis
+                title: {
+                  text: 'Эмоциональность статей',
+                  style: {
+                    color: Highcharts.getOptions().colors[2]
+                  }
+                },
+                labels: {
+                  style: {
+                    color: Highcharts.getOptions().colors[2]
+                  }
+                },
+                opposite: true,
+                min: -3,
+                max: 3
+              }],
+      tooltip: {
+                shared: true
+                },
+      legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 100,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+              },
+      series: [{
+                name: 'Количество',
+                type: 'column'
+              }, {
+                name: 'Эмоциональность',
+                type: 'spline',
+                yAxis: 1    
+              }]
+    };//Options both
   });//function
   parseDate = function (s) {
     var match = s[0].match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2}) ([0-9]{1,2}):([0-9]{1,2})$/);
@@ -156,7 +229,7 @@ $(function() {
 
   $(function() {
     $.ajax({
-      url: '/queries/<%= query.id %>/chart_data'
+      url: '/queries/<%= query.id %>/chart_data?source=<%= source %>'
     }).done(function(data) {
       Highcharts.setOptions({
             lang: {
@@ -180,9 +253,12 @@ $(function() {
       var parsed_data_count = data.count.map(parseDate);
       window.options_emot.series[0].data = parsed_data_emot;
       window.options_count.series[0].data = parsed_data_count;
+      window.options_both.series[0].data = parsed_data_count;
+      window.options_both.series[1].data = parsed_data_emot;
       Highcharts.setOptions(Highcharts.theme);
       var chart_emot = new Highcharts.Chart(window.options_emot);
       var chart_count = new Highcharts.Chart(window.options_count);
+      var chart_count = new Highcharts.Chart(window.options_both);
     });
   });  
 <% end %>

@@ -104,17 +104,27 @@ class QueriesController < ApplicationController
 
 	def chart_data
 		query = Query.find(params[:id])
-		texts = query.texts.order(:created_at)
-		#Faster with right sql-query: select emot, created_at from texts
-		med = texts[0].my_emot || texts[0].emot
-		n = 1.0
-		fst = texts.first.created_at
-		cur = texts.first.created_at
-		lst = texts.last.created_at
+		if params['source'] == 'smi'
+			source_ses = SearchEngine.where(engine_type: 'ya_news')
+		elsif params['source'] == 'sn'
+			source_ses = SearchEngine.where(engine_type: ['vk', 'vk_api'])
+		elsif params['source'] == 'blogs'
+			source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
+		else
+			source_ses = SearchEngine.all
+		end
+		texts = query.texts.source(source_ses).order(:created_at)
+		#Faster with right SQL-query: select emot, created_at from texts
 		chdata = {}
 		chdata['emot'] = []
 		chdata['count'] = []
 		return render(json: chdata.to_json) if texts.empty?
+		med = texts[0].my_emot || texts[0].emot
+		n = 1.0
+		fst = texts.first.created_at.beginning_of_hour
+		cur = fst.dup
+		lst = texts.last.created_at
+		
 		while cur <= lst
 			cur += 3600
 			n = 0

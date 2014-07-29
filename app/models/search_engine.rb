@@ -22,7 +22,7 @@ class SearchEngine < ActiveRecord::Base
         tqueries = queries.where(track: true)
         tqueries.each do |query|
           if engine_type == "vk_api"
-            url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&count=140"
+            url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&extended=1&count=140"
             Delayed::Worker.logger.debug "Get vk api url: #{url}"
             str = open_url(url)
             if str
@@ -31,7 +31,7 @@ class SearchEngine < ActiveRecord::Base
                 for i in 1...resp['response'].size
                   set = resp['response'][i]
                   unless set['text'].strip.empty?
-                    link = set['owner_id'].to_s + "_" + set['id'].to_s
+                    link = 'https://vk.com/wall' + set['owner_id'].to_s + "_" + set['id'].to_s
                     unless link_exists?(query, link)
                       save_text query, link, "No title", set['text'], get_emot('', set['text'])['overall']
                       sleep 0.01
@@ -349,10 +349,6 @@ private
                     browser.page_source.include?('Рекомендации:')
         end
       end
-    elsif type == "vk_api"
-
-    elsif type == "ya_blogs_api"
-
     end
     Delayed::Worker.logger.debug "Page opened. #{fl}"
     return locators

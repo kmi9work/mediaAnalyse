@@ -3,19 +3,40 @@
     <span class="text_header"><%= @query.title %></span>  
   <% end %>
   &nbsp; &nbsp; &nbsp;
-  <%= link_to 'СМИ', category_query_path(params[:category_id], @query.id, source: 'smi', from: params[:from], to: params[:to]) %> &nbsp; | &nbsp; 
-  <%= link_to 'Соц. сети', category_query_path(params[:category_id], @query.id, source: 'sn', from: params[:from], to: params[:to]) %> &nbsp; | &nbsp; 
-  <%= link_to 'Блоги', category_query_path(params[:category_id], @query.id, source: 'blogs', from: params[:from], to: params[:to]) %>
+  <span style="font-size: 24px;">
+  <% if params[:source] == 'smi' %>
+    СМИ
+  <% else %>
+    <%= link_to 'СМИ', category_query_path(params[:category_id], @query.id, source: 'smi', from: params[:from], to: params[:to]) %>
+  <% end %>
+   &nbsp; | &nbsp; 
+  <% if params[:source] == 'sn' %>
+    Соц. сети
+  <% else %>
+    <%= link_to 'Соц. сети', category_query_path(params[:category_id], @query.id, source: 'sn', from: params[:from], to: params[:to]) %>
+  <% end %>
+   &nbsp; | &nbsp; 
+  <% if params[:source] == 'blogs' %>
+    Блоги
+  <% else %>
+    <%= link_to 'Блоги', category_query_path(params[:category_id], @query.id, source: 'blogs', from: params[:from], to: params[:to]) %>
+  <% end %>
+  </span>
 </div>
 
 <div class="row" style="padding-bottom: 20px">
 	<div id="chart_emot" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
 </div>
 
-<div class="row">
+<div class="row" style="padding-bottom: 20px">
   <div id="chart_count" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
 </div>
-<%= render 'scripts', query: @query %>
+
+<div class="row">
+  <div id="chart_both" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
+</div>
+
+<%= render 'scripts', query: @query, source: params['source'] %>
 <div class="row">
   
   <div class="col-md-10 col-md-offset-1">
@@ -29,7 +50,7 @@
 	  </form>
   </div>
  </div>
-
+<!-- 
  <div class="row">
 	<div class="col-md-10 col-md-offset-1">
 		<% @texts.each do |text| %>
@@ -42,7 +63,7 @@
 		<% end %>
 	</div>
 </div>
-
+ -->
 <div class="row">
 <% @texts.each do |text| %>
 		<div class="article">
