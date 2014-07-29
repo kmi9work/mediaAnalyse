@@ -4,22 +4,52 @@
   <% end %>
   &nbsp; &nbsp; &nbsp;
   <span style="font-size: 24px;">
+  
   <% if params[:source] == 'smi' %>
     СМИ
   <% else %>
     <%= link_to 'СМИ', category_query_path(params[:category_id], @query.id, source: 'smi', from: params[:from], to: params[:to]) %>
   <% end %>
-   &nbsp; | &nbsp; 
+  <% emot_smi = @query.last_hour_emot_smi %>
+  <div class="emot emot_<%= emot_smi[:value].round + 3 %>"> 
+    <%= emot_smi[:value].round(2) %> 
+  </div>
+  <% if emot_smi[:rate] > 0 %>
+    <%= image_tag "arrow-up-grey.png" %>
+  <% elsif emot_smi[:rate] < 0 %>
+    <%= image_tag "arrow-down-grey.png" %>
+  <% end %>
+   &nbsp; | &nbsp;
+
   <% if params[:source] == 'sn' %>
     Соц. сети
   <% else %>
     <%= link_to 'Соц. сети', category_query_path(params[:category_id], @query.id, source: 'sn', from: params[:from], to: params[:to]) %>
   <% end %>
+  <% emot_sn = @query.last_hour_emot_sn %>
+  <div class="emot emot_<%= emot_sn[:value].round + 3 %>"> 
+    <%= emot_sn[:value].round(2) %> 
+  </div>
+  <% if emot_sn[:rate] > 0 %>
+    <%= image_tag "arrow-up-grey.png" %>
+  <% elsif emot_sn[:rate] < 0 %>
+    <%= image_tag "arrow-down-grey.png" %>
+  <% end %>
    &nbsp; | &nbsp; 
+  
   <% if params[:source] == 'blogs' %>
     Блоги
   <% else %>
     <%= link_to 'Блоги', category_query_path(params[:category_id], @query.id, source: 'blogs', from: params[:from], to: params[:to]) %>
+  <% end %>
+  <% emot_blogs = @query.last_hour_emot_blogs %>
+  <div class="emot emot_<%= emot_blogs[:value].round + 3 %>"> 
+    <%= emot_blogs[:value].round(2) %> 
+  </div>
+  <% if emot_blogs[:rate] > 0 %>
+    <%= image_tag "arrow-up-grey.png" %>
+  <% elsif emot_blogs[:rate] < 0 %>
+    <%= image_tag "arrow-down-grey.png" %>
   <% end %>
   </span>
 </div>

@@ -33,6 +33,33 @@ class Query < ActiveRecord::Base
     source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
     integral(texts.source(source_ses))
   end
+
+  def last_hour_emot_smi
+    source_ses = SearchEngine.where(engine_type: 'ya_news')
+    ret = {}
+    ret[:value] = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    prev = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    ret[:rate] = ret[:value] - prev
+    return ret
+  end
+  def last_hour_emot_sn
+    source_ses = SearchEngine.where(engine_type: ['vk', 'vk_api'])
+    ret = {}
+    ret[:value] = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    prev = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    ret[:rate] = ret[:value] - prev
+    return ret
+  end
+  def last_hour_emot_blogs
+    source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
+    ret = {}
+    ret[:value] = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    prev = integral texts.source(source_ses).from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    ret[:rate] = ret[:value] - prev
+    return ret
+  end
+
+  
   private
   def integral texts
     n = 0
