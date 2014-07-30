@@ -38,8 +38,8 @@ namespace :parse do
   task rp5: :environment do
     my_logger = Logger.new("#{Rails.root}/log/parser_rp5.log")
 
-    f_links = File.open "links_russia.txt", 'w+'
-    f_sections = File.open "sections_russia.txt", 'w+'
+    f_links = File.open "#{Rails.root}/links_russia.txt", 'w+'
+    f_sections = File.open "#{Rails.root}/sections_russia.txt", 'w+'
 
     meteo_ids = {}
     links, sections = *get_links_sections('http://rp5.ru/%D0%9F%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8')
@@ -67,7 +67,7 @@ namespace :parse do
       my_logger.debug  "Downloading #{i} from #{links.size}."
       begin
         my_logger.debug value
-        f_ids = File.open('ids_krasnoyarsky_dist.txt', 'a+')
+        f_ids = File.open("#{Rails.root}/ids_russia.txt", 'a+')
         sleep(2)
         while true
           begin
