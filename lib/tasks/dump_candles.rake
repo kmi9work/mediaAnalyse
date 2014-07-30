@@ -30,7 +30,7 @@ namespace :dump do
         chdata << [nil, nil, nil, nil]
       end
     end
-
+    puts "min;first;last;max"
     chdata.each do |c|
       puts c.join(';')
     end
