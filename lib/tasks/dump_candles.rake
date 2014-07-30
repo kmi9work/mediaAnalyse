@@ -1,6 +1,6 @@
 
 namespace :dump do
-  desc "Dump candels query 30 to stdout."
+  desc "Dump candles query 30 to stdout."
   task candles: :environment do
     query = Query.find(30)
 
@@ -15,16 +15,16 @@ namespace :dump do
       cur += 3600 * 24
       max = 0
       min = 5
-      tt = texts.where(created_at:, fst..cur)
-      fst_emot = tt.first.my_emot || tt.first.emot
-      lst_emot = tt.last.my_emot || tt.last.emot
-      tt.each do |t|
-        emot = t.my_emot || t.emot
-        max = emot if emot > max
-        min = emot if emot < min
-      end
-      fst = cur
+      tt = texts.where(created_at: fst..cur)
       if (tt.count > 0)
+        fst_emot = tt.first.my_emot || tt.first.emot
+        lst_emot = tt.last.my_emot || tt.last.emot
+        tt.each do |t|
+          emot = t.my_emot || t.emot
+          max = emot if emot > max
+          min = emot if emot < min
+        end
+        fst = cur
         chdata << [min, fst_emot, lst_emot, max]
       else
         chdata << [nil, nil, nil, nil]
