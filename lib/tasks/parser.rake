@@ -89,8 +89,8 @@ namespace :parse do
             sleep(rand(50) + 100)
           end
         end
-        my_logger.debug meteo_ids[key] = doc.at_css('div.archButton')['onclick'].match(/fconfirm\(\d+,(\d+)\)/)[1]
-        coord = doc.at_xpath('//*[@id="content"]/script').content.match(/latitude=(\d+(\.\d+)?)&longitude=(\d+(\.\d+)?)&/)
+        my_logger.debug meteo_ids[key] = doc.at_css('div.archButton')['onclick'].match(/f_fconfirm\(\d+,(\d+)\)/)[1]
+        coord = doc.at_css('#leftNavi div span:nth-child(2) a')['onclick'].match(/show_map\((\d+(\.\d+)?), (\d+(\.\d+)?),/)
         f_ids.puts "#{key};#{meteo_ids[key]};#{coord[1]};#{coord[3]}"
         f_ids.close
       rescue
