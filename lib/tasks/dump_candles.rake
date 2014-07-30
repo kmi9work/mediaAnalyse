@@ -1,7 +1,7 @@
 
 namespace :dump do
   desc "Dump candels query 30 to stdout."
-  task candels: :environment do
+  task candles: :environment do
     query = Query.find(30)
 
     chdata = []
