@@ -42,7 +42,7 @@ namespace :parse do
     f_sections = File.open "#{Rails.root}/sections_russia.txt", 'w+'
 
     meteo_ids = {}
-    links, sections = *get_links_sections('http://rp5.ru/%D0%9F%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8')
+    links, sections = *get_links_sections('http://rp5.ru/%D0%9F%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%90%D0%B4%D1%8B%D0%B3%D0%B5%D0%B5')
 
     sections.each do |section|
       my_logger.debug "get links... #{section}"
@@ -89,11 +89,24 @@ namespace :parse do
             sleep(rand(50) + 100)
           end
         end
-        my_logger.debug meteo_ids[key] = doc.at_css('div.archButton')['onclick'].match(/f_fconfirm\(\d+,(\d+)\)/)[1]
+        p doc.at_css('/html/body/script[6]').content
+
+  # document.fmetar.metar.value = 'URKK';
+  # changeTabMetar(3);
+  # statist_fconfirm(1348585200, 4991, 'URKK');
+  
+  # document.fwmo.wmo_id.value = '37014';
+  # changeTabSynop(2);
+  # statist_fconfirm(1356998400, '37014');
+
+
+        my_logger.debug meteo_ids[key] = doc.at_css('div.archButton')['onclick'].match(/statist_fconfirm\(\d+,(\d+)\)/)[1]
+        
         coord = doc.at_css('#leftNavi div span:nth-child(2) a')['onclick'].match(/show_map\((\d+(\.\d+)?), (\d+(\.\d+)?),/)
         f_ids.puts "#{key};#{meteo_ids[key]};#{coord[1]};#{coord[3]}"
         f_ids.close
       rescue
+
         my_logger.error "------"
         my_logger.error "Error in #{key} => #{value.to_s}"
         my_logger.error "======"    

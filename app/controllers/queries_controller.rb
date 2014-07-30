@@ -20,15 +20,7 @@ class QueriesController < ApplicationController
 		redirect_to category_query_path(@category.id, @query.id)
 	end
 	def start_work
-		if params['source'] == 'smi'
-			ses = SearchEngine.where(engine_type: 'ya_news')
-		elsif params['source'] == 'sn'
-			ses = SearchEngine.where(engine_type: 'vk_api') #'vk', 
-		elsif params['source'] == 'blogs'
-			ses = SearchEngine.where(engine_type: 'ya_blogs_api') #['ya_blogs','ya_blogs_api']
-		else
-			ses = []
-		end
+		ses = SearchEngine.source params['source']
 		@query = Query.find(params[:query_id])
 		@query.track = true
 		@query.search_engine_ids += ses.map(&:id)
@@ -48,15 +40,7 @@ class QueriesController < ApplicationController
 	end
 
 	def stop_work
-		if params['source'] == 'smi'
-			ses = SearchEngine.where(engine_type: 'ya_news')
-		elsif params['source'] == 'sn'
-			ses = SearchEngine.where(engine_type: 'vk_api')
-		elsif params['source'] == 'blogs'
-			ses = SearchEngine.where(engine_type: 'ya_blogs_api')
-		else
-			ses = []
-		end
+		ses = SearchEngine.source params['source']
 		@query = Query.find(params[:query_id])
 		@query.track = false
 		@query.search_engine_ids -= ses.map(&:id)
@@ -77,15 +61,7 @@ class QueriesController < ApplicationController
 		@queries = @category.queries
 		@query = Query.find(params[:id])
 		params['source'] = 'smi' unless params['source']
-		if params['source'] == 'smi'
-			source_ses = SearchEngine.where(engine_type: 'ya_news')
-		elsif params['source'] == 'sn'
-			source_ses = SearchEngine.where(engine_type: ['vk', 'vk_api'])
-		elsif params['source'] == 'blogs'
-			source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
-		else
-			source_ses = SearchEngine.all
-		end
+		source_ses = SearchEngine.source params['source']
 		@texts = @query.texts.source(source_ses).from_to(params[:from], params[:to])
 		respond_to do |format|
 			format.html { render :show}
@@ -105,15 +81,7 @@ class QueriesController < ApplicationController
 
 	def chart_data
 		query = Query.find(params[:id])
-		if params['source'] == 'smi'
-			source_ses = SearchEngine.where(engine_type: 'ya_news')
-		elsif params['source'] == 'sn'
-			source_ses = SearchEngine.where(engine_type: ['vk', 'vk_api'])
-		elsif params['source'] == 'blogs'
-			source_ses = SearchEngine.where(engine_type: ['ya_blogs','ya_blogs_api'])
-		else
-			source_ses = SearchEngine.all
-		end
+		source_ses = SearchEngine.source params['source']
 		texts = query.texts.source(source_ses).order(:created_at)
 		#Faster with right SQL-query: select emot, created_at from texts
 		chdata = {}

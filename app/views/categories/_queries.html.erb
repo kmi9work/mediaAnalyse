@@ -17,10 +17,10 @@
 																class: "query_show", 
 																queryid: query.id %> 
 								<% end %>
-								
-								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.count %>
-								</span> )
+								&nbsp; | &nbsp;
+								<span style="font-size: 12px;">
+									<%= link_to 'Настройки', '#', onclick: "$('#options_#{query.id}').toggle('blind', {}, 500); event.preventDefault();" %>
+								</span> 
 							</td>
 							<!-- <td>										
 								Общее:
@@ -32,7 +32,9 @@
 								<% else %>
 									<%= link_to 'СМИ', start_work_path(query.id, source: 'smi'), class: 'btn btn-primary' %>
 								<% end %>
-								<div class="emot emot_<%= query.integral_emot_smi.round + 3 %>"> <%= query.integral_emot_smi.round(2) %> </div>
+								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+									<%= query.texts.source_text('smi').count %>
+								</span> )
 							</td>
 							<td>
 								<% if query.track_with.include? 'sn' %>
@@ -41,7 +43,9 @@
 									<%= link_to 'Соц. сети', start_work_path(query.id, source: 'sn'), class: 'btn btn-primary' %>
 								<% end %>
 								
-								<div class="emot emot_<%= query.integral_emot_sn.round + 3 %>"> <%= query.integral_emot_sn.round(2) %> </div>
+								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+									<%= query.texts.source_text('sn').count %>
+								</span> )
 							</td>
 							<td>
 								<% if query.track_with.include? 'blogs' %>
@@ -49,15 +53,19 @@
 								<% else %>
 									<%= link_to 'Блоги', start_work_path(query.id, source: 'blogs'), class: 'btn btn-primary' %>
 								<% end %>
-								<div class="emot emot_<%= query.integral_emot_blogs.round + 3 %>"> <%= query.integral_emot_blogs.round(2) %> </div>
+								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+									<%= query.texts.source_text('blogs').count %>
+								</span> )
 							</td>
 						</tr>
-						<!-- 
-						<% if params['action'] == 'show' and params['controller'] == 'queries' and params['id'] == query.id.to_s %>
-							<tr>
+						<tr>
 								<td>
+									<div id="options_<%= query.id %>" class="options" style="display: none;">
 									<p>
 										Запрос: <%= query.body %>
+									</p>
+									<p>
+										Количество текстов: <%= query.texts.count %>
 									</p>
 									<p>
 										<%= link_to 'Удалить запрос', 
@@ -65,9 +73,10 @@
 																:method => :delete, 
 																data: {confirm: "Уверены?"} %>
 									</p>
+									</div>
 								</td>
-							</tr>
-						<% end %> -->
+							
+						</tr>
 					<% end %>
 				<% end %>
 			</tbody>

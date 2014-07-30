@@ -13,6 +13,17 @@ class SearchEngine < ActiveRecord::Base
     end
   end
 
+  def SearchEngine.source s
+    if s == 'smi'
+      SearchEngine.where(engine_type: 'ya_news')
+    elsif s == 'sn'
+      SearchEngine.where(engine_type: 'vk_api') #'vk', 
+    elsif s == 'blogs'
+      SearchEngine.where(engine_type: 'ya_blogs_api') #['ya_blogs','ya_blogs_api']
+    else
+      SearchEngine.all
+    end
+  end
   def api_track!
     Delayed::Worker.logger.debug "---"
     Delayed::Worker.logger.debug "Tracking #{title} started"

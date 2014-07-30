@@ -9,6 +9,11 @@ class Text < ActiveRecord::Base
 		where(search_engine_id: ids)
 	end
 
+  def Text.source_text(ses)
+    ids = SearchEngine.source(ses).map(&:id)
+    where(search_engine_id: ids)
+  end  
+
 	def Text.from_to from, to
     if from and to
       f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
