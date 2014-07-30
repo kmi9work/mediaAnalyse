@@ -27,6 +27,8 @@ class Text < ActiveRecord::Base
     return where(created_at: from..to).load
   end
 
+  
+
 	def get_emot
 		query = {"text" => title + "\n" + content}
 		uri = URI('http://emot.zaelab.ru/analyze.json')
