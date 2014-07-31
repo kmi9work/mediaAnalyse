@@ -111,9 +111,6 @@ class QueriesController < ApplicationController
 				chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
 			end
 		end
-		
-		chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med / n]
-		chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
 		render json: chdata.to_json
 	end
 	private
