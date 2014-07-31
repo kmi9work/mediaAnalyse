@@ -2,7 +2,7 @@ MediaAnalyse::Application.routes.draw do
   resources :user_sessions
   resources :users
   get 'login' => 'user_sessions#new', as: :login
-  match 'logout' => 'user_sessions#destroy', via: :post, as: :logout
+  match 'logout' => 'user_sessions#destroy', via: :get, as: :logout
 
   mount Delayed::Web::Engine, at: '/jobs'
   get 'queries/:id/chart_data' => 'queries#chart_data', as: :chart_data

@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   before_filter :time_zone
-  # before_filter :require_login
+  before_filter :require_login
 
 
   def disable_tracking
