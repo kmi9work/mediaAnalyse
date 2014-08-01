@@ -177,11 +177,11 @@ class SearchEngine < ActiveRecord::Base
         end #loop
       end #catch :done
       browser_track! if track?
-    ensure
-      browsers.each {|_, b| b.quit if b}
-      headless.destroy if headless
-      Delayed::Worker.logger.debug "#{engine_type}: Query '#{current_name}' done."
-      browser_track! if track?
+    # ensure
+    #   browsers.each {|_, b| b.quit if b}
+    #   headless.destroy if headless
+    #   Delayed::Worker.logger.debug "#{engine_type}: Query '#{current_name}' done."
+    #   browser_track! if track?
     end
     browser_track! if track?
   end
