@@ -34,6 +34,7 @@ class SearchEngine < ActiveRecord::Base
         tqueries.each do |query|
           if engine_type == "vk_api"
             url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&extended=1&count=140"
+            Delayed::Worker.logger.debug "#{engine_type}: #{query.title}"
             Delayed::Worker.logger.debug "#{engine_type}: Get vk api url: #{url}"
             str = open_url(url)
             if str
@@ -55,6 +56,7 @@ class SearchEngine < ActiveRecord::Base
             end
           elsif engine_type == "ya_blogs_api"
             url = URI.escape "http://blogs.yandex.ru/search.rss?text=#{query.body}&ft=all"
+            Delayed::Worker.logger.debug "#{engine_type}: #{query.title}"
             Delayed::Worker.logger.debug "#{engine_type}: Get yandex blogs api url: #{url}"
             str = open_url(url)
             if str
@@ -466,8 +468,8 @@ private
         doc = nil
         k = rand(15) + 5
         Delayed::Worker.logger.error "#{engine_type}: #{url} was not open. Sleep(#{k}). #{i}"
-        Delayed::Worker.logger.error engine_type + e.message
-        Delayed::Worker.logger.error engine_type + err_text
+        Delayed::Worker.logger.error engine_type + ": " + e.message
+        Delayed::Worker.logger.error engine_type + ": " + err_text
         Delayed::Worker.logger.error ''
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
