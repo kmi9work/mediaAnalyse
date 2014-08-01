@@ -30,7 +30,7 @@ class SearchEngine < ActiveRecord::Base
     return unless track?
     catch :done do
       loop do
-        tqueries = queries.where(track: true)
+        tqueries = queries.where(track: true).reload
         tqueries.each do |query|
           if engine_type == "vk_api"
             url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&extended=1&count=140"
@@ -108,7 +108,7 @@ class SearchEngine < ActiveRecord::Base
     begin #ensure
       catch :done do
         loop do
-          tqueries = queries.where(track: true)
+          tqueries = queries.where(track: true).reload
           tqueries.each do |query|
             current_name =  "id: #{query.id} #{query.title}"
             if query.reload.track?
@@ -218,7 +218,7 @@ private
                   {css: "body table.l-page-search tbody tr td.l-page-search-l div.Ppb-c-SearchStatistics div div div.short.ItemMore-Text div a"}]
       refresher browser, "Can't find locator ya_blogs '#{body}'." do |pos|
         if pos == :main
-          Delayed::Worker.logger.debug "Finding locators..."
+          # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0 or 
                       browser.find_elements(locators[1]).count > 0}
         elsif pos == :no_locator_on_page
@@ -260,7 +260,7 @@ private
       locators = [{css: "body div.b-page-content div.l-wrapper.page-search table tbody tr td.l-page__left div.b-news-groups.b-news-groups_mod_dups div div.b-news-groups__news-content div a"}]
       refresher browser, "Can't find locator ya_news '#{body}'." do |pos|
         if pos == :main
-          Delayed::Worker.logger.debug "Finding locators..."
+          # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
           Delayed::Worker.logger.debug "Maybe no links or captcha?"
@@ -302,7 +302,7 @@ private
       locators = [{css: "#rso div li div h3 a"}]
       refresher browser, "Can't find locator google '#{body}'." do |pos|
         if pos == :main
-          Delayed::Worker.logger.debug "Finding locators..."
+          # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
           if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
             return nil
@@ -346,14 +346,14 @@ private
       locators = [{css: "#rso div li div h3 a"}]
       refresher browser, "Can't find locator vk '#{body}'." do |pos|
         if pos == :main
-          Delayed::Worker.logger.debug "Finding locators..."
+          # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
           if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
             Delayed::Worker.logger.debug "No results found."
             return nil
           end
         elsif pos == :no_locator_on_page
-          Delayed::Worker.logger.debug "Maybe no links?"
+          # Delayed::Worker.logger.debug "Maybe no links?"
           Delayed::Worker.logger.debug "No results found. return nil"
           return nil if browser.page_source.include?('По запросу') and 
                     browser.page_source.include?('ничего не найдено') and 
@@ -427,12 +427,12 @@ private
     return true if !link or link.empty?
     t = Time.now
     fl = query.texts.where(url: link).count > 0 # May be slow???
-    Delayed::Worker.logger.debug "link_exists? takes #{t - Time.now} seconds. #{fl}"
+    # Delayed::Worker.logger.debug "link_exists? takes #{t - Time.now} seconds. #{fl}"
     return fl
   end
 
   def save_text query, link, title, content, emot
-    Delayed::Worker.logger.debug "Saving text... #{emot}"
+    # Delayed::Worker.logger.debug "Saving text... #{emot}"
     c = content.gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t = title.gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     text = Text.new(url: link, title: title, content: c, emot: emot)
@@ -443,7 +443,7 @@ private
     text.search_engine = self
     begin
     if text.save
-      Delayed::Worker.logger.debug "Url #{link} saved."
+      # Delayed::Worker.logger.debug "Url #{link} saved."
     else
       Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
     end
@@ -478,7 +478,7 @@ private
   end
 
   def track?
-    Delayed::Worker.logger.debug "track? QUERIES: #{queries.where(track: true).count}"
+    # Delayed::Worker.logger.debug "track? QUERIES: #{queries.where(track: true).count}"
     queries.where(track: true).count > 0
   end
 
