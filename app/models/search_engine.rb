@@ -34,7 +34,7 @@ class SearchEngine < ActiveRecord::Base
         tqueries.each do |query|
           if engine_type == "vk_api"
             url = URI.escape "https://api.vk.com/method/newsfeed.search?q=#{query.body}&extended=1&count=140"
-            Delayed::Worker.logger.debug "Get vk api url: #{url}"
+            Delayed::Worker.logger.debug "#{engine_type}: Get vk api url: #{url}"
             str = open_url(url)
             if str
               resp = JSON.parse str.read
@@ -54,8 +54,8 @@ class SearchEngine < ActiveRecord::Base
               s 10
             end
           elsif engine_type == "ya_blogs_api"
-            url = URI.escape "http://blogs.yandex.ru/search.rss?text=#{query.body}&ft=blog"
-            Delayed::Worker.logger.debug "Get yandex blogs api url: #{url}"
+            url = URI.escape "http://blogs.yandex.ru/search.rss?text=#{query.body}&ft=all"
+            Delayed::Worker.logger.debug "#{engine_type}: Get yandex blogs api url: #{url}"
             str = open_url(url)
             if str
               resp = Hash.from_xml str.read
@@ -77,7 +77,7 @@ class SearchEngine < ActiveRecord::Base
           end
           throw :done unless track?
           t = rand(timeout) + timeout / 2
-          Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
+          Delayed::Worker.logger.debug "#{engine_type}: Sleeping for #{t} seconds."
           sleep(t)
           throw :done unless track?
         end
@@ -87,16 +87,16 @@ class SearchEngine < ActiveRecord::Base
   end
 
   def browser_track!
-    Delayed::Worker.logger.debug "---"
-    Delayed::Worker.logger.debug "Tracking #{title} started"
+    Delayed::Worker.logger.debug "#{engine_type}: ---"
+    Delayed::Worker.logger.debug "#{engine_type}: Tracking #{title} started"
     unless track?
-      Delayed::Worker.logger.debug "Track complete."
+      Delayed::Worker.logger.debug "#{engine_type}: Track complete."
       return
     end
     if Rails.env.production?
       headless = Headless.new
       headless.start
-      Delayed::Worker.logger.debug "Headless started."
+      Delayed::Worker.logger.debug "#{engine_type}: Headless started."
     end
     wait = Selenium::WebDriver::Wait.new(:timeout => 60)
     tqueries = queries.where(track: true)
@@ -115,13 +115,13 @@ class SearchEngine < ActiveRecord::Base
 
               #in function or in if.
               unless browsers[query.id]
-                Delayed::Worker.logger.debug "Track '#{query.title}' started."
+                Delayed::Worker.logger.debug "#{engine_type}: Track '#{query.title}' started."
                 browsers[query.id] = Selenium::WebDriver.for :firefox
                 locators = open_page browsers[query.id], wait, engine_type, query.body, query.sort_by_date
               else
                 #refresh
                 status = refresher browsers[query.id], "Can't refresh '#{query.title}'." do |pos|
-                  Delayed::Worker.logger.debug "Browser '#{query.title}' refresh."
+                  Delayed::Worker.logger.debug "#{engine_type}: Browser '#{query.title}' refresh."
                   browsers[query.id].navigate.refresh if pos == :main
                 end
                 unless status
@@ -142,8 +142,8 @@ class SearchEngine < ActiveRecord::Base
 
               #captcha or nothing on page.
               if locators == :captcha
-                Delayed::Worker.logger.error "Captcha returned in query #{query.title}."
-                Delayed::Worker.logger.debug "Let's take some coffee. About #{captcha_timeout} seconds."
+                Delayed::Worker.logger.error "#{engine_type}: Captcha returned in query #{query.title}."
+                Delayed::Worker.logger.debug "#{engine_type}: Let's take some coffee. About #{captcha_timeout} seconds."
                 s captcha_timeout
                 captcha_timeout *= 2
                 if browsers[query.id] # КОСТЫЛЬ!!! ***
@@ -151,7 +151,7 @@ class SearchEngine < ActiveRecord::Base
                   browsers[query.id] = nil
                 end
               elsif !locators
-                Delayed::Worker.logger.debug "No search results in query #{query.title}."
+                Delayed::Worker.logger.debug "#{engine_type}: No search results in query #{query.title}."
                 if browsers[query.id] # КОСТЫЛЬ!!! ***
                   browsers[query.id].quit
                   browsers[query.id] = nil
@@ -162,13 +162,13 @@ class SearchEngine < ActiveRecord::Base
               end
 
               t = rand(timeout) + timeout / 2
-              Delayed::Worker.logger.debug "Sleeping for #{t} seconds."
+              Delayed::Worker.logger.debug "#{engine_type}: Sleeping for #{t} seconds."
               sleep(t)
             else
               if browsers[query.id]
                 browsers[query.id].quit
                 browsers[query.id] = nil
-                Delayed::Worker.logger.debug "Track '#{query.title}' complete."
+                Delayed::Worker.logger.debug "#{engine_type}: Track '#{query.title}' complete."
               end
             end
             throw :done unless track?
@@ -180,11 +180,10 @@ class SearchEngine < ActiveRecord::Base
     ensure
       browsers.each {|_, b| b.quit if b}
       headless.destroy if headless
-      Delayed::Worker.logger.debug "Query '#{current_name}' done."
+      Delayed::Worker.logger.debug "#{engine_type}: Query '#{current_name}' done."
       browser_track! if track?
     end
     browser_track! if track?
-    puts "#{Time.now}: Tracking #{title} done."
   end
 private
   def open_page browser, wait, type, body, sort_by_date
@@ -222,13 +221,13 @@ private
           wait.until {browser.find_elements(locators[0]).count > 0 or 
                       browser.find_elements(locators[1]).count > 0}
         elsif pos == :no_locator_on_page
-          Delayed::Worker.logger.debug "Maybe no links?"
+          Delayed::Worker.logger.debug "#{engine_type}: Maybe no links?"
           return :captcha if browser.page_source.include? "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
           return nil if browser.page_source.include? 'Извините, по вашему запросу не найдено записей' 
         end
       end
     elsif type == "ya_news"
-      Delayed::Worker.logger.debug "get http://news.yandex.ru/"
+      Delayed::Worker.logger.debug "#{engine_type}: get http://news.yandex.ru/"
       browser.get "http://news.yandex.ru/"
       refresher browser, "Can't find input text field in ya_news #{body}." do
         wait.until {browser.find_elements(name: "text", class: "b-form-input__input").count > 0}
@@ -263,7 +262,7 @@ private
           # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
         elsif pos == :no_locator_on_page
-          Delayed::Worker.logger.debug "Maybe no links or captcha?"
+          Delayed::Worker.logger.debug "#{engine_type}: Maybe no links or captcha?"
           captcha_text = "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
           return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
           return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
@@ -308,7 +307,7 @@ private
             return nil
           end
         elsif pos == :no_locator_on_page
-          Delayed::Worker.logger.debug "Maybe no links?"
+          Delayed::Worker.logger.debug "#{engine_type}: Maybe no links?"
           return nil if browser.page_source.include?('По запросу') and 
                     browser.page_source.include?('ничего не найдено') and 
                     browser.page_source.include?('Рекомендации:')
@@ -349,19 +348,19 @@ private
           # Delayed::Worker.logger.debug "Finding locators..."
           wait.until {browser.find_elements(locators[0]).count > 0}
           if browser.page_source.include?("Нет результатов для") and browser.page_source.include?("Результаты по запросу")
-            Delayed::Worker.logger.debug "No results found."
+            Delayed::Worker.logger.debug "#{engine_type}: No results found."
             return nil
           end
         elsif pos == :no_locator_on_page
           # Delayed::Worker.logger.debug "Maybe no links?"
-          Delayed::Worker.logger.debug "No results found. return nil"
+          Delayed::Worker.logger.debug "#{engine_type}: No results found. return nil"
           return nil if browser.page_source.include?('По запросу') and 
                     browser.page_source.include?('ничего не найдено') and 
                     browser.page_source.include?('Рекомендации:')
         end
       end
     end
-    Delayed::Worker.logger.debug "Page opened. #{fl}"
+    Delayed::Worker.logger.debug "#{engine_type}: Page opened. #{fl}"
     return locators
   end
 
@@ -371,23 +370,23 @@ private
     
   def get_links query, locators, browser  
     ls = []
-    Delayed::Worker.logger.debug "Let's get links"
+    Delayed::Worker.logger.debug "#{engine_type}: Let's get links"
     locators.each do |l|
       ls += browser.find_elements(l).map{|i| i.attribute('href')}
     end
-    Delayed::Worker.logger.debug "There is #{ls.size} links"
+    Delayed::Worker.logger.debug "#{engine_type}: There is #{ls.size} links"
     fl = true
     if ls.size == 0
-      Delayed::Worker.logger.debug "Maybe no links or captcha?"
+      Delayed::Worker.logger.debug "#{engine_type}: Maybe no links or captcha?"
       captcha_text = "Введите, пожалуйста, символы с картинки в поле ввода и нажмите «Отправить». Это нужно, чтобы мы поняли, что Вы живой пользователь"
       return :captcha if browser.page_source.include? captcha_text or browser.find_elements(css: '.b-captcha__image').count > 0
       return nil if browser.page_source.include? 'Новостей по вашему запросу не найдено.' 
-      Delayed::Worker.logger.debug "I don't know why there is no links... <<<-------------"
+      Delayed::Worker.logger.debug "#{engine_type}: I don't know why there is no links... <<<-------------"
       return locators
     end
     emot = {}
     ls.each do |link|
-      Delayed::Worker.logger.debug "Processing #{link}"
+      Delayed::Worker.logger.debug "#{engine_type}: Processing #{link}"
       unless link_exists?(query, link)
         title, content = nil, nil
         if (arr = get_link_content(link))
@@ -399,7 +398,7 @@ private
         save_text query, link, title, content, emot['overall']
         fl = false
       else
-        Delayed::Worker.logger.debug "Link exists."
+        Delayed::Worker.logger.debug "#{engine_type}: Link exists."
       end
     end
     if fl
@@ -409,7 +408,7 @@ private
   end
 
   def get_link_content link, def_title = ""
-    Delayed::Worker.logger.debug "Getting rich content."
+    Delayed::Worker.logger.debug "#{engine_type}: Getting rich content."
     yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
     doc = open_url(yandex_rich_url, "URL: #{link}")
     s 0.1
@@ -418,7 +417,7 @@ private
       rich_ret = JSON.parse(doc)
       return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
     else
-      Delayed::Worker.logger.debug "Can't download #{link}. -----------------"
+      Delayed::Worker.logger.debug "#{engine_type}: Can't download #{link}. -----------------"
       return nil
     end
   end
@@ -438,17 +437,17 @@ private
     text = Text.new(url: link, title: title, content: c, emot: emot)
     text.query = query
     unless query
-      Delayed::Worker.logger.error "FATAL! Query is nil!"
+      Delayed::Worker.logger.error "#{engine_type}: FATAL! Query is nil!"
     end
     text.search_engine = self
     begin
     if text.save
       # Delayed::Worker.logger.debug "Url #{link} saved."
     else
-      Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
+      Delayed::Worker.logger.error "#{engine_type}: Url #{link} CANNOT BE saved."
     end
     rescue ActiveRecord::StatementInvalid
-      Delayed::Worker.logger.error "Url #{link} CANNOT BE saved."
+      Delayed::Worker.logger.error "#{engine_type}: Url #{link} CANNOT BE saved."
     end
   end
 
@@ -466,9 +465,9 @@ private
       rescue Exception => e
         doc = nil
         k = rand(15) + 5
-        Delayed::Worker.logger.error "#{url} was not open. Sleep(#{k}). #{i}"
-        Delayed::Worker.logger.error e.message
-        Delayed::Worker.logger.error err_text
+        Delayed::Worker.logger.error "#{engine_type}: #{url} was not open. Sleep(#{k}). #{i}"
+        Delayed::Worker.logger.error engine_type + e.message
+        Delayed::Worker.logger.error engine_type + err_text
         Delayed::Worker.logger.error ''
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
@@ -489,17 +488,17 @@ private
         yield :main
         return true
       rescue Errno::ECONNREFUSED => e
-        Delayed::Worker.logger.error "#{e.message}\n" + msg + " closing browser."
+        Delayed::Worker.logger.error "#{engine_type}: #{e.message}\n" + msg + " closing browser."
         return false
       rescue StandardError, Timeout::Error => e
         yield :no_locator_on_page
         s(Math.log(refresh_times,2) ** 4)
-        Delayed::Worker.logger.error "#{e.message}\n" + msg + " Refreshing #{refresh_times}"
+        Delayed::Worker.logger.error "#{engine_type}: #{e.message}\n" + msg + " Refreshing #{refresh_times}"
         browser.navigate.refresh
       end
       refresh_times += 1
       unless track?
-        Delayed::Worker.logger.debug 'THROW DONE.'
+        Delayed::Worker.logger.debug '#{engine_type}: THROW DONE.'
         throw :done 
       end
     end
@@ -514,7 +513,7 @@ private
       response = Net::HTTP.post_form(uri, query)
     rescue StandardError, Timeout::Error => e
       s 15
-      Delayed::Worker.logger.error "#{response.value} to emot.zaelab.ru. Retrying..."
+      Delayed::Worker.logger.error "#{engine_type}: #{response.value} to emot.zaelab.ru. Retrying..."
       return get_emot title, content
     end
     return JSON.parse(response.body)
