@@ -11,6 +11,7 @@
     Реальная эмоциональность: <div class="emot emot_<%= text.my_emot.to_i + 3 %>"> <%= text.my_emot %> </div>
   </div>
 <% else %>
-</div>
-<%= render 'feedback', text: text %>
+  </div>
+  <%= render 'feedback', text: text %>
 <% end %>
+</div>
