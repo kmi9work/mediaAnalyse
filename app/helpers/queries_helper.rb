@@ -6,6 +6,6 @@ module QueriesHelper
     elsif emot[:rate] < 0
       str += "&darr;"
     end
-    return str
+    return str.html_safe
   end
 end
