@@ -10,19 +10,17 @@
 								<% if params[:category_id] and params[:id] == query.id.to_s %>
 									<span style="font-size: 24px"> <%= query.title %> </span>
 								<% else %>
-									<%= link_to query.title, 
-																category_query_path(params[:category_id] || params[:id], query.id), 
-																#remote: true, 
-																id: "query_show_#{query.id}", 
-																class: "query_show", 
-																queryid: query.id %> 
+									<%= link_to query.title, query,
+																					 id: "query_show_#{query.id}",
+																					 class: "query_show",
+																					 queryid: query.id %>
 								<% end %>
 								&nbsp; | &nbsp;
 								<span style="font-size: 12px;">
 									<%= link_to 'Настройки', '#', onclick: "$('#options_#{query.id}').toggle('blind', {}, 500); event.preventDefault();" %>
-								</span> 
+								</span>
 							</td>
-							<!-- <td>										
+							<!-- <td>
 								Общее:
 								<div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div>
 							</td> -->
@@ -34,7 +32,7 @@
 								<% end %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('smi').count %>
-								</span> )
+								</span>)
 							</td>
 							<td>
 								<% if query.track_with.include? 'sn' %>
@@ -45,7 +43,7 @@
 								
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('sn').count %>
-								</span> )
+								</span>)
 							</td>
 							<td>
 								<% if query.track_with.include? 'blogs' %>
@@ -55,27 +53,26 @@
 								<% end %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('blogs').count %>
-								</span> )
+								</span>)
 							</td>
 						</tr>
 						<tr>
-								<td>
-									<div id="options_<%= query.id %>" class="options" style="display: none;">
-									<p>
-										Запрос: <%= query.body %>
-									</p>
-									<p>
-										Количество текстов: <%= query.texts.count %>
-									</p>
-									<p>
-										<%= link_to 'Удалить запрос', 
-																category_query_path(params[:category_id] || params[:id], query.id), 
-																:method => :delete, 
-																data: {confirm: "Уверены?"} %>
-									</p>
-									</div>
-								</td>
-							
+							<td>
+								<div id="options_<%= query.id %>" class="options" style="display: none;">
+								<p>
+									Запрос: <%= query.body %>
+								</p>
+								<p>
+									Количество текстов: <%= query.texts.count %>
+								</p>
+								<p>
+									<%= link_to 'Удалить запрос', 
+															query_path(query.id), 
+															:method => :delete, 
+															data: {confirm: "Уверены?"} %>
+								</p>
+								</div>
+							</td>
 						</tr>
 					<% end %>
 				<% end %>
@@ -92,8 +89,8 @@
 <hr>
 <p>
 	<% if not_new %>
-		<% if category_id %> 
-			<%= link_to("Добавить запрос", new_category_query_path(category_id), class: 'btn btn-default') %> 
+		<% if @category %> 
+			<%= link_to("Добавить запрос", new_category_query_path(@category.id), class: 'btn btn-default') %> 
 		<% else %>
 			<%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %> 
 		<% end %>

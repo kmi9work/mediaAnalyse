@@ -1,6 +1,6 @@
 <% if @categories %>
 	<%= content_for :categories do %>
-		<%= render partial: 'categories/categories', locals: {categories: @categories, not_new: true} %>
+		<%= render partial: 'categories/categories', locals: {not_new: true} %>
 	<% end %>
 <% end %>
 
@@ -13,12 +13,12 @@
 		<% end %>
 	<% end %>
 	<%= content_for :queries do %>
-		<%= render partial: 'categories/queries', locals: {queries: @queries, category_id: params[:category_id], not_new: true} %>
+		<%= render partial: 'categories/queries', locals: {category_id: params[:category_id], not_new: true} %>
 	<% end %>
 <% end %>
 
 <%= content_for :main do %>
-	<%= render partial: 'queries/texts', locals: {query: @query, texts: @texts} %>
+	<%= render partial: 'queries/texts' %>
 <% end %>
 
 

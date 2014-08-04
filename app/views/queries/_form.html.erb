@@ -14,10 +14,10 @@
     <% unless @category %>
       <label class="col-sm-6 control-label" style="padding: 20px 0px"> Категория:</label>
       <div class="col-sm-6">
-        <%= select_tag :category_id, options_from_collection_for_select(@categories, :id, :title) %>
+        <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :title) %>
       </div>
     <% else %>
-      <%= hidden_field_tag :category_id, params[:category_id] %>
+      <%= f.hidden_field :category_id, @category.id %>
     <% end %>
   </div>
   <div class="form-group" style="padding: 20px 0px">

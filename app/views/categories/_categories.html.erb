@@ -1,17 +1,9 @@
 
 <% @categories.each do |category| %>
-		<% if params[:category_id] %>
-			<% if params[:category_id].to_i == category.id %>
-				<%= button_to category.title, category, method: :get, class: "btn btn-success btn-lg btn-block" %>
-			<% else %>
-				<%= button_to category.title, category, method: :get, class: "btn btn-primary btn-lg btn-block" %>
-			<% end %>
+		<% if @category and @category.id == category.id %>
+			<%= button_to category.title, category, method: :get, class: "btn btn-success btn-lg btn-block" %>
 		<% else %>
-			<% if params[:id] and params[:id].to_i == category.id %>
-				<%= button_to category.title, category, method: :get, class: "btn btn-success btn-lg btn-block" %>
-			<% else %>
-				<%= button_to category.title, category, method: :get, class: "btn btn-primary btn-lg btn-block" %>
-			<% end %>
+			<%= button_to category.title, category, method: :get, class: "btn btn-primary btn-lg btn-block" %>
 		<% end %>
 		<%= link_to "Настройки", edit_category_path(category.id) %>
 		<%= link_to "Удалить", category_path(category.id), 

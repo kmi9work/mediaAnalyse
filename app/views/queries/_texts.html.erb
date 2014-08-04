@@ -1,52 +1,32 @@
 <div style="text-align: center">
-  <% if @query %>
-    <span class="text_header"><%= @query.title %></span>  
-  <% end %>
+  <span class="text_header"><%= @query.title %></span>
   &nbsp; &nbsp; &nbsp;
   <span style="font-size: 24px;">
-  
-  <% if params[:source] == 'smi' %>
-    СМИ
-  <% else %>
-    <%= link_to 'СМИ', category_query_path(params[:category_id], @query.id, source: 'smi', from: params[:from], to: params[:to]) %>
-  <% end %>
-  <% emot_smi = @query.last_hour_emot_smi %>
-  (<%= emot_smi[:value] <= 0 ? emot_smi[:value].round(2) : "+" + emot_smi[:value].round(2).to_s %>)
-  <% if emot_smi[:rate] > 0 %>
-    &uarr;
-  <% elsif emot_smi[:rate] < 0 %>
-    &darr;
-  <% end %>
-   &nbsp; | &nbsp;
+    <% if params['source'] == 'smi' %>
+      СМИ
+    <% else %>
+      <%= link_to 'СМИ', query_path(@query.id, source: 'smi') %>
+    <% end %>
+    <% emot_smi = @query.last_hour_emot_smi %>
+    <%= emot_rate emot_smi %>
+    &nbsp; | &nbsp;
 
-  <% if params[:source] == 'sn' %>
-    Соц. сети
-  <% else %>
-    <%= link_to 'Соц. сети', category_query_path(params[:category_id], @query.id, source: 'sn', from: params[:from], to: params[:to]) %>
-  <% end %>
-  <% emot_sn = @query.last_hour_emot_sn %>
-
-  (<%= emot_sn[:value] <= 0 ? emot_sn[:value].round(2) : "+" + emot_sn[:value].round(2).to_s %>)
-
-  <% if emot_sn[:rate] > 0 %>
-    &uarr;
-  <% elsif emot_sn[:rate] < 0 %>
-    &darr;
-  <% end %>
-   &nbsp; | &nbsp; 
-  
-  <% if params[:source] == 'blogs' %>
-    Блоги
-  <% else %>
-    <%= link_to 'Блоги', category_query_path(params[:category_id], @query.id, source: 'blogs', from: params[:from], to: params[:to]) %>
-  <% end %>
-  <% emot_blogs = @query.last_hour_emot_blogs %>
-  (<%= emot_blogs[:value] <= 0 ? emot_blogs[:value].round(2) : "+" + emot_blogs[:value].round(2).to_s %>)
-  <% if emot_blogs[:rate] > 0 %>
-    &uarr;
-  <% elsif emot_blogs[:rate] < 0 %>
-    &darr;
-  <% end %>
+    <% if params['source'] == 'sn' %>
+      Соц. сети
+    <% else %>
+      <%= link_to 'Соц. сети', query_path(@query.id, source: 'sn') %>
+    <% end %>
+    <% emot_sn = @query.last_hour_emot_sn %>
+    <%= emot_rate emot_sn %>
+    &nbsp; | &nbsp; 
+    
+    <% if params['source'] == 'blogs' %>
+      Блоги
+    <% else %>
+      <%= link_to 'Блоги', query_path(@query.id, source: 'blogs') %>
+    <% end %>
+    <% emot_blogs = @query.last_hour_emot_blogs %>
+    <%= emot_rate emot_blogs %>
   </span>
 </div>
 
@@ -58,25 +38,25 @@
   <div id="chart_count" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
 </div>
 
-<div class="row">
+<div class="row" style="padding-bottom: 20px">
   <div id="chart_both" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
 </div>
 
 <%= render 'scripts', query: @query, source: params['source'] %>
 <div class="row">
-  
   <div class="col-md-10 col-md-offset-1">
-	  <form action="<%= category_query_path(params[:category_id], @query.id) %>" method="get">
+	  <form action="<%= change_interval_path(@query.id) %>" method="get">
 		  <p>
         <%= hidden_field_tag :source, params[:source] if params[:source] %>
-		  	С: <input type="text" id="datepicker_from" name="from" value="<%= params[:from] or DateTime.now.beginning_of_day.strftime("%d.%m.%Y %H:%M") %>">&nbsp;
-		  	По: <input type="text" id="datepicker_to" name="to" value="<%= params[:to] or DateTime.now.strftime("%d.%m.%Y %H:%M") %>">
+		  	С: <input type="text" id="datepicker_from" name="from" value="<%= session[@query.id][:from].strftime("%d.%m.%Y %H:%M") %>">&nbsp;
+		  	По: <input type="text" id="datepicker_to" name="to" value="<%= session[@query.id][:to].strftime("%d.%m.%Y %H:%M") %>">
 		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
 		  </p>
 	  </form>
   </div>
  </div>
 <!-- 
+  Оглавление
  <div class="row">
 	<div class="col-md-10 col-md-offset-1">
 		<% @texts.each do |text| %>
@@ -92,22 +72,6 @@
  -->
 <div class="row">
 <% @texts.each do |text| %>
-		<div class="article">
-			<button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(params[:category_id], text.query_id, text.id) %>'">Выделить сущности</button>
-			<p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
-			<p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-			<p> <%= text.content %> </p>
-			<p align="right"> Новость от: <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
-			<hr>
-			<div id="emotion_<%= text.id %>">
-				Эмоциональность: <div class="emot emot_<%= text.emot.to_i + 3 %>"> <%= text.emot %> </div>
-				<% if text.my_emot %>
-					Реальная эмоциональность: <div class="emot emot_<%= text.my_emot.to_i + 3 %>"> <%= text.my_emot %> </div>
-			</div>
-				<% else %>
-			</div>
-			<%= render 'feedback', text: text %>
-			<% end %>
-		</div>
+		<%= render 'text', text: text %>
 <% end %>
 </div>

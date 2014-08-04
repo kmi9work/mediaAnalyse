@@ -1,6 +1,6 @@
 <% if @categories %>
 	<%= content_for :categories do %>
-		<%= render partial: 'categories/categories', locals: {categories: @categories, not_new: true} %>
+		<%= render partial: 'categories/categories', locals: {not_new: true} %>
 	<% end %>
 <% end %>
 

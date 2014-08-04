@@ -1,27 +1,21 @@
 class QueriesController < ApplicationController
+	before_action :categories_find, only: [:new, :show]
+	before_action :query_find, only: [:start_work, :stop_work, :show, :change_interval, :destroy, :chart_data]
 	def new
-		@categories = Category.all	
 		if params[:category_id]
 			@category = Category.find(params[:category_id])
 			@queries = @category.queries
 			@query = @category.queries.build
 		else
-			@category = nil
-			@categories = Category.all
 			@query = Query.new
 		end
 	end
 	def create
-		@category = Category.find(params[:category_id])
-		@query = Query.create(query_params)
-
-		# @query.categories << @category
-		@category.queries << @query
-		redirect_to category_query_path(@category.id, @query.id)
+		query = Query.create(query_params)
+		redirect_to query_path(query.id)
 	end
 	def start_work
 		ses = SearchEngine.source params['source']
-		@query = Query.find(params[:query_id])
 		@query.track = true
 		@query.search_engine_ids += ses.map(&:id)
 		@query.save
@@ -41,7 +35,6 @@ class QueriesController < ApplicationController
 
 	def stop_work
 		ses = SearchEngine.source params['source']
-		@query = Query.find(params[:query_id])
 		@query.track = false
 		@query.search_engine_ids -= ses.map(&:id)
 		@query.save
@@ -56,22 +49,28 @@ class QueriesController < ApplicationController
 	end
 
 	def show
-		@categories = Category.all
-		@category = Category.find(params[:category_id])
+		@category = @query.category
 		@queries = @category.queries
-		@query = Query.find(params[:id])
-		params['source'] = 'smi' unless params['source']
+		params['source'] ||= 'smi'
+		session[@query.id] ||= {}
+		session[@query.id][:from] ||= DateTime.now.beginning_of_day
+		session[@query.id][:to] ||= DateTime.now
 		source_ses = SearchEngine.source params['source']
-		@texts = @query.texts.source(source_ses).from_to(params[:from], params[:to])
+		@texts = @query.texts.source(source_ses).from_to_date(session[@query.id][:from], session[@query.id][:to])
 		respond_to do |format|
 			format.html { render :show}
 			format.js { render :show}
 		end
 	end
+	def change_interval
+		session[@query.id] ||= {}
+		session[@query.id][:from] = DateTime.strptime(params['from'] + " +0400", "%d.%m.%Y %H:%M %Z")
+		session[@query.id][:to] = DateTime.strptime(params['to'] + " +0400", "%d.%m.%Y %H:%M %Z")
+		redirect_to query_path(@query.id, source: params['source'])
+	end
 
 	def destroy
-		@category = Category.find(params[:category_id])
-		@query = Query.find(params[:id])
+		@category = @query.category
   	@query.destroy
   	respond_to do |format|
     		format.html { redirect_to @category }
@@ -80,9 +79,8 @@ class QueriesController < ApplicationController
 	end
 
 	def chart_data
-		query = Query.find(params[:id])
 		source_ses = SearchEngine.source params['source']
-		texts = query.texts.source(source_ses).order(:created_at)
+		texts = @query.texts.source(source_ses).order(:created_at).load
 		#Faster with right SQL-query: select emot, created_at from texts
 		chdata = {}
 		chdata['emot'] = []
@@ -93,14 +91,15 @@ class QueriesController < ApplicationController
 		fst = texts.first.created_at.beginning_of_hour
 		cur = fst.dup
 		lst = texts.last.created_at
-		
+		index = 0
 		while cur <= lst
 			cur += 3600
 			n = 0
 			med = 0
-			texts.from_to_date(fst,cur).each do |t|
-				med += t.my_emot || t.emot
+			while index < texts.size - 1 and texts[index].created_at < cur
+				med += texts[index].my_emot || texts[index].emot
 				n += 1
+				index += 1
 			end
 			fst = cur
 			if (n > 0)
@@ -114,7 +113,14 @@ class QueriesController < ApplicationController
 		render json: chdata.to_json
 	end
 	private
+	def categories_find
+		@categories = Category.all
+	end
+	def query_find
+		@query = Query.find(params[:query_id])
+	end
+
 	def query_params
-		params.require(:query).permit(:id, :title, :body, :max_count, :sort_by_date, search_engine_ids: [])
+		params.require(:query).permit(:id, :title, :body, :max_count, :sort_by_date, :category_id, search_engine_ids: [])
 	end
 end

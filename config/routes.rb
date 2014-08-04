@@ -3,9 +3,10 @@ MediaAnalyse::Application.routes.draw do
   resources :users
   get 'login' => 'user_sessions#new', as: :login
   match 'logout' => 'user_sessions#destroy', via: :get, as: :logout
+  get 'queries/:query_id/change_interval' => 'queries#change_interval', as: :change_interval
 
   mount Delayed::Web::Engine, at: '/jobs'
-  get 'queries/:id/chart_data' => 'queries#chart_data', as: :chart_data
+  get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
   delete '/essence/:id' => 'essences#destroy', as: :essence
@@ -20,6 +21,34 @@ MediaAnalyse::Application.routes.draw do
   get '/disable_tracking' => 'application#disable_tracking', as: :disable_tracking
   get '/enable_tracking' => 'application#enable_tracking', as: :enable_tracking
 
+  # category_id
+  get '/categories(.:format)' => 'categories#index', as: :categories
+  match '/categories(.:format)' => 'categories#create', via: :post
+  get '/categories/new(.:format)' => 'categories#new', as: :new_category
+  get '/categories/:category_id/edit(.:format)' => 'categories#index', as: :edit_category
+  get '/categories/:category_id(.:format)' => 'categories#show', as: :category
+  match '/categories/:category_id(.:format)' => 'categories#update',  via: :patch
+  match '/categories/:category_id(.:format)' => 'categories#update',  via: :put
+  match '/categories/:category_id(.:format)' => 'categories#destroy', via: :delete
+
+  # query_id
+  get '/queries/:query_id/edit(.:format)' => 'queries#index', as: :edit_query
+  get '/queries/:query_id(.:format)' => 'queries#show', as: :query
+  match '/queries/:query_id(.:format)' => 'queries#update',  via: :patch
+  match '/queries/:query_id(.:format)' => 'queries#update',  via: :put
+  match '/queries/:query_id(.:format)' => 'queries#destroy', via: :delete
+  resources :queries
+
+  # query_id
+  get '/categories/:category_id/queries(.:format)' => 'queries#index', as: :category_queries
+  match '/categories/:category_id/queries(.:format)' => 'queries#create', via: :post
+  get '/categories/:category_id/queries/new(.:format)' => 'queries#new', as: :new_category_query
+  get '/categories/:category_id/queries/:query_id/edit(.:format)' => 'queries#edit', as: :edit_category_query
+  get '/categories/:category_id/queries/:query_id(.:format)' => 'queries#show', as: :category_query
+  match '/categories/:category_id/queries/:query_id(.:format)' => 'queries#update', via: :patch
+  match '/categories/:category_id/queries/:query_id(.:format)' => 'queries#update', via: :put
+  match '/categories/:category_id/queries/:query_id(.:format)' => 'queries#destroy', via: :delete
+
   resources :categories do
     resources :queries do
       resources :texts
@@ -27,58 +56,4 @@ MediaAnalyse::Application.routes.draw do
   end
   
   root 'categories#index'
-  # The priority is based upon order of creation: first created -> highest priority.
-  # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  # root 'welcome#index'
-
-  # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
-
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
-  
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
 end

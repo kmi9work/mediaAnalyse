@@ -1,5 +1,5 @@
 <%= content_for :categories do %>
-	<%= render partial: 'categories/categories', :locals => {categories: @categories, not_new: false} %>
+	<%= render partial: 'categories/categories', :locals => {not_new: false} %>
 	<h3>Новая категория</h3>
 
 	<%= render 'form' %>

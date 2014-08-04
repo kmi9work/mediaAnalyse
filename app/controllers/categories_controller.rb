@@ -1,31 +1,20 @@
 # http://glava.openregion71.ru/vote/
 
 class CategoriesController < ApplicationController
+	before_action :categories_find, only: [:index, :new, :edit, :show, :negative_category]
+	before_action :category_find, only: [:edit, :show, :update, :destroy]
 	def index
-		cookies[:track_on] = true
-		@categories = Category.all
-		if params[:id]
-			@category = Category.find(params[:id])
-			@queries = @category.queries
-		else
-			@queries = []
-		end
 	end
 
 	def new
-		@categories = Category.all
 		@category = Category.new
 	end
 
 	def edit
-		@categories = Category.all
-		@category = Category.find(params[:id])
+		@queries = @category.queries
 	end
 
 	def show
-		cookies[:track_on] = false
-		@categories = Category.all
-		@category = Category.find(params[:id])
 		@queries = @category.queries
 	end
 
@@ -36,27 +25,30 @@ class CategoriesController < ApplicationController
 	end
 
 	def update
-		@category = Category.find(params[:id])
 		@category.update(category_params)
 		redirect_to @category
 	end
 
 	def destroy
-	@category = Category.find(params[:id])
-  	@category.destroy
-  	respond_to do |format|
-    		format.html { redirect_to categories_url }
-    		format.json { head :no_content }
-  	end
+		@category.destroy
+		respond_to do |format|
+	  		format.html { redirect_to categories_url }
+	  		format.json { head :no_content }
+		end
 	end
 
 	def negative_category
-		@categories = Category.all
-		@texts = Text.where("emot < ?", 0)
+		@texts = Text.where('created_at > ?', DateTime.now.beginning_of_day).where("emot < ?", 0)
 		render 'queries/show'
 	end
 
 	private
+	def categories_find
+		@categories = Category.all
+	end
+	def category_find
+		@category = Category.find(params[:category_id])
+	end
 	def category_params
 		params.require(:category).permit(:id, :title)
 	end
