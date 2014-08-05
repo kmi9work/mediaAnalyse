@@ -11,7 +11,11 @@ class QueriesController < ApplicationController
 		end
 	end
 	def create
-		query = Query.create(query_params)
+		query = Query.new(query_params)
+		query.title = params[:query][:body] if params[:query][:title].blank?
+		query.body = params[:query][:title] if params[:query][:body].blank?
+		
+		query.save
 		redirect_to query_path(query.id)
 	end
 	def start_work
@@ -29,7 +33,7 @@ class QueriesController < ApplicationController
 		end
 		respond_to do |format|
 			format.html { redirect_to :back}
-			format.json { render :none }
+			format.js { render :none }
 		end
 	end
 
@@ -44,7 +48,7 @@ class QueriesController < ApplicationController
 		end
 		respond_to do |format|
 			format.html { redirect_to :back}
-			format.json { render :none }
+			format.js { render :none }
 		end
 	end
 
@@ -57,10 +61,6 @@ class QueriesController < ApplicationController
 		session[@query.id][:to] ||= DateTime.now
 		source_ses = SearchEngine.source params['source']
 		@texts = @query.texts.source(source_ses).from_to_date(session[@query.id][:from], session[@query.id][:to])
-		respond_to do |format|
-			format.html { render :show}
-			format.js { render :show}
-		end
 	end
 	def change_interval
 		session[@query.id] ||= {}

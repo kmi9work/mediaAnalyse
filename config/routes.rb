@@ -25,7 +25,7 @@ MediaAnalyse::Application.routes.draw do
   get '/categories(.:format)' => 'categories#index', as: :categories
   match '/categories(.:format)' => 'categories#create', via: :post
   get '/categories/new(.:format)' => 'categories#new', as: :new_category
-  get '/categories/:category_id/edit(.:format)' => 'categories#index', as: :edit_category
+  get '/categories/:category_id/edit(.:format)' => 'categories#edit', as: :edit_category
   get '/categories/:category_id(.:format)' => 'categories#show', as: :category
   match '/categories/:category_id(.:format)' => 'categories#update',  via: :patch
   match '/categories/:category_id(.:format)' => 'categories#update',  via: :put

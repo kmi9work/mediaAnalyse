@@ -39,6 +39,7 @@ class CategoriesController < ApplicationController
 
 	def negative_category
 		@texts = Text.where('created_at > ?', DateTime.now.beginning_of_day).where("emot < ?", 0)
+		@query = Query.new(title: 'Негатив МЧС')
 		render 'queries/show'
 	end
 

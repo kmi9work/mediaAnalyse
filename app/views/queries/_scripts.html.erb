@@ -231,7 +231,7 @@ $(function() {
 
   $(function() {
     $.ajax({
-      url: '/queries/<%= query.id %>/chart_data?source=<%= source %>'
+      url: '/queries/<%= @query.id %>/chart_data?source=<%= source %>'
     }).done(function(data) {
       Highcharts.setOptions({
             lang: {
