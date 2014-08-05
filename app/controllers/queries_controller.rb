@@ -92,8 +92,26 @@ class QueriesController < ApplicationController
 		cur = fst.dup
 		lst = texts.last.created_at
 		index = 0
-		while cur <= lst
+		cur += 3600
+		while cur <= lst			
+			n = 0
+			med = 0
+			while index < texts.size - 1 and texts[index].created_at < cur
+				med += texts[index].my_emot || texts[index].emot
+				n += 1
+				index += 1
+			end
+			fst = cur
+			if (n > 0)
+				chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med.to_f / n]
+				chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
+			else
+				chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
+				chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
+			end
 			cur += 3600
+		end
+		unless (cur > DateTime.now)
 			n = 0
 			med = 0
 			while index < texts.size - 1 and texts[index].created_at < cur

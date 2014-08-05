@@ -8,7 +8,7 @@ class UserSessionsController < ApplicationController
   def create
     _remember_me = true
     if @user = login(params[:username], params[:password], _remember_me)
-      redirect_back_or_to('/', notice: "Добро пожаловать, #{@user.username}!")
+      redirect_back_or_to('/')
     else
       flash.now[:alert] = "Неправильный логин или пароль"
       render action: 'new'
