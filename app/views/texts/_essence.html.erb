@@ -1,7 +1,7 @@
 <%= form_tag commit_essence_path(text.id), class: "form-inline", role: 'form', remote: true do %>
 	<div id="essence_fields">
 		<div id="essence">
-			<%= text_field_tag 'essence[title]', nil, class: 'form-control', placeholder: "Text input" %>
+			<%= text_field_tag 'essence[title]', nil, class: 'form-control', placeholder: "Сущность" %>
 			<label class="radio-inline">
 				<%= radio_button_tag 'essence[rating]', -3 %> -3
 			</label>
