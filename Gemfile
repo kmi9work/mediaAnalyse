@@ -32,8 +32,8 @@ gem 'nokogiri'
 gem 'delayed_job_active_record'
 gem 'delayed-web', git: 'https://github.com/thebestday/delayed-web.git'
 gem 'daemons'
+gem 'daemons-rails'
 gem 'sorcery'
-gem 'simple-rss'
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 

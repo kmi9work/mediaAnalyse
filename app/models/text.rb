@@ -3,6 +3,7 @@ require 'net/http'
 class Text < ActiveRecord::Base
 	belongs_to :query
 	belongs_to :search_engine
+  belongs_to :origin
 	has_many :essences
 
 	def Text.source(ids)

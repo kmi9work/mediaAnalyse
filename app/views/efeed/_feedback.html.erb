@@ -1,0 +1,19 @@
+<form id="feedback_<%= text.id %>" action="http://emot.zaelab.ru/feedback.json" method="POST" style="display: block;" data-remote="true" class="feedback" textid="<%= text.id %>">
+  <input type="hidden" name="text" value="<%= text.content %>">
+  <input type="hidden" name="revision" value="2">
+  <input type="hidden" name="score" value="">
+  <p><strong>Как вы бы сами оценили этот текст?</strong></p>
+  <input type="submit" value="(-3) критический" onclick="setFeedbackScore(<%= text.id %>,-3);">
+  <input type="submit" value="(-2) негативный" onclick="setFeedbackScore(<%= text.id %>,-2);">
+  <input type="submit" value="(-1) неблагоприятный" onclick="setFeedbackScore(<%= text.id %>,-1);">
+  <input type="submit" value="(0) нейтральный" onclick="setFeedbackScore(<%= text.id %>,0);">
+  <input type="submit" value="(+1) благоприятный" onclick="setFeedbackScore(<%= text.id %>,1);">
+  <input type="submit" value="(+2) позитивный" onclick="setFeedbackScore(<%= text.id %>,2);">
+  <input type="submit" value="(+3) прекрасный" onclick="setFeedbackScore(<%= text.id %>,3);">
+  <script type="text/javascript">
+    function setFeedbackScore(id, score) {
+      document.forms['feedback_' + id]['score'].value = score
+      return true
+    }
+  </script>
+</form>

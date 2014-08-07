@@ -179,11 +179,11 @@ class SearchEngine < ActiveRecord::Base
         end #loop
       end #catch :done
       browser_track! if track?
-    # ensure
-    #   browsers.each {|_, b| b.quit if b}
-    #   headless.destroy if headless
-    #   Delayed::Worker.logger.debug "#{engine_type}: Query '#{current_name}' done."
-    #   browser_track! if track?
+    ensure
+      browsers.each {|_, b| b.quit if b}
+      headless.destroy if headless
+      Delayed::Worker.logger.debug "#{engine_type}: Query '#{current_name}' done."
+      browser_track! if track?
     end
     browser_track! if track?
   end
@@ -464,7 +464,7 @@ private
           doc = open(url)
         end
         break
-      rescue Exception => e
+      rescue StandardError, Timeout::Error => e
         doc = nil
         k = rand(15) + 5
         Delayed::Worker.logger.error "#{engine_type}: #{url} was not open. Sleep(#{k}). #{i}"

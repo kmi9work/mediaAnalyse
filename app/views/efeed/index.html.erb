@@ -1,0 +1,7 @@
+<%= content_for :main do %>
+  <div class="row">
+  <% @texts.each do |text| %>
+      <%= render 'text', text: text %>
+  <% end %>
+  </div>
+<% end %>
