@@ -2,7 +2,11 @@ require 'rss'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def s k
-  sleep(rand(k * 100)/100.0 + rand(100)/100.0)
+  if k >= 0
+    sleep(rand(k * 100)/100.0 + rand(100)/100.0)
+  else
+    sleep)
+  end
 end
 
 def open_url url, err_text = ""
@@ -86,6 +90,8 @@ def get_texts origin
             t.author = f.author
             if (arr = get_link_content(t.url, t.title))
               title, content = *arr
+            else
+              content = ""
             end
             t.content = content
             t.emot = get_emot t.title, t.content
