@@ -34,6 +34,7 @@ gem 'delayed-web', git: 'https://github.com/thebestday/delayed-web.git'
 gem 'daemons'
 gem 'daemons-rails'
 gem 'sorcery'
+gem 'logger'
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
