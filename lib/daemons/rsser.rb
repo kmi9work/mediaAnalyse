@@ -1,5 +1,6 @@
 require 'rss'
 require 'logger'
+require 'rails'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def s k
