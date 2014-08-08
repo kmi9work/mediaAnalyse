@@ -1,4 +1,4 @@
-# Delayed::Worker.logger = Logger.new(Rails.root.join('log', 'dj.log'))
+Delayed::Worker.logger = Logger.new(Rails.root.join('log', 'dj.log'))
 Delayed::Worker.destroy_failed_jobs = false
 Delayed::Worker.sleep_delay = 180
 Delayed::Worker.max_attempts = 0
