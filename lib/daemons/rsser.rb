@@ -5,7 +5,7 @@ def s k
   if k >= 0
     sleep(rand(k * 100)/100.0 + rand(100)/100.0)
   else
-    sleep)
+    sleep(rand(100 + k)/100.0)
   end
 end
 
@@ -38,7 +38,7 @@ def get_link_content link, def_title = ""
     @my_logger.debug "Getting rich content."
     yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
     doc = open_url(yandex_rich_url, "URL: #{link}")
-    s 0
+    s -50
     if (doc)
       doc = doc.readlines.join
       rich_ret = JSON.parse(doc)
@@ -50,7 +50,7 @@ def get_link_content link, def_title = ""
   end
 
 def get_emot title, content
-    s 0
+    s -50
     query = {"text" => title + "\n" + content}
     uri = URI('http://emot.zaelab.ru/analyze.json')
     begin
