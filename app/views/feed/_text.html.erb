@@ -3,8 +3,8 @@
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
   <b>Аннотация:</b>
   <p> <%= text.description.gsub("\n\n", "<br>\n").html_safe if text.description %> </p>
-  <!-- <b>Полный текст статьи:</b>
-  <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
+  <b>Полный текст статьи:</b>
+  <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p>
   <% if text.datetime %>
     <b> Новость от: </b>
     <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>

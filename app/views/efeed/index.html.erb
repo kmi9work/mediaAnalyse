@@ -4,7 +4,12 @@
     <%= link_to origin.title, '/efeed' %>
     | 
   <% end %>
-  <div class="row">
+  <br>
+  <br>
+  <div id="new_rows" style="display: none;">
+    <%= link_to 'Показать новые сообщения', show_new_emessages_path, remote: true %> (<span id="tcount">0</span>)
+  </div>
+  <div id="texts" class="row">
   <% @texts.each do |text| %>
       <%= render 'text', text: text %>
   <% end %>

@@ -69,7 +69,7 @@ def get_texts origin
   # Origin.find(10).texts.each{|i| i.title = i.title.encode('WINDOWS-1251').force_encoding('UTF-8'); i.save}
 
     i = 0
-    ret = nil
+    ret = 0
     @my_logger.info origin.rss_url
     while (i += 1) <= 3
       begin
@@ -82,6 +82,7 @@ def get_texts origin
             break unless Text.where(guid: guid).blank?
             save_feeds << f
           end
+          ret += save_feeds.count
           @my_logger.info "#{origin.title}: New texts: #{save_feeds.count}"
           save_feeds.reverse_each do |f|
             t = Text.new
@@ -108,10 +109,9 @@ def get_texts origin
             t.save
           end
         end
-        ret = true
         break
       rescue StandardError, Timeout::Error => e
-        ret = nil
+        ret = 0
         k = rand(15) + 5
         @my_logger.error "#{origin.rss_url} was not open. Sleep(#{k}). #{i}"
         @my_logger.error e.message
@@ -148,8 +148,10 @@ end
 while($running) do
   @my_logger.info "----------------------"
   @my_logger.info "Still parsing RSS's. Count: #{Origin.count}"
+  count = 0
   Origin.all.each do |o|
-    get_texts o
+    count += get_texts o
   end
+  @my_logger.info "=== New messages: #{count} ==="
   sleep 10
 end

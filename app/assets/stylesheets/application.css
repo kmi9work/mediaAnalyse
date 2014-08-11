@@ -59,7 +59,7 @@
 	display: inline-block;
 }
 
-#main{
+#nav{
 	padding:0px;
 	background-color: #E6E6E6;
 }
@@ -99,7 +99,7 @@ ul.empty li{
 	position: relative;
 }
 
-#texts a{
+#main a{
 	word-wrap: break-word;
 }
 
