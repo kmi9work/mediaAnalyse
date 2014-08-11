@@ -151,5 +151,5 @@ while($running) do
   Origin.all.each do |o|
     get_texts o
   end
-  sleep 2
+  sleep 10
 end
