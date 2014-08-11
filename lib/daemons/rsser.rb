@@ -66,6 +66,8 @@ def get_emot title, content
   end
 
 def get_texts origin
+  # Origin.find(10).texts.each{|i| i.title = i.title.encode('WINDOWS-1251').force_encoding('UTF-8'); i.save}
+
     i = 0
     ret = nil
     @my_logger.info origin.rss_url
@@ -84,12 +86,18 @@ def get_texts origin
           save_feeds.reverse_each do |f|
             t = Text.new
             t.origin = origin
-            t.title = f.title
+            if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+              t.title = f.title.encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.description = f.description.encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.author = f.author.encode('WINDOWS-1251').force_encoding('UTF-8')
+            else
+              t.title = f.title
+              t.description = f.description
+              t.author = f.author
+            end
             t.guid = f.guid.nil? ? f.link : f.guid.content || f.link
             t.url = f.link
-            t.description = f.description
             t.datetime = f.pubDate || DateTime.now
-            t.author = f.author
             if (arr = get_link_content(t.url, t.title))
               title, content = *arr
             else
