@@ -87,13 +87,13 @@ def get_texts origin
             t = Text.new
             t.origin = origin
             if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-              t.title = ActionView::Base.full_sanitizer.sanitize f.title.encode('WINDOWS-1251').force_encoding('UTF-8') unless f.title.blank?
-              t.description = ActionView::Base.full_sanitizer.sanitize f.description.encode('WINDOWS-1251').force_encoding('UTF-8') unless f.description.blank?
-              t.author = ActionView::Base.full_sanitizer.sanitize f.author.encode('WINDOWS-1251').force_encoding('UTF-8') unless f.author.blank?
+              t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '').encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '').encode('WINDOWS-1251').force_encoding('UTF-8') unless f.description.blank?
+              t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '').encode('WINDOWS-1251').force_encoding('UTF-8') unless f.author.blank?
             else
-              t.title = ActionView::Base.full_sanitizer.sanitize f.title unless f.title.blank?
-              t.description = ActionView::Base.full_sanitizer.sanitize f.description unless f.description.blank?
-              t.author = ActionView::Base.full_sanitizer.sanitize f.author unless f.author.blank?
+              t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
+              t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
+              t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
             end
             t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
             t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
