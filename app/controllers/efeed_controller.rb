@@ -10,6 +10,7 @@ class EfeedController < ApplicationController
     @origins = Origin.where(group: 1917)
     @texts = Text.where(origin_id: @origins)
                  .order(:datetime => :desc).where(novel: true)
+    @texts.each{|t| t.novel = false; t.save}
   end
   def new_emessages
     @origins = Origin.where(group: 1917)

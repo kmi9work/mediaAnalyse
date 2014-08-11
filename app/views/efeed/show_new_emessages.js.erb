@@ -1,4 +1,4 @@
+$('#new_rows').hide();
 <% @texts.reverse_each do |text| %>
-  $('#new_rows').hide();
   $('#texts').prepend('<%= j render "text", text: text %>');
 <% end %>
