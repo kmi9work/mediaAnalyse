@@ -4,7 +4,7 @@ class EfeedController < ApplicationController
     @origins = Origin.where(group: 1917)
     @texts = Text.where(origin_id: @origins)
                  .from_to_date(DateTime.now - 1.day, DateTime.now)
-                 .order(:datetime).limit(100)
+                 .order(:datetime => :desc).limit(100)
 
   end
 end
