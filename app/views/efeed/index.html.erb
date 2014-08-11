@@ -1,4 +1,7 @@
 <%= content_for :main do %>
+  <% @origins.each do |origin| %>
+    <%= link_to origin.title, origin %>
+  <% end %>
   <div class="row">
   <% @texts.each do |text| %>
       <%= render 'text', text: text %>

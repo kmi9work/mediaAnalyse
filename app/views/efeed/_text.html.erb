@@ -1,9 +1,9 @@
 <div class="article">
-  <p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title.html_safe %> </b> </p>
+  <p><a name="<%= "anc#{text.id}" %>"></a><span></span><b> <%= text.title.html_safe %> </b> </p>
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
   <b>Аннотация:</b>
-  <p> <%= text.description.gsub("\n\n", "<br>\n").html_safe if text.description %> </p>
-  <b>Полный текст статьи:</b>
+  <!-- <p> <%= text.description.gsub("\n\n", "<br>\n").html_safe if text.description %> </p>
+  <b>Полный текст статьи:</b> -->
   <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p>
   <% if text.datetime %>
     <p align="right"> Новость от: <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
@@ -19,7 +19,7 @@
     </div>
   <% else %>
     </div>
-    <%= render 'feedback', text: text %>
+    <%#= render 'feedback', text: text %>
   <% end %>  
 <% end %>
 </div>
