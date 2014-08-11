@@ -87,16 +87,16 @@ def get_texts origin
             t = Text.new
             t.origin = origin
             if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-              t.title = f.title.encode('WINDOWS-1251').force_encoding('UTF-8')
-              t.description = f.description.encode('WINDOWS-1251').force_encoding('UTF-8')
-              t.author = f.author.encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.title = ActionView::Base.full_sanitizer.sanitize f.title.encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.description = ActionView::Base.full_sanitizer.sanitize f.description.encode('WINDOWS-1251').force_encoding('UTF-8')
+              t.author = ActionView::Base.full_sanitizer.sanitize f.author.encode('WINDOWS-1251').force_encoding('UTF-8')
             else
-              t.title = f.title
-              t.description = f.description
-              t.author = f.author
+              t.title = ActionView::Base.full_sanitizer.sanitize f.title
+              t.description = ActionView::Base.full_sanitizer.sanitize f.description
+              t.author = ActionView::Base.full_sanitizer.sanitize f.author
             end
-            t.guid = f.guid.nil? ? f.link : f.guid.content || f.link
-            t.url = f.link
+            t.guid = ActionView::Base.full_sanitizer.sanitize f.guid.nil? ? f.link : f.guid.content || f.link
+            t.url = ActionView::Base.full_sanitizer.sanitize f.link
             t.datetime = f.pubDate || DateTime.now
             if (arr = get_link_content(t.url, t.title))
               title, content = *arr
