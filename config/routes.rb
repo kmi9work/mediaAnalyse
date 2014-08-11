@@ -7,6 +7,7 @@ MediaAnalyse::Application.routes.draw do
 
   #rss
   get '/efeed' => 'efeed#index', as: :efeed
+  get '/feed' => 'feed#index', as: :feed
 
   mount Delayed::Web::Engine, at: '/jobs'
   get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
