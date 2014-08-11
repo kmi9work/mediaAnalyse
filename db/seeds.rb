@@ -30,7 +30,16 @@ eurls.each do |url, name|
   Origin.create(rss_url: url, title: name, group: 1917)
 end
 
+urls = {
+'http://news.yandex.ru/society.rss' => 'Яндекс.Общество',
+'http://news.yandex.ru/fire.rss' => 'Яндекс.Пожары',
+'http://news.yandex.ru/politics.rss' => 'Яндекс.Политика',
+'http://news.yandex.ru/incident.rss' => 'Яндекс.Происшествия'
+}
 
+urls.each do |url, name|
+  Origin.create(rss_url: url, title: name)
+end
 
 =begin
 cat1 = Category.create(title: "Руководство МЧС")
