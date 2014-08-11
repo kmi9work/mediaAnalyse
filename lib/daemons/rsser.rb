@@ -122,7 +122,13 @@ ENV["RAILS_ENV"] ||= "production"
 root = File.expand_path(File.dirname(__FILE__))
 root = File.dirname(root) until File.exists?(File.join(root, 'config'))
 Dir.chdir(root)
-@my_logger = Logger.new("#{Rails.root}/log/rsser.log")
+
+if Rails.env.production?
+  @my_logger = Logger.new("/home/web/public_html/msystem2/log/rsser.log")
+else
+  @my_logger = Logger.new("#{Rails.root}/log/rsser.log")
+end
+
 # @my_logger = Rails.logger
 require File.join(root, "config", "environment")
 
