@@ -75,7 +75,8 @@ def get_texts origin
       begin
         open(origin.rss_url) do |rss|
           if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-            text = rss.read.encode('WINDOWS-1251').force_encoding('UTF-8')
+            text = rss.read
+            text.encode!('WINDOWS-1251').force_encoding('UTF-8')
           else
             text = rss.read
           end
