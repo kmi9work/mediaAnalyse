@@ -74,7 +74,10 @@ def get_texts origin
     while (i += 1) <= 3
       begin
         open(origin.rss_url) do |rss|
-          feed = RSS::Parser.parse(rss, false)
+          if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+            text = rss.read.encode('WINDOWS-1251').force_encoding('UTF-8')
+          end
+          feed = RSS::Parser.parse(text, false)
           save_feeds = []
           last = origin.texts.order(:datetime).last
           feed.items.each do |f|
@@ -87,15 +90,9 @@ def get_texts origin
           save_feeds.reverse_each do |f|
             t = Text.new
             t.origin = origin
-            if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-              t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '').encode('WINDOWS-1251').force_encoding('UTF-8')
-              t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '').encode('WINDOWS-1251').force_encoding('UTF-8') unless f.description.blank?
-              t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '').encode('WINDOWS-1251').force_encoding('UTF-8') unless f.author.blank?
-            else
-              t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
-              t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
-              t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
-            end
+            t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
+            t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
+            t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
             t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
             t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
             t.datetime = f.pubDate || DateTime.now
