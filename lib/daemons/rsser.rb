@@ -59,7 +59,7 @@ def get_emot title, content
       response = Net::HTTP.post_form(uri, query)
     rescue StandardError, Timeout::Error => e
       s 10
-      @my_logger.error "#{response.value} to emot.zaelab.ru. Retrying..."
+      @my_logger.error "Can't connect to emot.zaelab.ru. Retrying..."
       return get_emot title, content
     end
     return JSON.parse(response.body)['overall']
@@ -73,42 +73,38 @@ def get_texts origin
     @my_logger.info origin.rss_url
     while (i += 1) <= 3
       begin
-        open(origin.rss_url) do |rss|
-          if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-            text = rss.read
-            text.encode!('WINDOWS-1251').force_encoding('UTF-8')
-          else
-            text = rss.read
-          end
+        text = open(origin.rss_url).read
+        if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+          text.encode!('WINDOWS-1251').force_encoding('UTF-8')
+        end
 
-          feed = RSS::Parser.parse(text, false)
-          save_feeds = []
-          last = origin.texts.order(:datetime).last
-          feed.items.each do |f|
-            guid = f.guid.nil? ? f.link : f.guid.content || f.link
-            break unless Text.where(guid: guid).blank?
-            save_feeds << f
+        feed = RSS::Parser.parse(text, false)
+        save_feeds = []
+        last = origin.texts.order(:datetime).last
+        feed.items.each do |f|
+          guid = f.guid.nil? ? f.link : f.guid.content || f.link
+          break unless Text.where(guid: guid).blank?
+          save_feeds << f
+        end
+        ret += save_feeds.count
+        @my_logger.info "#{origin.title}: New texts: #{save_feeds.count}"
+        save_feeds.reverse_each do |f|
+          t = Text.new
+          t.origin = origin
+          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
+          t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
+          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
+          t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
+          t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
+          t.datetime = f.pubDate || DateTime.now
+          if (arr = get_link_content(t.url, t.title))
+            title, content = *arr
+          else
+            content = ""
           end
-          ret += save_feeds.count
-          @my_logger.info "#{origin.title}: New texts: #{save_feeds.count}"
-          save_feeds.reverse_each do |f|
-            t = Text.new
-            t.origin = origin
-            t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
-            t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
-            t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
-            t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
-            t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
-            t.datetime = f.pubDate || DateTime.now
-            if (arr = get_link_content(t.url, t.title))
-              title, content = *arr
-            else
-              content = ""
-            end
-            t.content = content
-            t.emot = get_emot t.title, t.content
-            t.save
-          end
+          t.content = content
+          t.emot = get_emot t.title, t.content
+          t.save
         end
         break
       rescue StandardError, Timeout::Error => e
