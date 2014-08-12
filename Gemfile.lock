@@ -76,6 +76,9 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.8.1)
     jwt (1.0.0)
+    kaminari (0.16.1)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     logger (1.2.8)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -185,6 +188,7 @@ DEPENDENCIES
   headless
   jbuilder (~> 1.2)
   jquery-rails
+  kaminari
   logger
   mysql2
   net-ssh-gateway

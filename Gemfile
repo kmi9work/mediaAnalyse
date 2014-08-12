@@ -35,6 +35,7 @@ gem 'daemons'
 gem 'daemons-rails'
 gem 'sorcery'
 gem 'logger'
+gem 'kaminari'
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 

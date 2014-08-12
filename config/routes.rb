@@ -10,6 +10,7 @@ MediaAnalyse::Application.routes.draw do
   get '/feed' => 'feed#index', as: :feed
   get 'show_new_emessages' => 'efeed#show_new_emessages', as: :show_new_emessages
   get 'new_emessages' => 'efeed#new_emessages', as: :new_emessages
+  match 'select_sources' => 'efeed#select_sources', via: :post, as: :select_sources
 
   mount Delayed::Web::Engine, at: '/jobs'
   get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
