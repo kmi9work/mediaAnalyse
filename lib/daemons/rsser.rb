@@ -74,9 +74,9 @@ def get_texts origin
     while (i += 1) <= 3
       begin
         text = open(origin.rss_url).read
-        if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-          text.encode!('WINDOWS-1251').force_encoding('UTF-8')
-        end
+        # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+        #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
+        # end
 
         feed = RSS::Parser.parse(text, false)
         save_feeds = []
