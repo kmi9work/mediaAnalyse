@@ -92,8 +92,7 @@ ul.empty li{
 }
 
 .article{
-	background-color: #EEDFAC;
-	border-radius: 15px;
+	border: solid 1px black;
 	padding: 10px;
 	margin: 10px;
 	position: relative;

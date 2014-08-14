@@ -1,6 +1,27 @@
-<%= content_for :main do %>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MediaAnalyse</title>
+  <%= stylesheet_link_tag    "application", media: "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+
+  <link href='http://fonts.googleapis.com/css?family=Unica+One' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<!-- <div id="logout"><%= link_to 'Выйти', logout_path %></div> -->
+
+<div>
+  <p id="notice"><%= flash[:notice] %></p>
+  <p id="alert"><%= flash[:alert] %></p>
+</div>
+
+<div id="main" class="col-md-12">
+  <a name="anctexts"></a>
   <div id="new_rows" style="display: none;">
-    <%= link_to 'Показать новые сообщения', show_new_emessages_path, remote: true %> (<span id="tcount">0</span>)
+    <span style="font-size:30px">
+      <%= link_to 'Показать новые сообщения', show_new_emessages_path, remote: true %> (<span id="tcount">0</span>)
+    </span>
   </div>
   <div class="row">
     <div class="row" style="margin-left: 30px;">
@@ -10,16 +31,15 @@
       <div id="texts" class="col-md-8">
         
       <% @texts.each do |text| %>
-        <%= render 'text', text: text %>
+        <%= render 'text', {text: text, color: "#fff"} %>
       <% end %>
       </div>
       <div class="col-md-3">
-        <%= form_tag 'select_sources' do %>
+        <%= form_tag 'select_esources' do %>
           <label>Источники:</label><br>
-          <%= hidden_field_tag "select_sources[]", nil%>
           <% origins = Origin.where(group: 1917) %>
           <% origins.each do |origin| %>
-            <%= check_box_tag "select_sources[]", origin.id, session[:origins].include?(origin.id), id: dom_id(origin) %>
+            <%= check_box_tag "select_sources[]", origin.id, session[:eorigins].include?(origin.id), id: dom_id(origin) %>
             <%= label_tag dom_id(origin), origin.title %><br>
           <% end %>
           <%= submit_tag 'Применить' %>
@@ -27,4 +47,7 @@
       </div>
     </div>
   </div>
-<% end %>
+</div>
+<%= yield :specific_js %>
+</body>
+</html>

@@ -1,32 +1,27 @@
-class EfeedController < ApplicationController
+class EfeedController < FeedController
   skip_before_filter :require_login
-  before_filter :set_session, only: :index
+  before_action :set_session, only: :index
   def index
-    @origins = Origin.where(id: session[:origins])
-    @texts = Text.where(origin_id: @origins)
-                 .order(:datetime => :desc).page(params[:page]).per(50)
-    Text.where({origin_id: @origins, novel: true}).each{|t| t.novel = false; t.save}
+    @origins = Origin.where(id: session[:eorigins])
+    get_texts
+    render 'index', layout: false
   end
   def show_new_emessages
     @origins = Origin.where(group: 1917)
-    @texts = Text.where(origin_id: @origins)
-                 .order(:datetime => :desc).where(novel: true)
-    @texts.each{|t| t.novel = false; t.save}
+    get_novel_texts
   end
   def new_emessages
     @origins = Origin.where(group: 1917)
-    @tcount = Text.where(origin_id: @origins)
-                 .order(:datetime => :desc).where(novel: true).count
-    render json: {tcount: @tcount.to_s}.to_json
+    render_tcount
   end
-  def select_sources
-    session[:origins] = params[:select_sources].map(&:to_i)
+  def select_esources
+    session[:eorigins] = params[:select_sources] ? params[:select_sources].map(&:to_i) : [] 
     redirect_to action: :index
   end
   private
   def set_session
-    if session[:origins].blank?
-      session[:origins] = Origin.where(group: 1917).map(&:id)
+    if session[:eorigins].blank?
+      session[:eorigins] = Origin.where(group: 1917).map(&:id)
     end
   end
 end

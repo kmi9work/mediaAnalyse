@@ -7,10 +7,15 @@ MediaAnalyse::Application.routes.draw do
 
   #rss
   get '/efeed' => 'efeed#index', as: :efeed
-  get '/feed' => 'feed#index', as: :feed
   get 'show_new_emessages' => 'efeed#show_new_emessages', as: :show_new_emessages
   get 'new_emessages' => 'efeed#new_emessages', as: :new_emessages
-  match 'select_sources' => 'efeed#select_sources', via: :post, as: :select_sources
+  match 'select_esources' => 'efeed#select_esources', via: :post, as: :select_esources
+
+  get '/feed' => 'feed#index', as: :feed
+  get 'show_new_messages' => 'feed#show_new_messages', as: :show_new_messages
+  get 'new_messages' => 'feed#new_messages', as: :new_messages
+  match 'select_sources' => 'feed#select_sources', via: :post, as: :select_sources
+  
 
   mount Delayed::Web::Engine, at: '/jobs'
   get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data

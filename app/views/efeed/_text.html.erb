@@ -1,18 +1,15 @@
-<div class="article">
+<div class="article" style="background-color: <%= color || '#fff' %>">
   <p><a name="<%= "anc#{text.id}" %>"></a><span></span><b> <%= text.title.html_safe %> </b> </p>
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-  <b>Аннотация:</b>
   <p> <%= text.description.gsub("\n\n", "<br>\n").html_safe if text.description %> </p>
   <!-- <b>Полный текст статьи:</b>
   <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
   <% if text.datetime %>
-    <b> Новость от: </b>
     <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
   <% else %>
     <b> Новость получена: </b>
     <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
   <% end %>
-  <hr>
 <% if text.emot %>
   <div class="emot emot_<%= text.emot.to_i + 3 %>" style="top:10px; right: 10px; position:absolute"> <%= text.emot %> </div>
     <%#= render 'feedback', text: text %>
