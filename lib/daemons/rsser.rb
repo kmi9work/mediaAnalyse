@@ -99,13 +99,17 @@ def get_texts origin
           t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
           t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
           t.datetime = f.pubDate || DateTime.now
-          if (arr = get_link_content(t.url, t.title))
-            title, content = *arr
+          if origin.group != 1917
+            if (arr = get_link_content(t.url, t.title))
+              title, content = *arr
+            else
+              content = ""
+            end
+            t.content = content
           else
-            content = ""
+            t.content = ""
           end
-          t.content = content
-          t.emot = get_emot t.title, t.content
+          t.emot = get_emot t.title, t.description
           t.save
         end
         break
