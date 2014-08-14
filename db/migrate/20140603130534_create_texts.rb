@@ -10,7 +10,6 @@ class CreateTexts < ActiveRecord::Migration
       t.belongs_to :query
       t.belongs_to :search_engine
       t.belongs_to :origin
-    	t.boolean :novel, default: true
       t.integer :emot
       t.integer :my_emot
       t.datetime :datetime
