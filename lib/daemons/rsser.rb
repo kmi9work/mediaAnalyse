@@ -53,7 +53,9 @@ def get_link_content link, def_title = ""
 
 def get_emot title, content
     s -50
-    query = {"text" => title + "\n" + content}
+    t = title || ""
+    c = content || ""
+    query = {"text" => t + "\n" + c}
     uri = URI('http://emot.zaelab.ru/analyze.json')
     begin
       response = Net::HTTP.post_form(uri, query)
