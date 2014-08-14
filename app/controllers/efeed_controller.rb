@@ -7,11 +7,11 @@ class EfeedController < FeedController
     render 'index', layout: false
   end
   def show_new_emessages
-    @origins = Origin.where(group: 1917)
+    @origins = Origin.where(id: session[:eorigins])
     get_novel_texts
   end
   def new_emessages
-    @origins = Origin.where(group: 1917)
+    @origins = Origin.where(id: session[:eorigins])
     render_tcount
   end
   def select_esources

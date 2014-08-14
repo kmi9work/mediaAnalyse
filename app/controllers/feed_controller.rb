@@ -26,9 +26,10 @@ class FeedController < ApplicationController
     Text.where({origin_id: @origins, novel: true}).each{|t| t.novel = false; t.save}
   end
   def get_novel_texts
-    @texts = Text.where(origin_id: @origins)
-                 .order(:datetime => :desc).where(novel: true)
+    @texts = Text.where(origin_id: @origins).order(:datetime => :desc).where(novel: true)
+    puts '------------', @texts.count
     @texts.each{|t| t.novel = false; t.save}
+    puts @texts.count, '========='
   end
   def render_tcount
     @tcount = Text.where(origin_id: @origins)
