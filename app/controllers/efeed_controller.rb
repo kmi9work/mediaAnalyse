@@ -25,5 +25,8 @@ class EfeedController < FeedController
     if session[:eorigins].blank?
       session[:eorigins] = Origin.where(group: 1917).map(&:id)
     end
+    if session[:elast].blank?
+      session[:elast] = DateTime.now
+    end
   end
 end
