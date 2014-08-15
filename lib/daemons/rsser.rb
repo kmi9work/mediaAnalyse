@@ -3,6 +3,12 @@ require 'logger'
 require 'rails'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
+def send_email subject, body
+  ActionMailer::Base.mail(:from => "info@msystem2.amchs.ru", 
+                          :to => "kmi9.other@gmail.com", 
+                          :subject => subject, :body => body).deliver
+end
+
 def s k
   if k >= 0
     sleep(rand(k * 100)/100.0 + rand(100)/100.0)
@@ -74,55 +80,55 @@ def get_texts origin
     ret = 0
     @my_logger.info origin.rss_url
     while (i += 1) <= 3
-      begin
-        text = open(origin.rss_url).read
-        # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
-        #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
-        # end
+      text = open_url(origin.rss_url).read
+      # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+      #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
+      # end
 
-        feed = RSS::Parser.parse(text, false)
-        save_feeds = []
-        last = origin.texts.order(:datetime).last
-        feed.items.each do |f|
-          guid = f.guid.nil? ? f.link : f.guid.content || f.link
-          break unless Text.where(guid: guid).blank?
-          save_feeds << f
-        end
-        ret += save_feeds.count
-        @my_logger.info "#{origin.title}: New texts: #{save_feeds.count}"
-        save_feeds.reverse_each do |f|
-          t = Text.new
-          t.origin = origin
-          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
-          t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
-          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
-          t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
-          t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
-          t.datetime = f.pubDate || DateTime.now
-          if origin.group != 1917
-            if (arr = get_link_content(t.url, t.title))
-              title, content = *arr
-            else
-              content = ""
-            end
-            t.content = content
-          else
-            t.content = ""
-          end
-          t.emot = get_emot t.title, t.description
-          t.save
-        end
-        break
-      rescue StandardError, Timeout::Error => e
-        ret = 0
-        k = rand(15) + 5
-        @my_logger.error "#{origin.rss_url} was not open. Sleep(#{k}). #{i}"
-        @my_logger.error e.message
-        @my_logger.error ''
-        sleep(k)
+      feed = RSS::Parser.parse(text, false)
+      save_feeds = []
+      last = origin.texts.order(:datetime).last
+      feed.items.each do |f|
+        guid = f.guid.nil? ? f.link : f.guid.content || f.link
+        break unless Text.where(guid: guid).blank?
+        save_feeds << f
       end
+      ret += save_feeds.count
+      @my_logger.info "#{origin.title}: New texts: #{save_feeds.count}"
+      save_feeds.reverse_each do |f|
+        t = Text.new
+        t.origin = origin
+        t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
+        t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
+        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
+        t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
+        t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
+        t.datetime = f.pubDate || DateTime.now
+        if origin.group != 1917
+          if (arr = get_link_content(t.url, t.title))
+            title, content = *arr
+          else
+            content = ""
+          end
+          t.content = content
+        else
+          t.content = ""
+        end
+        t.emot = get_emot t.title, t.description
+        t.save
+      end
+      break
     end
     return ret
+  rescue Exception => e
+    str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+    send_email "Fatal error in rss project.", "Fatal error in get_texts inside rss project.\nMessage:\n\n" + str
+
+    @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+    @my_logger.error e.backtrace.join("\n")
+    @my_logger.error "============================================"
+    s 10
+    return 0
   end
 
 #!/usr/bin/env ruby
