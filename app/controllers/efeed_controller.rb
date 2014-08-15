@@ -21,10 +21,10 @@ class EfeedController < FeedController
   end
   private
   def set_session
-    @origins = Origin.where(id: session[:eorigins])
     if session[:eorigins].blank?
       session[:eorigins] = Origin.where(group: 1917).map(&:id)
     end
+    @origins = Origin.where(id: session[:eorigins])
     if session[:elast].blank?
       session[:elast] = Text.where(origin_id: @origins).last.id
     end
