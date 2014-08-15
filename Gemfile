@@ -22,6 +22,7 @@ end
 
 group :production do
 	gem 'mysql2'
+  gem 'feedjira'
 end
 group :development, :test do
 	gem 'sqlite3'
