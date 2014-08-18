@@ -5,6 +5,9 @@ require 'open-uri'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
+  ActionMailer::Base.smtp_settings = {  
+    :openssl_verify_mode => 'none' 
+  }
   ActionMailer::Base.mail(:from => "info@msystem2.amchs.ru", 
                           :to => "kmi9.other@gmail.com", 
                           :subject => subject, :body => body).deliver
@@ -38,7 +41,7 @@ def open_url url, err_text = ""
         @my_logger.error ''
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
-      rescue Exception => e
+      rescue IO::EAGAINWaitReadable, Exception => e
         str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
         send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
         @my_logger.error "FATAL ERROR! --- #{e.message} ---"
