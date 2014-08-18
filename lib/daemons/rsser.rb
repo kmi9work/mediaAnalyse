@@ -92,7 +92,9 @@ def get_texts origin
     ret = 0
     @my_logger.info origin.rss_url
     while (i += 1) <= 3
-      text = open_url(origin.rss_url).read
+      response = open_url(origin.rss_url)
+      return 0 unless response
+      text = response.read
       # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
