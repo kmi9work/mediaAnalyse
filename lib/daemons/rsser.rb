@@ -38,6 +38,14 @@ def open_url url, err_text = ""
         @my_logger.error ''
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
+      rescue Exception => e
+        str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+        send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
+        @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+        @my_logger.error e.backtrace.join("\n")
+        @my_logger.error "============================================"
+        s 10
+        return nil
       end
     end
     return doc
