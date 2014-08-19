@@ -97,7 +97,7 @@ def get_texts origin
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
       feed = Feedjira::Feed.fetch_and_parse(origin.rss_url)
-      return 0 if feed == 0
+      return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
       save_feeds = []
       last = origin.texts.order(:datetime).last
       feed.entries.each do |f|
