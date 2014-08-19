@@ -5,9 +5,9 @@ $('#texts').prepend('<hr>');
 
 <% @texts.reverse_each do |text| %>
   <% if session[:estyle] == "blue" %>
-    $('#texts').prepend('<%= j render "text", text: text, background_color: "#03004d", color: "#00c2a8"%>');
+    $('#texts').prepend('<%= j render "text", text: text, background_color: "#040075", color: "#00c2a8"%>');
   <% else %>
-    $('#texts').prepend('<%= j render "text", text: text, background_color: "#e3ddb8", color: "#000" %>');
+    $('#texts').prepend('<%= j render "text", text: text, background_color: "#d6d5cf", color: "#000" %>');
   <% end %>
   
 <% end %>
