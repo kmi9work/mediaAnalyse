@@ -110,7 +110,7 @@ def get_texts origin
       save_feeds.reverse_each do |f|
         t = Text.new
         t.origin = origin
-        @my_logger.info (t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '')).encoding
+        t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '')
         t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '')
         t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
         t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
