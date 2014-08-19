@@ -101,7 +101,7 @@ def get_texts origin
       save_feeds = []
       last = origin.texts.order(:datetime).last
       feed.entries.each do |f|
-        @my_logger.info guid = f.entry_id || f.url
+        guid = f.entry_id || f.url
         break unless Text.where(guid: guid).blank?
         save_feeds << f
       end
@@ -110,15 +110,9 @@ def get_texts origin
       save_feeds.reverse_each do |f|
         t = Text.new
         t.origin = origin
-        if (origin.rss_url == 'http://www.pravda.com.ua/rus/rss/')
-          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '').encode('WINDOWS-1251').force_encoding('UTF-8')
-          t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '').encode('WINDOWS-1251').force_encoding('UTF-8')
-          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '').encode('WINDOWS-1251').force_encoding('UTF-8')
-        else
-          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')
-          t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
-          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
-        end
+        @my_logger.info (t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')).to_s
+        t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
+        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
         t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || f.url) 
         t.url = ActionView::Base.full_sanitizer.sanitize (f.url)
         t.datetime = f.published || DateTime.now
