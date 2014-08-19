@@ -110,11 +110,11 @@ def get_texts origin
       save_feeds.reverse_each do |f|
         t = Text.new
         t.origin = origin
-        @my_logger.info t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')
-        t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
-        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
-        t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || f.url) 
-        t.url = ActionView::Base.full_sanitizer.sanitize (f.url)
+        @my_logger.info (t.title = ActionView::Base.full_sanitizer.sanitize(f.title || ''))
+        t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '')
+        t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
+        t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
+        t.url = ActionView::Base.full_sanitizer.sanitize(f.url)
         t.datetime = f.published || DateTime.now
         if origin.group != 1917
           if (arr = get_link_content(t.url, t.title))
