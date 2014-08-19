@@ -110,9 +110,15 @@ def get_texts origin
       save_feeds.reverse_each do |f|
         t = Text.new
         t.origin = origin
-        t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')
-        t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
-        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
+        if (origin.rss_url == 'http://www.pravda.com.ua/rus/rss/')
+          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '').encode('WINDOWS-1251').force_encoding('UTF-8')
+          t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '').encode('WINDOWS-1251').force_encoding('UTF-8')
+          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '').encode('WINDOWS-1251').force_encoding('UTF-8')
+        else
+          t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')
+          t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
+          t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
+        end
         t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || '') 
         t.url = ActionView::Base.full_sanitizer.sanitize (f.url || '')
         t.datetime = f.published || DateTime.now
