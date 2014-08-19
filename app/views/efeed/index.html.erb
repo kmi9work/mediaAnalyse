@@ -35,7 +35,7 @@
       <div id="texts" class="col-md-8">
       <% @texts.each do |text| %>
         <% if session[:estyle] == "blue" %>
-          <%= render 'text', {text: text, background_color: '#03004d', color: '#c6cfa3'} %>
+          <%= render 'text', {text: text, background_color: '#03004d', color: '#00c2a8'} %>
         <% else %>
           <%= render 'text', {text: text, background_color: '#e3ddb8', color: '#000'} %>
         <% end %>
