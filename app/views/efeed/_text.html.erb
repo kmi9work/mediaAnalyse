@@ -1,4 +1,4 @@
-<div class="article" style="background-color: <%= color || '#03004d' %>">
+<div class="article" style="background-color: <%= color %>">
   <p><a name="<%= "anc#{text.id}" %>"></a><span></span><b> <%= text.title %> </b> </p>
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
   <p> <%= text.description if text.description %> </p>
