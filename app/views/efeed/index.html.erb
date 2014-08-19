@@ -25,12 +25,20 @@
   </div>
   <div class="row">
     <div class="row" style="margin-left: 30px;">
-      <%= paginate @texts %>  
+      <%= paginate @texts %>
+      &nbsp; | &nbsp; 
+      Внешний вид: 
+      <%= link_to 'Обычный', '/efeed/style/default', remote: true %>, 
+      <%= link_to 'Синий', '/efeed/style/blue', remote: true %>
     </div>
     <div class="row">
       <div id="texts" class="col-md-8">
       <% @texts.each do |text| %>
-        <%= render 'text', {text: text, color: '#03004d'} %>
+        <% if session[:estyle] == "blue" %>
+          <%= render 'text', {text: text, background_color: '#03004d', color: '#c6cfa3'} %>
+        <% else %>
+          <%= render 'text', {text: text, background_color: '#e3ddb8', color: '#000'} %>
+        <% end %>
       <% end %>
       </div>
       <div class="col-md-3">

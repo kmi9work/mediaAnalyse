@@ -10,6 +10,7 @@ MediaAnalyse::Application.routes.draw do
   get 'show_new_emessages' => 'efeed#show_new_emessages', as: :show_new_emessages
   get 'new_emessages' => 'efeed#new_emessages', as: :new_emessages
   match 'select_esources' => 'efeed#select_esources', via: :post, as: :select_esources
+  get '/efeed/style/:style' => 'efeed#style', as: :estyle
 
   get '/feed' => 'feed#index', as: :feed
   get 'show_new_messages' => 'feed#show_new_messages', as: :show_new_messages

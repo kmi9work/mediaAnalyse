@@ -4,5 +4,10 @@ $(".article").css('background-color', '#03004d');
 $('#texts').prepend('<hr>');
 
 <% @texts.reverse_each do |text| %>
-  $('#texts').prepend('<%= j render "text", text: text, color: "#040075" %>');
+  <% if session[:estyle] == "blue" %>
+    $('#texts').prepend('<%= j render "text", text: text, background_color: "#03004d", color: "#c6cfa3"%>');
+  <% else %>
+    $('#texts').prepend('<%= j render "text", text: text, background_color: "#e3ddb8", color: "#000" %>');
+  <% end %>
+  
 <% end %>

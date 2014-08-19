@@ -13,3 +13,4 @@ window.getNewEMessages = () ->
         $('#tcount').html(respond.tcount);
         $('#new_rows').show();    
     setTimeout(getNewEMessages, 7000)
+
