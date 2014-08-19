@@ -101,7 +101,7 @@ def get_texts origin
       save_feeds = []
       last = origin.texts.order(:datetime).last
       feed.entries.each do |f|
-        guid = f.entry_id
+        @my_logger.info guid = f.entry_id
         break unless Text.where(guid: guid).blank?
         save_feeds << f
       end
