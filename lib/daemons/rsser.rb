@@ -129,7 +129,7 @@ def get_texts origin
           t.content = ""
         end
         t.emot = get_emot t.title, t.description
-        t.save
+        t.save if t.title or t.description or t.url
       end
       break
     end
