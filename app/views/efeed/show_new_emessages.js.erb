@@ -1,6 +1,11 @@
 $('#new_rows').hide();
 $("hr").remove();
-$(".article").css('background-color', '#03004d');
+<% if session[:estyle] == "blue" %>
+  $(".article").css('background-color', '#03004d');
+<% else %>
+  $(".article").css('background-color', '#e3ddb8');
+<% end %>
+
 $('#texts').prepend('<hr>');
 
 <% @texts.reverse_each do |text| %>
