@@ -2,6 +2,7 @@ require 'rss'
 require 'logger'
 require 'rails'
 require 'open-uri'
+require 'feedjira'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
@@ -92,18 +93,15 @@ def get_texts origin
     ret = 0
     @my_logger.info origin.rss_url
     while (i += 1) <= 3
-      response = open_url(origin.rss_url)
-      return 0 unless response
-      text = response.read
       # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
-
-      feed = RSS::Parser.parse(text, false)
+      feed = Feedjira::Feed.fetch_and_parse(origin.rss_url)
+      return 0 if feed == 0
       save_feeds = []
       last = origin.texts.order(:datetime).last
-      feed.items.each do |f|
-        guid = f.guid.nil? ? f.link : f.guid.content || f.link
+      feed.entries.each do |f|
+        guid = f.entry_id
         break unless Text.where(guid: guid).blank?
         save_feeds << f
       end
@@ -112,12 +110,12 @@ def get_texts origin
       save_feeds.reverse_each do |f|
         t = Text.new
         t.origin = origin
-        t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '') unless f.title.blank?
-        t.description = ActionView::Base.full_sanitizer.sanitize (f.description || '') unless f.description.blank?
-        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '') unless f.author.blank?
-        t.guid = ActionView::Base.full_sanitizer.sanitize (f.guid.nil? ? f.link || '' : f.guid.content || f.link || '') 
-        t.url = ActionView::Base.full_sanitizer.sanitize (f.link || '')
-        t.datetime = f.pubDate || DateTime.now
+        t.title = ActionView::Base.full_sanitizer.sanitize (f.title || '')
+        t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
+        t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
+        t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || '') 
+        t.url = ActionView::Base.full_sanitizer.sanitize (f.url || '')
+        t.datetime = f.published || DateTime.now
         if origin.group != 1917
           if (arr = get_link_content(t.url, t.title))
             title, content = *arr
