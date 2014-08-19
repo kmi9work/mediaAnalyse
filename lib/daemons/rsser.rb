@@ -101,7 +101,7 @@ def get_texts origin
       save_feeds = []
       last = origin.texts.order(:datetime).last
       feed.entries.each do |f|
-        @my_logger.info guid = f.entry_id
+        @my_logger.info guid = f.entry_id || f.url
         break unless Text.where(guid: guid).blank?
         save_feeds << f
       end
@@ -119,8 +119,8 @@ def get_texts origin
           t.description = ActionView::Base.full_sanitizer.sanitize (f.summary || '')
           t.author = ActionView::Base.full_sanitizer.sanitize (f.author || '')
         end
-        t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || '') 
-        t.url = ActionView::Base.full_sanitizer.sanitize (f.url || '')
+        t.guid = ActionView::Base.full_sanitizer.sanitize (f.entry_id || f.url) 
+        t.url = ActionView::Base.full_sanitizer.sanitize (f.url)
         t.datetime = f.published || DateTime.now
         if origin.group != 1917
           if (arr = get_link_content(t.url, t.title))
