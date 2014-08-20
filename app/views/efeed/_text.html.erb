@@ -1,7 +1,7 @@
 <div class="article" style="background-color: <%= background_color %>; color: <%= color %>;">
-  <p><a name="<%= "anc#{text.id}" %>"></a><div class="col-md-11"><b> <%= text.title %> </b> </p></div>
+  <p><a name="<%= "anc#{text.id}" %>"></a><div class="col-md-11"><b> <%= text.title.try(:html_safe) %> </b> </p></div>
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-  <p> <%= text.description if text.description %> </p>
+  <p> <%= text.description.try(:html_safe) %> </p>
   <!-- <b>Полный текст статьи:</b>
   <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
   <% if text.datetime %>
