@@ -93,7 +93,11 @@ namespace :parse do
         my_logger.debug meteo_ids[key] = doc.text.match(/statist_fconfirm\(\d+, \'?(\d+)'?\)/)[1]
         
         coord = doc.at_css('#leftNavi div span:nth-child(2) a')['onclick'].match(/show_map\((\d+(\.\d+)?), (\d+(\.\d+)?),/)
-        f_ids.puts "#{key};#{meteo_ids[key]};#{coord[1]};#{coord[3]}"
+        states = []
+        doc.css('nobr').each do |state|
+          states << state.content
+        end
+        f_ids.puts "#{key};#{meteo_ids[key]};#{coord[1]};#{coord[3]};#{states.join(';')}"
         f_ids.close
       rescue
 
