@@ -13,7 +13,7 @@ def get_links_sections url
       doc = Nokogiri::HTML(open(url))
       break
     rescue
-      puts "Error in open url. 1"
+      my_logger.error "Error in open url. 1"
       sleep(rand(50) + 100)
     end
   end
@@ -45,7 +45,7 @@ namespace :parse do
     links, sections = *get_links_sections('http://rp5.ru/%D0%9F%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8')
 
     sections.each do |section|
-      my_logger.debug "get links... #{section}"
+      my_logger.info "get links... #{section}"
       l, s = *get_links_sections(URI::encode section)
       links.merge!(l)
       unless s.empty?
@@ -60,13 +60,13 @@ namespace :parse do
 
 
     f_links.puts links.values
-    my_logger.debug "links collected. Count: #{links.size}. Time: #{links.size * 6} seconds."
+    my_logger.info "links collected. Count: #{links.size}. Time: #{links.size * 6} seconds."
     i = 0
     links.each do |key, value|
       i += 1
-      my_logger.debug  "Downloading #{i} from #{links.size}."
+      my_logger.info  "Downloading #{i} from #{links.size}."
       begin
-        my_logger.debug value
+        my_logger.info value
         f_ids = File.open("#{Rails.root}/tmp/ids_russia.txt", 'a+')
         sleep(2)
         while true

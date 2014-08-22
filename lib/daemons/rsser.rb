@@ -161,12 +161,7 @@ end
 # @my_logger = Rails.logger
 require File.join(root, "config", "environment")
 
-$running = true
-Signal.trap("TERM") do 
-  $running = false
-end
-
-while($running) do
+while (true) do
   @my_logger.info "----------------------"
   @my_logger.info "Still parsing RSS's. Count: #{Origin.count}"
   count = 0
@@ -174,5 +169,5 @@ while($running) do
     count += get_texts o
   end
   @my_logger.info "=== New messages: #{count} ==="
-  sleep 10
+  s 20
 end
