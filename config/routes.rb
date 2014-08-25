@@ -11,6 +11,10 @@ MediaAnalyse::Application.routes.draw do
   get 'new_emessages' => 'efeed#new_emessages', as: :new_emessages
   match 'select_esources' => 'efeed#select_esources', via: :post, as: :select_esources
   get '/efeed/style/:style' => 'efeed#style', as: :estyle
+  get '/efeed/edit' => 'efeed#edit', as: :edit_efeed
+  get '/efeed/new' => 'efeed#new', as: :new_efeed
+  match '/efeed/:id' => 'efeed#delete', via: :delete, as: :delete_efeed
+  match '/efeed/create' => 'efeed#create', via: :post, as: :create_efeed
 
   get '/feed' => 'feed#index', as: :feed
   get 'show_new_messages' => 'feed#show_new_messages', as: :show_new_messages

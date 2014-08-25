@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MediaAnalyse</title>
+  <%= stylesheet_link_tag    "application", media: "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <style>
+   table {
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+   }
+   td, th {
+    padding: 3px; /* Поля вокруг содержимого таблицы */
+    border: 1px solid #000; /* Параметры рамки */
+   }
+   th {
+    background: #afd792; /* Цвет фона */
+    color: #333;  /* Цвет текста */
+   }
+   tbody tr:hover {
+    background: #aaa; /* Цвет фона при наведении */
+   }
+  </style>
+  <link href='http://fonts.googleapis.com/css?family=Unica+One' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<h2>Редактировать источники:</h2>
+<% origins = Origin.where(group: 1917) %>
+<table>
+<tbody>
+  <thead>
+    <tr>
+      <td>Заголовок</td> 
+      <td>RSS URL</td>
+      <td>Действия</td>
+    </tr>
+  </thead>
+  <% origins.each do |origin| %>
+    <tr>
+      <td><%= origin.title %></td> 
+      <td><%= origin.rss_url %></td>
+      <td><%= link_to 'Удалить', delete_efeed_path(origin.id), method: :delete, confirm: 'Удалить?' %></td>
+    </tr>
+  <% end %>
+</tbody>
+</table>
+<%= link_to 'Добавить источник', new_efeed_path %><br>
+</body>
+</html>

@@ -1,5 +1,5 @@
 class FeedController < ApplicationController
-  skip_before_filter :require_login
+  skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
   before_action :get_origins, only: [:show_new_messages, :new_messages]
   before_action :set_session, only: :index
   def index

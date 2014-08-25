@@ -37,6 +37,8 @@ gem 'daemons-rails'
 gem 'sorcery'
 gem 'logger'
 gem 'kaminari'
+gem 'sunspot_rails'
+gem 'sunspot_solr'
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 

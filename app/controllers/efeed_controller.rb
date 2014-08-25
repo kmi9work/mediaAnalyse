@@ -1,5 +1,5 @@
 class EfeedController < FeedController
-  skip_before_filter :require_login
+  # skip_before_filter :require_login
   before_action :set_session, only: :index
   def index
     get_texts
@@ -22,7 +22,22 @@ class EfeedController < FeedController
   def style
     session[:estyle] = params[:style]
   end
+  def edit
+    render 'edit', layout: false
+  end
+  def delete
+    origin = Origin.find(params[:id])
+    origin.destroy
+    render 'edit', layout: false
+  end
+  def create
+    origin = Origin.create(origin_params)
+    render 'edit', layout: false
+  end
   private
+  def origin_params
+    params.require(:origin).permit(:title, :rss_url, :group)
+  end
   def set_session
     if session[:eorigins].blank?
       session[:eorigins] = Origin.where(group: 1917).map(&:id)
