@@ -8,7 +8,7 @@ class Text < ActiveRecord::Base
 
   searchable do
     text :title, :description, :content
-    integer :group
+    integer :origin_id
   end
 
 	def Text.source(ids)
