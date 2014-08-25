@@ -6,6 +6,11 @@ class Text < ActiveRecord::Base
   belongs_to :origin
 	has_many :essences
 
+  searchable do
+    text :title, :description, :content
+    integer :group
+  end
+
 	def Text.source(ids)
 		where(search_engine_id: ids)
 	end

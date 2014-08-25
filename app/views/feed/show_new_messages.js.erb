@@ -1,5 +1,9 @@
 $('#new_rows').hide();
+$("hr").remove();
+$(".article").css('background-color', '#e3ddb8');
+
 $('#texts').prepend('<hr>');
+
 <% @texts.reverse_each do |text| %>
-  $('#texts').prepend('<%= j render "text", text: text %>');
+  $('#texts').prepend('<%= j render "text", text: text, background_color: "#d6d5cf" %>');
 <% end %>

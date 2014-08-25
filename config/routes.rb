@@ -20,7 +20,11 @@ MediaAnalyse::Application.routes.draw do
   get 'show_new_messages' => 'feed#show_new_messages', as: :show_new_messages
   get 'new_messages' => 'feed#new_messages', as: :new_messages
   match 'select_sources' => 'feed#select_sources', via: :post, as: :select_sources
-  
+  get '/feed/edit' => 'feed#edit', as: :edit_feed
+  get '/feed/new' => 'feed#new', as: :new_feed
+  match '/feed/:id' => 'feed#delete', via: :delete, as: :delete_feed
+  match '/feed/create' => 'feed#create', via: :post, as: :create_feed
+  get '/feed/puchkov' => 'feed#puchkov', as: :puchkov
 
   mount Delayed::Web::Engine, at: '/jobs'
   get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
