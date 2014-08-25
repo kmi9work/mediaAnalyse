@@ -10,8 +10,4 @@
     <b> Новость получена: </b>
     <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
   <% end %>
-<% if text.emot %>
-  <div class="emot emot_<%= text.emot.to_i + 3 %>" style="top:10px; right: 10px; position:absolute"> <%= text.emot %> </div>
-    <%#= render 'feedback', text: text %>
-<% end %>
 </div>
