@@ -9,14 +9,14 @@ production:
 
 development:
   solr:
-    hostname: localhost
+    hostname: vps45162.vps.tech-logol.ru
     port: 8982
     log_level: INFO
     path: /solr/development
 
 test:
   solr:
-    hostname: localhost
+    hostname: vps45162.vps.tech-logol.ru
     port: 8981
     log_level: WARNING
     path: /solr/test
