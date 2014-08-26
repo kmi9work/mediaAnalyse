@@ -33,15 +33,15 @@ class FeedController < ApplicationController
   def puchkov
     @origins = Origin.where(id: session[:origins])
     @texts = Text.search do
-      fulltext 'Пучков Владимир Андреевич'
-      fulltext 'Пучков В.А.'
-      fulltext 'А.В. Пучков'
+      # fulltext 'Пучков Владимир Андреевич'
+      # fulltext 'Пучков В.А.'
+      # fulltext 'А.В. Пучков'
       fulltext 'Владимир Пучков'
-      fulltext 'Глава МЧС России'
-      fulltext 'Глава МЧС РФ'
-      fulltext 'Глава МЧС'
-      fulltext 'Главный спасатель страны'
-      fulltext 'Министр МЧС'
+      # fulltext 'Глава МЧС России'
+      # fulltext 'Глава МЧС РФ'
+      # fulltext 'Глава МЧС'
+      # fulltext 'Главный спасатель страны'
+      # fulltext 'Министр МЧС'
     end.results
     render 'index'
   end
