@@ -22,3 +22,5 @@
 /net_ssh.rb
 /db/schema*
 /config/database.yml
+
+/solr/*
