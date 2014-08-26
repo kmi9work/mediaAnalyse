@@ -42,7 +42,7 @@ class FeedController < ApplicationController
       fulltext 'Глава МЧС'
       fulltext 'Главный спасатель страны'
       fulltext 'Министр МЧС'
-    end
+    end.results
     render 'index'
   end
   private
