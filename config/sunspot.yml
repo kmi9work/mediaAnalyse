@@ -1,6 +1,6 @@
 production:
   solr:
-    hostname: localhost
+    hostname: vps45162.vps.tech-logol.ru
     port: 8983
     log_level: WARNING
     path: /solr/production
