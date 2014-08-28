@@ -177,5 +177,5 @@ while (true) do
     s 5
   end
   @my_logger.info "=== New messages: #{count} ==="
-  s 20
+  s 60
 end
