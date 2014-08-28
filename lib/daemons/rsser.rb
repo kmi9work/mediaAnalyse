@@ -6,6 +6,7 @@ require 'feedjira'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
+  @my_logger.info "send_email"
   ActionMailer::Base.smtp_settings = {  
     :openssl_verify_mode => 'none' 
   }
@@ -15,6 +16,7 @@ def send_email subject, body
 end
 
 def s k
+  @my_logger.info "s"
   if k >= 0
     sleep(rand(k * 100)/100.0 + rand(100)/100.0)
   else
@@ -23,6 +25,7 @@ def s k
 end
 
 def open_url url, err_text = ""
+    @my_logger.info "open_url"
     i = 0
     doc = nil
     while (i += 1 ) <= 2
@@ -71,6 +74,7 @@ def get_link_content link, def_title = ""
   end
 
 def get_emot title, content
+    @my_logger.info "get_emot"
     s -50
     t = title || ""
     c = content || ""
@@ -87,6 +91,7 @@ def get_emot title, content
   end
 
 def get_texts origin
+    @my_logger.info "get_texts"
   # Origin.find(10).texts.each{|i| i.title = i.title.encode('WINDOWS-1251').force_encoding('UTF-8'); i.save}
 
     i = 0
@@ -96,7 +101,9 @@ def get_texts origin
       # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
+      @my_logger.info "before fetch_and_parse"
       feed = Feedjira::Feed.fetch_and_parse(origin.rss_url)
+      @my_logger.info "after fetch_and_parse"
       return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
       save_feeds = []
       last = origin.texts.order(:datetime).last
