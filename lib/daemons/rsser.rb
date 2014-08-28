@@ -174,6 +174,7 @@ while (true) do
   count = 0
   Origin.all.each do |o|
     count += get_texts o
+    s 5
   end
   @my_logger.info "=== New messages: #{count} ==="
   s 20
