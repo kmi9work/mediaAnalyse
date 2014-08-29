@@ -140,6 +140,7 @@ def get_texts origin
       # end
       @my_logger.info "before fetch_and_parse"
       text = open_url_curb origin.rss_url
+      return 0 unless text
       feed = Feedjira::Feed.parse(text)
       @my_logger.info "after fetch_and_parse"
       return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
