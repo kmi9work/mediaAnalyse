@@ -3,6 +3,7 @@ require 'logger'
 require 'rails'
 require 'open-uri'
 require 'feedjira'
+require 'curb'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
@@ -25,38 +26,74 @@ def s k
 end
 
 def open_url url, err_text = ""
-    @my_logger.info "open_url"
-    i = 0
-    doc = nil
-    while (i += 1 ) <= 2
-      begin
-        if (url =~ /https/)
-          doc = open(url, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE})
-        else
-          doc = open(url)
-        end
-        break
-      rescue StandardError, Timeout::Error => e
-        doc = nil
-        k = rand(5) + 5
-        @my_logger.error "#{url} was not open. Sleep(#{k}). #{i}"
-        @my_logger.error e.message
-        @my_logger.error err_text
-        @my_logger.error ''
-        # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
-        sleep(k)
-      rescue IO::EAGAINWaitReadable, Exception => e
-        str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
-        send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
-        @my_logger.error "FATAL ERROR! --- #{e.message} ---"
-        @my_logger.error e.backtrace.join("\n")
-        @my_logger.error "============================================"
-        s 10
-        return nil
+  @my_logger.info "open_url"
+  i = 0
+  doc = nil
+  while (i += 1 ) <= 2
+    begin
+      if (url =~ /https/)
+        doc = open(url, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE})
+      else
+        doc = open(url)
       end
+      break
+    rescue StandardError, Timeout::Error => e
+      doc = nil
+      k = rand(5) + 5
+      @my_logger.error "#{url} was not open. Sleep(#{k}). #{i}"
+      @my_logger.error e.message
+      @my_logger.error err_text
+      @my_logger.error ''
+      # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
+      sleep(k)
+    rescue IO::EAGAINWaitReadable, Exception => e
+      str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
+      @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+      @my_logger.error e.backtrace.join("\n")
+      @my_logger.error "============================================"
+      s 10
+      return nil
     end
-    return doc
   end
+  return doc
+end
+
+def open_url_curb url, err_text = ""
+  @my_logger.info "open_url_curb"
+  i = 0
+  doc = nil
+  while (i += 1 ) <= 2
+    begin
+      easy = Curl::Easy.new
+      easy.follow_location = true
+      easy.max_redirects = 3 
+      easy.url = url
+      easy.useragent = "curb"
+      easy.perform
+      doc = easy.body_str
+      break
+    rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
+      doc = nil
+      k = rand(5) + 5
+      @my_logger.error "#{url} was not open. Sleep(#{k}). #{i}"
+      @my_logger.error e.message
+      @my_logger.error err_text
+      @my_logger.error ''
+      # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
+      sleep(k)
+    rescue IO::EAGAINWaitReadable, Exception => e
+      str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
+      @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+      @my_logger.error e.backtrace.join("\n")
+      @my_logger.error "============================================"
+      s 10
+      return nil
+    end
+  end
+  return doc
+end
 
 def get_link_content link, def_title = ""
     @my_logger.debug "Getting rich content."
@@ -102,7 +139,8 @@ def get_texts origin
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
       @my_logger.info "before fetch_and_parse"
-      feed = Feedjira::Feed.fetch_and_parse(origin.rss_url)
+      text = open_url_curb origin.rss_url
+      feed = Feedjira::Feed.parse(text)
       @my_logger.info "after fetch_and_parse"
       return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
       save_feeds = []
