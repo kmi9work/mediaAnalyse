@@ -187,6 +187,7 @@ def get_texts origin
     @my_logger.info "============================================"
     @my_logger.info text
     @my_logger.info "============================================"
+    return 0
   rescue Exception => e
     str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in rss project.", "Fatal error in get_texts inside rss project.\nMessage:\n\n" + str
