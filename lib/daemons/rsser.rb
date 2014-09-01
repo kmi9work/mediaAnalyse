@@ -67,9 +67,9 @@ def open_url_curb url, err_text = ""
   @my_logger.info "open_url_curb"
   i = 0
   doc = nil
+  easy = Curl::Easy.new
   while (i += 1 ) <= 2
     begin
-      easy = Curl::Easy.new
       easy.follow_location = true
       easy.max_redirects = 3 
       easy.connect_timeout = 120
@@ -86,7 +86,6 @@ def open_url_curb url, err_text = ""
       @my_logger.error e.message
       @my_logger.error err_text
       @my_logger.error ''
-      # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
       str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
@@ -94,10 +93,12 @@ def open_url_curb url, err_text = ""
       @my_logger.error "FATAL ERROR! --- #{e.message} ---"
       @my_logger.error e.backtrace.join("\n")
       @my_logger.error "============================================"
+      easy.close
       s 10
       return nil
     end
   end
+  easy.close
   return doc
 end
 
