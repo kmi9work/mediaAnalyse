@@ -1,16 +1,20 @@
 <div class="article" style="background-color: <%= background_color %>; color: <%= color %>;">
-  <p><a name="<%= "anc#{text.id}" %>"></a>
-  <div class="col-md-11">
-    <b> <%= text.title.try(:html_safe) %> </b> </p>
-  </div><br>
-  <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-  <p> <%= text.description.try(:html_safe) %> </p>
-  <!-- <b>Полный текст статьи:</b>
-  <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
-  <% if text.datetime %>
-    <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
-  <% else %>
-    <b> Новость получена: </b>
-    <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
-  <% end %>
+  <div class="row">
+    <p><a name="<%= "anc#{text.id}" %>"></a>
+    <div class="col-md-11">
+      <b> <%= text.title.try(:html_safe) %> </b> </p>
+    </div>
+  </div>
+  <div class="row">
+    <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+    <p> <%= text.description.try(:html_safe) %> </p>
+    <!-- <b>Полный текст статьи:</b>
+    <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
+    <% if text.datetime %>
+      <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
+    <% else %>
+      <b> Новость получена: </b>
+      <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
+    <% end %>
+  </div>
 </div>
