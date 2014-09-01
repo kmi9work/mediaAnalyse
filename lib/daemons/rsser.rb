@@ -65,13 +65,14 @@ def open_url_curb url, err_text = ""
   doc = nil
   while (i += 1 ) <= 2
     begin
+      headers = ["Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Encoding:gzip,deflate,sdch", "Accept-Language:ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4", "Cache-Control:max-age=0", "Connection:keep-alive", "Cookie:referrer=", "Host:www.unn.com.ua", "If-Modified-Since:Mon, 01 Sep 2014 05:45:02 GMT", 'If-None-Match:"540407de-488d"', "Referer:http://www.unn.com.ua/rss/news_ru.xml", "User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"]
       easy = Curl::Easy.new
       easy.follow_location = true
       easy.max_redirects = 3 
       easy.connect_timeout = 120
       easy.dns_cache_timeout = 120
       easy.url = url
-      easy.useragent = "curb"
+      easy.headers = headers
       easy.perform
       doc = easy.body_str
       break
@@ -180,6 +181,12 @@ def get_texts origin
       break
     end
     return ret
+  rescue Feedjira::NoParserAvailable => e
+    @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+    @my_logger.error e.backtrace.join("\n")
+    @my_logger.info "============================================"
+    @my_logger.info text
+    @my_logger.info "============================================"
   rescue Exception => e
     str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in rss project.", "Fatal error in get_texts inside rss project.\nMessage:\n\n" + str
