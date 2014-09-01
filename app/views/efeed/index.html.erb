@@ -42,7 +42,7 @@
       <% end %>
       </div>
       <div class="col-md-3">
-        <%= form_tag 'select_esources' do %>
+        <%= form_tag select_esources_path do %>
           <label>Источники:</label><br>
           <% origins = Origin.where(group: 1917) %>
           <% origins.each do |origin| %>
