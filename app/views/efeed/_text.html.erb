@@ -6,15 +6,17 @@
     </div>
   </div>
   <div class="row">
-    <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-    <p> <%= text.description.try(:html_safe) %> </p>
-    <!-- <b>Полный текст статьи:</b>
-    <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
-    <% if text.datetime %>
-      <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
-    <% else %>
-      <b> Новость получена: </b>
-      <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
-    <% end %>
+    <div class="col-md-11">
+      <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+      <p> <%= text.description.try(:html_safe) %> </p>
+      <!-- <b>Полный текст статьи:</b>
+      <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
+      <% if text.datetime %>
+        <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
+      <% else %>
+        <b> Новость получена: </b>
+        <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
+      <% end %>
+    </div>
   </div>
 </div>
