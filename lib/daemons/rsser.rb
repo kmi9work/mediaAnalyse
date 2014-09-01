@@ -68,6 +68,8 @@ def open_url_curb url, err_text = ""
       easy = Curl::Easy.new
       easy.follow_location = true
       easy.max_redirects = 3 
+      easy.connect_timeout = 120
+      easy.dns_cache_timeout = 120
       easy.url = url
       easy.useragent = "curb"
       easy.perform
