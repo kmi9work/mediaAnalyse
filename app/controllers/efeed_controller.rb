@@ -17,7 +17,7 @@ class EfeedController < FeedController
   end
   def select_esources
     session[:eorigins] = params[:select_sources] ? params[:select_sources].map(&:to_i) : [] 
-    redirect_to action: :index
+    redirect_to efeed_path
   end
   def style
     session[:estyle] = params[:style]

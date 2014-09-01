@@ -181,6 +181,10 @@ def get_texts origin
     end
     return ret
   rescue Feedjira::NoParserAvailable => e
+    # осле трёх ошибок match origin as corrupted. 
+    # And write to it resume_at = Time.now + 3600. Or Time.now + timeout. 
+    # And make timeout greater. НО ЭТО НЕСТАБИЛЬНО.
+    # Выводить в view сообщение о том, что источник сломан.
     @my_logger.error "FATAL ERROR! --- #{e.message} ---"
     @my_logger.error e.backtrace.join("\n")
     @my_logger.info "============================================"

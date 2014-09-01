@@ -1,15 +1,15 @@
 MediaAnalyse::Application.routes.draw do
   resources :user_sessions
   resources :users
-  get 'login' => 'user_sessions#new', as: :login
-  match 'logout' => 'user_sessions#destroy', via: :get, as: :logout
-  get 'queries/:query_id/change_interval' => 'queries#change_interval', as: :change_interval
+  get '/login' => 'user_sessions#new', as: :login
+  match '/logout' => 'user_sessions#destroy', via: :get, as: :logout
+  get '/queries/:query_id/change_interval' => 'queries#change_interval', as: :change_interval
 
   #rss
   get '/efeed' => 'efeed#index', as: :efeed
-  get 'show_new_emessages' => 'efeed#show_new_emessages', as: :show_new_emessages
-  get 'new_emessages' => 'efeed#new_emessages', as: :new_emessages
-  match 'select_esources' => 'efeed#select_esources', via: :post, as: :select_esources
+  get '/show_new_emessages' => 'efeed#show_new_emessages', as: :show_new_emessages
+  get '/new_emessages' => 'efeed#new_emessages', as: :new_emessages
+  match '/select_esources' => 'efeed#select_esources', via: :post, as: :select_esources
   get '/efeed/style/:style' => 'efeed#style', as: :estyle
   get '/efeed/edit' => 'efeed#edit', as: :edit_efeed
   get '/efeed/new' => 'efeed#new', as: :new_efeed
@@ -17,9 +17,9 @@ MediaAnalyse::Application.routes.draw do
   match '/efeed/create' => 'efeed#create', via: :post, as: :create_efeed
 
   get '/feed' => 'feed#index', as: :feed
-  get 'show_new_messages' => 'feed#show_new_messages', as: :show_new_messages
-  get 'new_messages' => 'feed#new_messages', as: :new_messages
-  match 'select_sources' => 'feed#select_sources', via: :post, as: :select_sources
+  get '/show_new_messages' => 'feed#show_new_messages', as: :show_new_messages
+  get '/new_messages' => 'feed#new_messages', as: :new_messages
+  match '/select_sources' => 'feed#select_sources', via: :post, as: :select_sources
   get '/feed/edit' => 'feed#edit', as: :edit_feed
   get '/feed/new' => 'feed#new', as: :new_feed
   match '/feed/:id' => 'feed#delete', via: :delete, as: :delete_feed
@@ -27,7 +27,7 @@ MediaAnalyse::Application.routes.draw do
   get '/feed/puchkov' => 'feed#puchkov', as: :puchkov
 
   mount Delayed::Web::Engine, at: '/jobs'
-  get 'queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
+  get '/queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
   delete '/essence/:id' => 'essences#destroy', as: :essence
