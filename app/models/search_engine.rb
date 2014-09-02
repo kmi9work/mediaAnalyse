@@ -80,6 +80,7 @@ class SearchEngine < ActiveRecord::Base
           throw :done unless track?
           t = rand(timeout) + timeout / 2
           Delayed::Worker.logger.debug "#{engine_type}: Sleeping for #{t} seconds."
+          GC.start
           sleep(t)
           throw :done unless track?
         end
@@ -165,6 +166,7 @@ class SearchEngine < ActiveRecord::Base
 
               t = rand(timeout) + timeout / 2
               Delayed::Worker.logger.debug "#{engine_type}: Sleeping for #{t} seconds."
+              GC.start
               sleep(t)
             else
               if browsers[query.id]

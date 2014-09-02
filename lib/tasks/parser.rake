@@ -86,6 +86,7 @@ namespace :parse do
             break
           rescue
             puts "Error in open url. 3"
+            GC.start
             sleep(rand(50) + 100)
           end
         end
@@ -99,6 +100,7 @@ namespace :parse do
         end
         f_ids.puts "#{key};#{meteo_ids[key]};#{coord[1]};#{coord[3]};#{states.join(';')}"
         f_ids.close
+        GC.start
       rescue
 
         my_logger.error "------"
