@@ -235,5 +235,6 @@ while (true) do
     s 5
   end
   @my_logger.info "=== New messages: #{count} ==="
-  s 60
+  GC.start
+  s 50
 end
