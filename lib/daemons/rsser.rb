@@ -51,7 +51,7 @@ def open_url url, err_text = ""
       # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
-      str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      str = "URL: #{url}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
       @my_logger.error "FATAL ERROR! --- #{e.message} ---"
       @my_logger.error e.backtrace.join("\n")
@@ -70,13 +70,14 @@ def open_url_curb url, err_text = ""
   easy = Curl::Easy.new
   while (i += 1 ) <= 2
     begin
+      @my_logger.info "--- Before perform ---"
       easy.follow_location = true
       easy.max_redirects = 3 
       easy.connect_timeout = 120
-      easy.dns_cache_timeout = 120
       easy.url = url
       easy.useragent = "Ruby/Curb"
       easy.perform
+      @my_logger.info "--- After perform ---"
       doc = easy.body_str
       break
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
@@ -88,7 +89,7 @@ def open_url_curb url, err_text = ""
       @my_logger.error ''
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
-      str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      str = "URL: #{url}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in rss project.", "Fatal error in open_url (#{url}) inside rss project.\nMessage:\n\n" + str
       @my_logger.error "FATAL ERROR! --- #{e.message} ---"
       @my_logger.error e.backtrace.join("\n")
