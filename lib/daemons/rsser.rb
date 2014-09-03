@@ -4,6 +4,7 @@ require 'rails'
 require 'open-uri'
 require 'feedjira'
 require 'curb'
+require 'timeout'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
@@ -71,12 +72,14 @@ def open_url_curb url, err_text = ""
   while (i += 1 ) <= 2
     begin
       @my_logger.info "--- Before perform ---"
+
       easy.follow_location = true
       easy.max_redirects = 3 
-      easy.connect_timeout = 120
       easy.url = url
       easy.useragent = "Ruby/Curb"
-      easy.perform
+      Timeout.timeout(30) do   
+        easy.perform
+      end
       @my_logger.info "--- After perform ---"
       doc = easy.body_str
       break
