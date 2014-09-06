@@ -1,9 +1,9 @@
 class EfeedController < FeedController
   # skip_before_filter :require_login
-  before_action :set_session, only: :index
   def index
+    set_session
     get_texts
-    session[:elast] = Text.where(origin_id: @origins).last.id
+    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.id
     render 'index', layout: false
   end
   def show_new_emessages

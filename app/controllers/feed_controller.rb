@@ -5,7 +5,7 @@ class FeedController < ApplicationController
   def index
     @origins = Origin.where(id: session[:origins])
     get_texts
-    session[:last] = @texts.order(id: :asc).last.id
+    session[:last] = Text.where(origin_id: @origins).order(id: :asc).last.id
   end
   def show_new_messages
     get_novel_texts session[:last]
