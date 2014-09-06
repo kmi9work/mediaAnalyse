@@ -42,6 +42,7 @@
       <% end %>
       </div>
       <div class="col-md-3">
+        <input type="checkbox" name="selectAll" id="selectAllDomainList" /> Все <br>
         <%= form_tag select_esources_path do %>
           <label>Источники:</label><br>
           <% origins = Origin.where(group: 1917) %>

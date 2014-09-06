@@ -14,3 +14,6 @@ window.getNewEMessages = () ->
         $('#new_rows').show();    
     setTimeout(getNewEMessages, 7000)
 
+$(':checkbox[name=selectAll]').click () ->
+  alert(this.checked)
+  $(':checkbox[name="select_sources[]"]').prop('checked', this.checked)
