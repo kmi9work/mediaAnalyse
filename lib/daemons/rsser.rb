@@ -148,7 +148,7 @@ def get_texts origin
         return 0 
       end
       feed = Feedjira::Feed.parse(text)
-      if feed == 0 or feed.class != Feedjira::Parser::RSS
+      if feed == 0 or (feed.class.parent != Feedjira::Parser)
         @my_logger.info "Can't parse."
         return 0 
       end
