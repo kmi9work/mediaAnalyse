@@ -44,7 +44,7 @@ class EfeedController < FeedController
     end
     @origins = Origin.where(id: session[:eorigins])
     if session[:elast].blank?
-      session[:elast] = Text.where(origin_id: @origins).last.id
+      session[:elast] = Text.where(origin_id: @origins).last.try(:id)
     end
   end
 end
