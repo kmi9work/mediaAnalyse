@@ -3,7 +3,7 @@ class EfeedController < FeedController
   def index
     set_session
     get_texts
-    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.id
+    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
     render 'index', layout: false
   end
   def show_new_emessages
