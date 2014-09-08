@@ -22,7 +22,6 @@ def send_email subject, body
 end
 
 def s k
-  @my_logger.info "s"
   if k >= 0
     sleep(rand(k * 100)/100.0 + rand(100)/100.0)
   else
@@ -31,7 +30,6 @@ def s k
 end
 
 def open_url url, err_text = ""
-  @my_logger.info "open_url"
   i = 0
   doc = nil
   while (i += 1 ) <= 2
@@ -65,14 +63,11 @@ def open_url url, err_text = ""
 end
 
 def open_url_curb url, err_text = ""
-  @my_logger.info "open_url_curb"
   i = 0
   doc = nil
   easy = Curl::Easy.new
   while (i += 1 ) <= 2
     begin
-      @my_logger.info "--- Before perform ---"
-
       easy.follow_location = true
       easy.max_redirects = 3 
       easy.url = url
@@ -80,7 +75,6 @@ def open_url_curb url, err_text = ""
       Timeout.timeout(30) do   
         easy.perform
       end
-      @my_logger.info "--- After perform ---"
       doc = easy.body_str
       break
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
@@ -139,7 +133,6 @@ def get_emot title, content
   end
 
 def get_texts origin
-    @my_logger.info "get_texts"
   # Origin.find(10).texts.each{|i| i.title = i.title.encode('WINDOWS-1251').force_encoding('UTF-8'); i.save}
 
     i = 0
@@ -149,11 +142,9 @@ def get_texts origin
       # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
-      @my_logger.info "before fetch_and_parse"
       text = open_url_curb origin.rss_url
       return 0 if text.blank?
       feed = Feedjira::Feed.parse(text)
-      @my_logger.info "after fetch_and_parse"
       return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
       save_feeds = []
       last = origin.texts.order(:datetime).last
