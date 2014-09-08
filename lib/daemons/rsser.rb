@@ -143,14 +143,19 @@ def get_texts origin
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
       text = open_url_curb origin.rss_url
-      return 0 if text.blank?
+      if text.blank?
+        @my_logger.info "Nothing CURBed."
+        return 0 
+      end
       feed = Feedjira::Feed.parse(text)
-      return 0 if feed == 0 or feed.class != Feedjira::Parser::RSS
+      if feed == 0 or feed.class != Feedjira::Parser::RSS
+        @my_logger.info "Can't parse."
+        return 0 
+      end
       save_feeds = []
-      last = origin.texts.order(:datetime).last
       feed.entries.each do |f|
         guid = f.entry_id || f.url
-        break unless Text.where(guid: guid).blank?
+        break unless Text.where({origin_id: origin.id, guid: guid}).blank?
         save_feeds << f
       end
       ret += save_feeds.count
