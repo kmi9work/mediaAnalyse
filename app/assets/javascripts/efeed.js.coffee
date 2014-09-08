@@ -11,9 +11,9 @@ window.getNewEMessages = () ->
     $.ajax(url: "/new_emessages").done (respond) ->
       if respond.tcount > 0
         $('#tcount').html(respond.tcount);
-        $('#new_rows').show();    
+        $('#new_rows').show();
     setTimeout(getNewEMessages, 7000)
 
-$(':checkbox[name=selectAll]').click () ->
-  alert(this.checked)
-  $(':checkbox[name="select_sources[]"]').prop('checked', this.checked)
+$ -> 
+  $(':checkbox[name=selectAll]').click () ->
+    $(':checkbox[name="select_sources[]"]').prop('checked', this.checked)
