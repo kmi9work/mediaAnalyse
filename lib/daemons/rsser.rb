@@ -225,6 +225,7 @@ while (true) do
   @my_logger.info "Still parsing RSS's. Count: #{Origin.count}"
   count = 0
   Origin.all.each do |o|
+     @my_logger.info "----------"
     count += get_texts o
     s 5
   end
