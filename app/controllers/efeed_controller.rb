@@ -9,7 +9,7 @@ class EfeedController < FeedController
   def show_new_emessages
     @origins = Origin.where(id: session[:eorigins])
     get_novel_texts session[:elast]
-    session[:elast] = @texts.order(id: :asc).last.id
+    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
   end
   def new_emessages
     @origins = Origin.where(id: session[:eorigins])

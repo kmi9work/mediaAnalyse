@@ -9,7 +9,7 @@ class FeedController < ApplicationController
   end
   def show_new_messages
     get_novel_texts session[:last]
-    session[:last] = @texts.order(id: :asc).last.id
+    session[:last] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
   end
   def new_messages
     render_tcount session[:last]
