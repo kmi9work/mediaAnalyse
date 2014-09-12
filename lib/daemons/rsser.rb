@@ -221,7 +221,10 @@ if Rails.env.production?
 else
   @my_logger = Logger.new("#{Rails.root}/log/rsser.log")
 end
-
+@my_logger.info File.dirname(__FILE__)
+@my_logger.info root
+@my_logger.info Rails.root
+@my_logger.info "=======\n========\n========"
 # @my_logger = Rails.logger
 require File.join(root, "config", "environment")
 
