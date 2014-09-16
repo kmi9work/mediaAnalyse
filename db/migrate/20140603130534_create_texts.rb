@@ -7,14 +7,11 @@ class CreateTexts < ActiveRecord::Migration
     	t.text :content, :limit => 16777215
       t.string :author
     	t.string :url
-      t.string :guid
-      t.belongs_to :query
-      t.belongs_to :search_engine
+      t.text :guid
       t.belongs_to :origin
       t.integer :emot
       t.integer :my_emot
       t.datetime :datetime
-
       t.timestamps
     end
   end
