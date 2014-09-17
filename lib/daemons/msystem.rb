@@ -294,28 +294,21 @@ Dir.chdir(root)
 
 require File.join(root, "config", "environment")
 
-@logger = Logger.new("#{root}/log/monitoring.log")
-
 while true
-  @logger.info "1"
   origins = Origin.where.not(type: 'browser')
-  @logger.info "2"
   origins_browser = Origin.where(type: 'browser') 
-  @logger.info "3"
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
   for i in 0...NTHREADS
     torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
-    loggers << Logger.new("#{root}/log/monitoring_#{i}_#{origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
+    loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
     # Разбиваем источники по потокам.
     threads << Thread.new do
       start_work(torigins, loggers.last)
     end
   end
-  @logger.info "4"
   ThreadsWait.all_wait(*threads)
-  @logger.info "5"
   GC.start
   s 20
 end
