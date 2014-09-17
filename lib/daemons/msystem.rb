@@ -311,7 +311,7 @@ while true
     end
   end
   # threads.each(&:w)
-  ThreadsWait.all_wait(*threads)
+  ThreadsWait.all_waits(*threads)
   GC.start
   s 20
 end
