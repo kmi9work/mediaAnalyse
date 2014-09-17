@@ -3,13 +3,13 @@ class EfeedController < FeedController
   def index
     set_session
     get_texts
-    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
+    session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     render 'index', layout: false
   end
   def show_new_emessages
     @origins = Origin.where(id: session[:eorigins])
     get_novel_texts session[:elast]
-    session[:elast] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
+    session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
   end
   def new_emessages
     @origins = Origin.where(id: session[:eorigins])
@@ -44,7 +44,7 @@ class EfeedController < FeedController
     end
     @origins = Origin.where(id: session[:eorigins])
     if session[:elast].blank?
-      session[:elast] = Text.where(origin_id: @origins).last.try(:id)
+      session[:elast] = Text.where(origin_id: @origins.map(&:id)).last.try(:id)
     end
   end
 end

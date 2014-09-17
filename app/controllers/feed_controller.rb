@@ -5,11 +5,11 @@ class FeedController < ApplicationController
   def index
     @origins = Origin.where(id: session[:origins])
     get_texts
-    session[:last] = Text.where(origin_id: @origins).order(id: :asc).last.id
+    session[:last] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.id
   end
   def show_new_messages
     get_novel_texts session[:last]
-    session[:last] = Text.where(origin_id: @origins).order(id: :asc).last.try(:id)
+    session[:last] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
   end
   def new_messages
     render_tcount session[:last]
@@ -50,14 +50,14 @@ class FeedController < ApplicationController
     @origins = Origin.where(group: 0)
   end
   def get_texts
-    @texts = Text.where(origin_id: @origins)
+    @texts = Text.where(origin_id: @origins.map(&:id))
                  .order(:datetime => :desc).page(params[:page]).per(50)
   end
   def get_novel_texts id
-    @texts = Text.where(origin_id: @origins).order(:datetime => :desc).where('id > ?', id)
+    @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).where('id > ?', id)
   end
   def render_tcount id
-    @tcount = Text.where(origin_id: @origins)
+    @tcount = Text.where(origin_id: @origins.map(&:id))
                  .order(:datetime => :desc).where('id > ?', id).count
     render json: {tcount: @tcount.to_s}.to_json
   end
