@@ -292,13 +292,16 @@ root = File.expand_path(File.dirname(__FILE__))
 root = File.dirname(root) until File.exists?(File.join(root, 'config'))
 Dir.chdir(root)
 
-@my_logger = Logger.new("#{root}/log/rsser.log")
-
 require File.join(root, "config", "environment")
 
+@logger = Logger.new("#{root}/log/monitoring.log")
+
 while true
+  @logger.info "1"
   origins = Origin.where.not(type: 'browser')
+  @logger.info "2"
   origins_browser = Origin.where(type: 'browser') 
+  @logger.info "3"
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
@@ -310,7 +313,9 @@ while true
       start_work(torigins, loggers.last)
     end
   end
+  @logger.info "4"
   ThreadsWait.all_wait(*threads)
+  @logger.info "5"
   GC.start
   s 20
 end
