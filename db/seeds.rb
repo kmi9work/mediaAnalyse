@@ -7,6 +7,13 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+ # t.string :title
+ #      t.string :url
+ #      t.integer :query_position
+ #      t.string :type
+ #      t.integer :group, default: 0
+ #      t.integer :timeout, default: 20
+ #type: rss, xml, json, vk_api, browser
 eurls = { 
 'http://vognebroda.net/rss.xml' => "В огне брода нет", 
 'http://www.unn.com.ua/rss/news_ru.xml' => "Украинские Национальные Новости", 
@@ -27,7 +34,7 @@ eurls = {
 }
 
 eurls.each do |url, name|
-  Origin.create(rss_url: url, title: name, group: 1917)
+  Origin.create(url: url, type: "rss", title: name, group: 1917)
 end
 
 urls = {
@@ -38,7 +45,7 @@ urls = {
 }
 
 urls.each do |url, name|
-  Origin.create(rss_url: url, title: name)
+  Origin.create(url: url, type: "rss", title: name)
 end
 
 =begin
