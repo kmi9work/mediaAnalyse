@@ -302,12 +302,22 @@ while true
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
-  for i in 0...NTHREADS
-    torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
-    loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
-    # Разбиваем источники по потокам.
-    threads << Thread.new(torigins, loggers.last) do |to, logger|
-      start_work(to, logger)
+  if origins.count > NTHREADS
+    for i in 0...NTHREADS
+      torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
+      loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
+      # Разбиваем источники по потокам.
+      threads << Thread.new(torigins, loggers.last) do |to, logger|
+        start_work(to, logger)
+      end
+    end
+  else
+    origins.each_with_index do |origin, i|
+      loggers << Logger.new("#{root}/log/monitoring_#{i}.log")
+      # Разбиваем источники по потокам.
+      threads << Thread.new([origin], loggers.last) do |to, logger|
+        start_work(to, logger)
+      end
     end
   end
   # threads.each(&:w)
