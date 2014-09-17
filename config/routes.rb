@@ -26,7 +26,6 @@ MediaAnalyse::Application.routes.draw do
   match '/feed/create' => 'feed#create', via: :post, as: :create_feed
   get '/feed/puchkov' => 'feed#puchkov', as: :puchkov
 
-  mount Delayed::Web::Engine, at: '/jobs'
   get '/queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
