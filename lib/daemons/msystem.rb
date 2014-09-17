@@ -9,6 +9,8 @@ require 'open-uri'
 require 'feedjira'
 require 'curb'
 require 'timeout'
+require 'thread'
+require 'thwait'
 
 # require 'get_browser_texts.rb'
 
@@ -304,10 +306,11 @@ while true
     torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
     loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
     # Разбиваем источники по потокам.
-    threads << Thread.new do
-      start_work(torigins, loggers.last)
+    threads << Thread.new(torigins, loggers.last) do |to, logger|
+      start_work(to, logger)
     end
   end
+  # threads.each(&:w)
   ThreadsWait.all_wait(*threads)
   GC.start
   s 20
