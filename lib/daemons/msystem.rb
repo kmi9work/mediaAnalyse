@@ -206,11 +206,11 @@ end
 def parse logger, origin, text
   texts = []
   if origin.origin_type =~ /rss/
-    texts = parse_rss(logger, origin, type, text)
+    texts = parse_rss(logger, origin, origin.origin_type, text)
   elsif origin.origin_type =~ /xml/
-    texts = parse_xml(logger, origin, type, text)
+    texts = parse_xml(logger, origin, origin.origin_type, text)
   elsif origin.origin_type =~ /json/
-    texts = parse_json(logger, origin, type, text)
+    texts = parse_json(logger, origin, origin.origin_type, text)
   else
     texts = []
     #There is no parser yet
