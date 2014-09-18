@@ -36,7 +36,7 @@ class EfeedController < FeedController
   end
   private
   def origin_params
-    params.require(:origin).permit(:title, :rss_url, :group)
+    params.require(:origin).permit(:title, :url, :group)
   end
   def set_session
     if session[:eorigins].blank?

@@ -40,7 +40,7 @@
   <% origins.each do |origin| %>
     <tr>
       <td><%= origin.title %></td> 
-      <td><%= origin.rss_url %></td>
+      <td><%= origin.url %></td>
       <td><%= link_to 'Удалить', delete_efeed_path(origin.id), method: :delete, confirm: 'Удалить?' %></td>
     </tr>
   <% end %>

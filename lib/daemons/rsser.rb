@@ -137,12 +137,12 @@ def get_texts origin
 
     i = 0
     ret = 0
-    @my_logger.info origin.rss_url
+    @my_logger.info origin.url
     while (i += 1) <= 3
-      # if origin.rss_url == 'http://www.pravda.com.ua/rus/rss/'
+      # if origin.url == 'http://www.pravda.com.ua/rus/rss/'
       #   text.encode!('WINDOWS-1251').force_encoding('UTF-8')
       # end
-      text = open_url_curb origin.rss_url
+      text = open_url_curb origin.url
       if text.blank?
         @my_logger.info "Nothing CURBed."
         return 0 

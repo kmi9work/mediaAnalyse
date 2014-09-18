@@ -10,10 +10,10 @@
  # t.string :title
  #      t.string :url
  #      t.integer :query_position
- #      t.string :type
+ #      t.string :origin_type
  #      t.integer :group, default: 0
  #      t.integer :timeout, default: 20
- #type: rss, xml, json, vk_api, browser
+ #origin_type: rss, xml, json, vk_api, browser
 eurls = { 
 'http://vognebroda.net/rss.xml' => "В огне брода нет", 
 'http://www.unn.com.ua/rss/news_ru.xml' => "Украинские Национальные Новости", 
@@ -34,7 +34,7 @@ eurls = {
 }
 
 eurls.each do |url, name|
-  Origin.create(url: url, type: "rss", title: name, group: 1917)
+  Origin.create(url: url, origin_type: "rss", title: name, group: 1917)
 end
 
 urls = {
@@ -45,7 +45,7 @@ urls = {
 }
 
 urls.each do |url, name|
-  Origin.create(url: url, type: "rss", title: name)
+  Origin.create(url: url, origin_type: "rss", title: name)
 end
 
 =begin

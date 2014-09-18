@@ -4,7 +4,7 @@ class CreateOrigins < ActiveRecord::Migration
       t.string :title
       t.string :url
       t.integer :query_position
-      t.string :type
+      t.string :origin_type
       t.integer :group, default: 0
       t.integer :timeout, default: 20
       t.timestamps

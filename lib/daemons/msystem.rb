@@ -60,12 +60,12 @@ end
 
 def parse_rss logger, origin, text
   texts = []
-  logger.info "get_rss_texts URL: #{origin.rss_url}"
+  logger.info "get_rss_texts URL: #{origin.url}"
   feed = Feedjira::Feed.parse(text)
   if feed == 0 or (feed.class.parent != Feedjira::Parser)
     logger.info "Can't parse."
     str = "Text: #{text}\n\n"
-    send_email "Can't parse in rss project.", "Can't parse text #{origin.type}\nMessage:\n\n" + str
+    send_email "Can't parse in rss project.", "Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
     return texts
   end
   save_feeds = []
@@ -94,7 +94,7 @@ rescue Feedjira::NoParserAvailable => e
   logger.error e.backtrace.join("\n")
   logger.info "Can't parse."
   str = "Text: #{text}\n\n" + e.message + "\n" + e.backtrace.join("\n")
-  send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.type}\nMessage:\n\n" + str
+  send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
   return []
 rescue Exception => e
   str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
@@ -116,7 +116,7 @@ def parse_vk_api logger, origin, text
     logger.error e.backtrace.join("\n")
     logger.info "Can't parse."
     str = "Text: #{text}\n\n" + e.message + "\n" + e.backtrace.join("\n")
-    send_email "Can't parse in msystem project.", "vk_api: Can't parse text #{origin.type}\nMessage:\n\n" + str
+    send_email "Can't parse in msystem project.", "vk_api: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
     return []
   end
   if resp['response']
@@ -146,7 +146,7 @@ end
 
 def parse_xml logger, origin, text
   texts = []
-  if origin.type =~ //
+  if origin.origin_type =~ //
     #there is nothing yet
   end
   return texts
@@ -154,7 +154,7 @@ end
 
 def parse_json logger, origin, text
   texts = []
-  if origin.type =~ /vk_api/
+  if origin.origin_type =~ /vk_api/
     texts = parse_vk_api logger, origin, text
   end
   return texts
@@ -205,11 +205,11 @@ end
 
 def parse logger, origin, text
   texts = []
-  if origin.type =~ /rss/
+  if origin.origin_type =~ /rss/
     texts = parse_rss(logger, origin, type, text)
-  elsif origin.type =~ /xml/
+  elsif origin.origin_type =~ /xml/
     texts = parse_xml(logger, origin, type, text)
-  elsif origin.type =~ /json/
+  elsif origin.origin_type =~ /json/
     texts = parse_json(logger, origin, type, text)
   else
     texts = []
@@ -241,7 +241,7 @@ end
 def fill_and_save logger, origin, query, texts
   if origin.group != 1917
     texts.each do |t|
-      if origin.type =~ /rca/
+      if origin.origin_type =~ /rca/
         t.content = get_link_content(t.url)[1]
       end
       t.emot = get_emot t.title, (t.content.presence || t.description)
@@ -262,7 +262,7 @@ def start_work origins, logger
   t = Time.now
   while Time.now - t < 1800
     origins.each do |origin|
-      if origin.type =~ /search/
+      if origin.origin_type =~ /search/
         origin.queries.each do |query|
           text = open_url logger, origin.url, origin.url_query_pos, query.body
           unless text.blank?
@@ -280,7 +280,7 @@ def start_work origins, logger
             fill_and_save(logger, origin, nil, texts - tt)
           end
         end
-      end #if origin.type =~ /search/
+      end #if origin.origin_type =~ /search/
     end
     s 60
   end
