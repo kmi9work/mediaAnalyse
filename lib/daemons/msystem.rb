@@ -262,6 +262,7 @@ def start_work origins, logger
   t = Time.now
   while Time.now - t < 1800
     origins.each do |origin|
+      logger.info "#{origin.title} parsing..."
       if origin.origin_type =~ /search/
         origin.queries.each do |query|
           text = open_url logger, origin.url, origin.url_query_pos, query.body
@@ -293,12 +294,14 @@ NTHREADS = 4
 root = File.expand_path(File.dirname(__FILE__))
 root = File.dirname(root) until File.exists?(File.join(root, 'config'))
 Dir.chdir(root)
-
+@logger = Logger.new("#{root}/log/monitoring.log")
 require File.join(root, "config", "environment")
 
 while true
+
   origins = Origin.where.not(origin_type: 'browser')
   origins_browser = Origin.where(origin_type: 'browser') 
+  @logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
@@ -323,7 +326,9 @@ while true
     end
   end
   # threads.each(&:w)
+  @logger.info "Waiting threads..."
   ThreadsWait.all_waits(*threads)
+  @logger.info "Threads done."
   GC.start
   s 20
 end
