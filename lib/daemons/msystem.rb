@@ -308,7 +308,9 @@ while true
       loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
       # Разбиваем источники по потокам.
       threads << Thread.new(torigins, loggers.last) do |to, logger|
+        logger.info "STARTED."
         start_work(to, logger)
+        logger.info "COMPLITED."
       end
     end
   else
