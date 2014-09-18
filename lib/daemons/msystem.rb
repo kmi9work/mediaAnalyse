@@ -297,8 +297,8 @@ Dir.chdir(root)
 require File.join(root, "config", "environment")
 
 while true
-  origins = Origin.where.not(type: 'browser')
-  origins_browser = Origin.where(type: 'browser') 
+  origins = Origin.where.not(origin_type: 'browser')
+  origins_browser = Origin.where(origin_type: 'browser') 
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
