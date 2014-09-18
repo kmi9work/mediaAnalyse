@@ -168,7 +168,7 @@ def open_url_curb logger, link
     begin
       easy.follow_location = true
       easy.max_redirects = 3 
-      easy.url = url
+      easy.url = link
       easy.useragent = "Ruby/Curb"
       Timeout.timeout(30) do   
         easy.perform
@@ -178,14 +178,14 @@ def open_url_curb logger, link
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
       text = nil
       k = rand(5) + 5
-      logger.error "#{url} was not open. Sleep(#{k}). #{i}"
+      logger.error "#{link} was not open. Sleep(#{k}). #{i}"
       logger.error e.message
       logger.error err_text
       logger.error ''
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
-      str = "URL: #{url}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
-      send_email "Fatal error in rss parser.", "Fatal error in open_url_curb (#{url}) inside rss project.\nMessage:\n\n" + str
+      str = "URL: #{link}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      send_email "Fatal error in rss parser.", "Fatal error in open_url_curb (#{link}) inside rss project.\nMessage:\n\n" + str
       logger.error "FATAL ERROR! --- #{e.message} ---"
       logger.error e.backtrace.join("\n")
       logger.error "============================================"
