@@ -67,7 +67,7 @@ class FeedController < ApplicationController
       session[:origins] = Origin.where(group: 0).map(&:id)
     end
     if session[:last].blank?
-      session[:last] = Text.last.id
+      session[:last] = Text.order(id: :asc).last.id
     end
   end
 end
