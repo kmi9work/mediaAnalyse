@@ -327,7 +327,7 @@ while true
   end
   # threads.each(&:w)
   @logger.info "Waiting threads..."
-  ThreadsWait.all_waits(*threads)
+  threads.each(&:join)
   @logger.info "Threads done."
   GC.start
   s 20
