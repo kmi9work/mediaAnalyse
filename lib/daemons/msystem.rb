@@ -160,7 +160,7 @@ def parse_json logger, origin, text
   return texts
 end
 
-def open_url_curb logger, link, text
+def open_url_curb logger, link
   i = 0
   text = nil
   easy = Curl::Easy.new
@@ -283,7 +283,7 @@ def start_work origins, logger
         end
       end #if origin.origin_type =~ /search/
     end
-    s 60
+    s 30
   end
 end
 
