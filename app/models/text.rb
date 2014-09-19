@@ -1,10 +1,11 @@
 require 'net/http'
 
 class Text < ActiveRecord::Base
-	belongs_to :query
-	belongs_to :search_engine
-  belongs_to :origin
+	has_many :queries_texts
+	has_many :queries, through: :queries_texts
+  	belongs_to :origin
 	has_many :essences
+	self.primary_key = :id
 
   # searchable do
   #   text :title, :description, :content

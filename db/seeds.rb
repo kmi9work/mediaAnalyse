@@ -18,7 +18,6 @@ eurls = {
 'http://vognebroda.net/rss.xml' => "В огне брода нет", 
 'http://www.unn.com.ua/rss/news_ru.xml' => "Украинские Национальные Новости", 
 'http://rss.unian.net/site/news_rus.rss' => "ИА УНИАН", 
-'http://www.ukrinform.ua/rus/rss/news/' => "Укрiнформ", 
 'http://regnum.ru/rss/ukraina.xml' => "ИА REGNUM", 
 'http://novorossy.ru/news/rss/1' => "Заря Новороссии", 
 'http://k.img.com.ua/rss/ru/all_news2.0.xml' => "Корреспондент.net", 

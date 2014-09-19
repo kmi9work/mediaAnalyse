@@ -7,9 +7,10 @@ require 'headless'
 class Query < ActiveRecord::Base
 
 	belongs_to :category
-	has_many :texts
-	has_many :query_search_engines
-	has_many :search_engines, through: :query_search_engines
+  has_many :queries_texts
+	has_many :texts, through: :queries_texts
+  has_many :origins_queries
+  has_many :origins, through: :origins_queries
   def track_with
     types = search_engines.map(&:engine_type)
     sources = []

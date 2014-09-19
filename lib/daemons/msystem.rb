@@ -180,7 +180,6 @@ def open_url_curb logger, link
       k = rand(5) + 5
       logger.error "#{link} was not open. Sleep(#{k}). #{i}"
       logger.error e.message
-      logger.error err_text
       logger.error ''
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
@@ -246,13 +245,13 @@ def fill_and_save logger, origin, query, texts
       end
       t.emot = get_emot t.title, (t.content.presence || t.description)
       t.origin = origin
-      t.query = query
+      t.queries << query
       t.save
     end
   else
     texts.each do |t|
       t.origin = origin
-      t.query = query
+      t.queries << query
       t.save
     end
   end
@@ -275,13 +274,16 @@ def start_work origins, logger
         text = open_url logger, origin.url
         unless text.blank?
           texts = parse logger, origin, text
+          tt_all = []
           origin.queries.each do |query|
             tt = select_texts(logger, origin, texts, query)
             fill_and_save(logger, origin, query, tt)
-            fill_and_save(logger, origin, nil, texts - tt)
+            tt_all += tt
           end
+          fill_and_save(logger, origin, [], texts - tt_all)
         end
       end #if origin.origin_type =~ /search/
+      s 2
     end
     s 30
   end
@@ -289,23 +291,28 @@ end
 
 # ----------------------------- BEGIN ------------------------------------
 ENV["RAILS_ENV"] ||= "production"
-NTHREADS = 4
+NTHREADS = 1
 
 root = File.expand_path(File.dirname(__FILE__))
 root = File.dirname(root) until File.exists?(File.join(root, 'config'))
 Dir.chdir(root)
-@logger = Logger.new("#{root}/log/monitoring.log")
+@my_logger = Logger.new("#{root}/log/monitoring.log")
 require File.join(root, "config", "environment")
 
 while true
 
   origins = Origin.where.not(origin_type: 'browser')
   origins_browser = Origin.where(origin_type: 'browser') 
-  @logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
+  @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
   #Отдельно работаем с источниками browser, т.к. у них свои ограничения
   threads = []
   loggers = []
-  if origins.count > NTHREADS
+  if NTHREADS == 1
+    logger = Logger.new("#{root}/log/monitoring_1.log")
+    logger.info "STARTED."
+    start_work(origins, logger)
+    logger.info "COMPLITED."
+  elsif origins.count > NTHREADS
     for i in 0...NTHREADS
       torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
       loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
@@ -326,9 +333,9 @@ while true
     end
   end
   # threads.each(&:w)
-  @logger.info "Waiting threads..."
+  @my_logger.info "Waiting threads..."
   threads.each(&:join)
-  @logger.info "Threads done."
+  @my_logger.info "Threads done."
   GC.start
   s 20
 end

@@ -25,7 +25,8 @@ group :production do
   gem 'feedjira'
 end
 group :development, :test do
-	gem 'sqlite3'
+	# gem 'sqlite3'
+	gem 'pg'
 end
 
 
