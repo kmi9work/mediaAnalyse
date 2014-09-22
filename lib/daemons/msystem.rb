@@ -69,9 +69,10 @@ def parse_rss logger, origin, text
     return texts
   end
   save_feeds = []
+  logger.info "#{origin.title}: Texts: #{feed.entries.count}"
   feed.entries.each do |f|
     guid = f.entry_id || f.url
-    break unless Text.where({origin_id: origin.id, guid: guid}).blank?
+    next unless Text.where({origin_id: origin.id, guid: guid}).blank?
     save_feeds << f
   end
   logger.info "#{origin.title}: New texts: #{save_feeds.count}"
@@ -90,10 +91,12 @@ def parse_rss logger, origin, text
   end
   return texts
 rescue Feedjira::NoParserAvailable => e
-  logger.error "FATAL ERROR! --- #{e.message} ---"
+  logger.error "93: FATAL ERROR! --- #{e.message} ---"
   logger.error e.backtrace.join("\n")
   logger.info "Can't parse."
   str = "Text: #{text}\n\n" + e.message + "\n" + e.backtrace.join("\n")
+  logger.info "Text: #{text}"
+  logger.info "------------------------------------"
   send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
   return []
 rescue Exception => e
@@ -163,9 +166,9 @@ end
 def open_url_curb logger, link
   i = 0
   text = nil
-  easy = Curl::Easy.new
   while (i += 1 ) <= 2
     begin
+      easy = Curl::Easy.new
       easy.follow_location = true
       easy.max_redirects = 3 
       easy.url = link
@@ -173,7 +176,11 @@ def open_url_curb logger, link
       Timeout.timeout(30) do   
         easy.perform
       end
-      text = easy.body_str
+      if easy.header_str =~ /Content-Encoding: gzip/
+        text = ActiveSupport::Gzip.decompress(easy.body_str)
+      else
+        text = easy.body_str
+      end
       break
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
       text = nil
@@ -232,6 +239,7 @@ def get_emot title, content
     response = Net::HTTP.post_form(uri, query)
   rescue StandardError, Timeout::Error => e
     s 1
+    return nil
   end
   return JSON.parse(response.body)['overall']
 end
@@ -243,7 +251,7 @@ def fill_and_save logger, origin, query, texts
       if origin.origin_type =~ /rca/
         t.content = get_link_content(t.url)[1]
       end
-      t.emot = get_emot t.title, (t.content.presence || t.description)
+      t.emot = get_emot(t.title, (t.content.presence || t.description))
       t.origin = origin
       t.queries << query
       t.save
@@ -259,37 +267,53 @@ end
 
 def start_work origins, logger
   t = Time.now
-  while Time.now - t < 1800
-    origins.each do |origin|
-      logger.info "#{origin.title} parsing..."
-      if origin.origin_type =~ /search/
-        origin.queries.each do |query|
-          text = open_url logger, origin.url, origin.url_query_pos, query.body
-          unless text.blank?
-            texts = parse logger, origin, text
-            fill_and_save(logger, texts, origin, query)
-          end
+  while Time.now - t < 600
+    begin
+      origins.each do |origin|
+        unless origin.destroyed?
+          logger.info "#{origin.title} parsing..."
+          if origin.origin_type =~ /search/
+            origin.queries.each do |query|
+              text = open_url logger, origin.url, origin.url_query_pos, query.body
+              unless text.blank?
+                if origin.origin_type =~ /cp1251/
+                  text.force_encoding('WINDOWS-1251')
+                end
+                texts = parse logger, origin, text
+                fill_and_save(logger, texts, origin, query)
+              end
+            end
+          else
+            text = open_url logger, origin.url
+            if origin.origin_type =~ /cp1251/
+              text.force_encoding('WINDOWS-1251')
+            end
+            unless text.blank?
+              texts = parse logger, origin, text
+              tt_all = []
+              origin.queries.each do |query|
+                tt = select_texts(logger, origin, texts, query)
+                fill_and_save(logger, origin, query, tt)
+                tt_all += tt
+              end
+              fill_and_save(logger, origin, [], texts - tt_all)
+            end
+          end #if origin.origin_type =~ /search/
+          s 2
         end
-      else
-        text = open_url logger, origin.url
-        unless text.blank?
-          texts = parse logger, origin, text
-          tt_all = []
-          origin.queries.each do |query|
-            tt = select_texts(logger, origin, texts, query)
-            fill_and_save(logger, origin, query, tt)
-            tt_all += tt
-          end
-          fill_and_save(logger, origin, [], texts - tt_all)
-        end
-      end #if origin.origin_type =~ /search/
-      s 2
+      end
+      s 30
+    rescue Exception => e
+      str = "Thread: #{Thread.current.thread_variable_get(:thread_number)};\n" + e.message + "\n\n" + e.backtrace.join("\n")
+      send_email "Fatal error in msystem.", "Fatal error in start_work inside msystem.\nMessage:\n\n" + str
+      @my_logger.error "FATAL ERROR! --- #{e.message} --- Thread: #{Thread.current.thread_variable_get(:thread_number)};"
+      @my_logger.error e.backtrace.join("\n")
+      @my_logger.error "============================================"
     end
-    s 30
   end
 end
 
-# ----------------------------- BEGIN ------------------------------------
+# ----------------------------- BEGIN -----------------------------
 ENV["RAILS_ENV"] ||= "production"
 NTHREADS = 1
 
@@ -300,44 +324,54 @@ Dir.chdir(root)
 require File.join(root, "config", "environment")
 
 while true
-
-  origins = Origin.where.not(origin_type: 'browser')
-  origins_browser = Origin.where(origin_type: 'browser') 
-  @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
-  #Отдельно работаем с источниками browser, т.к. у них свои ограничения
-  threads = []
-  loggers = []
-  if NTHREADS == 1
-    logger = Logger.new("#{root}/log/monitoring_1.log")
-    logger.info "STARTED."
-    start_work(origins, logger)
-    logger.info "COMPLITED."
-  elsif origins.count > NTHREADS
-    for i in 0...NTHREADS
-      torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
-      loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
-      # Разбиваем источники по потокам.
-      threads << Thread.new(torigins, loggers.last) do |to, logger|
-        logger.info "STARTED."
-        start_work(to, logger)
-        logger.info "COMPLITED."
+  begin
+    origins = Origin.where.not(origin_type: 'browser').reload.reverse
+    origins_browser = Origin.where(origin_type: 'browser').reload
+    @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
+    #Отдельно работаем с источниками browser, т.к. у них свои ограничения
+    threads = []
+    loggers = []
+    if NTHREADS == 1
+      logger = Logger.new("#{root}/log/monitoring_0.log")
+      logger.info "------------------ STARTED. ------------------"
+      Thread.current.thread_variable_set(:thread_number, 0)
+      start_work(origins, logger)
+      logger.info "------------------ COMPLITED. ------------------"
+    elsif origins.count > NTHREADS
+      for i in 0...NTHREADS
+        torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
+        loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
+        # Разбиваем источники по потокам.
+        threads << Thread.new(torigins, loggers.last) do |to, logger|
+          Thread.current.thread_variable_set(:thread_number, i)
+          logger.info "STARTED."
+          start_work(to, logger)
+          logger.info "COMPLITED."
+        end
+      end
+    else
+      origins.each_with_index do |origin, i|
+        loggers << Logger.new("#{root}/log/monitoring_#{i}.log")
+        # Разбиваем источники по потокам.
+        threads << Thread.new([origin], loggers.last) do |to, logger|
+          Thread.current.thread_variable_set(:thread_number, i)
+          start_work(to, logger)
+        end
       end
     end
-  else
-    origins.each_with_index do |origin, i|
-      loggers << Logger.new("#{root}/log/monitoring_#{i}.log")
-      # Разбиваем источники по потокам.
-      threads << Thread.new([origin], loggers.last) do |to, logger|
-        start_work(to, logger)
-      end
-    end
+    # threads.each(&:w)
+    @my_logger.info "Waiting threads..."
+    threads.each(&:join)
+    @my_logger.info "Threads done."
+    GC.start
+    s 20
+  rescue Exception => e
+    str = e.message + "\n\n" + e.backtrace.join("\n")
+    send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
+    @my_logger.error "FATAL ERROR! --- #{e.message} ---"
+    @my_logger.error e.backtrace.join("\n")
+    @my_logger.error "============================================"
   end
-  # threads.each(&:w)
-  @my_logger.info "Waiting threads..."
-  threads.each(&:join)
-  @my_logger.info "Threads done."
-  GC.start
-  s 20
 end
 
 # ----------------------------- END ------------------------------------

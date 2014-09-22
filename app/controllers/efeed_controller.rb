@@ -28,15 +28,15 @@ class EfeedController < FeedController
   def delete
     origin = Origin.find(params[:id])
     origin.destroy
-    render 'edit', layout: false
+    redirect_to 'edit', layout: false
   end
   def create
     origin = Origin.create(origin_params)
-    render 'edit', layout: false
+    redirect_to 'edit', layout: false
   end
   private
   def origin_params
-    params.require(:origin).permit(:title, :url, :group)
+    params.require(:origin).permit(:title, :url, :group, :origin_type, :query_position)
   end
   def set_session
     if session[:eorigins].blank?
