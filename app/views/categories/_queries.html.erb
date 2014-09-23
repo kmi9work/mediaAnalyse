@@ -25,35 +25,23 @@
 								<div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div>
 							</td> -->
 							<td>
-								<% if query.track_with.include? 'smi' %>
-									<%= link_to 'СМИ', stop_work_path(query.id, source: 'smi'), class: 'btn btn-success' %>
-								<% else %>
-									<%= link_to 'СМИ', start_work_path(query.id, source: 'smi'), class: 'btn btn-primary' %>
-								<% end %>
+								<%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('smi').count %>
 								</span>)
 							</td>
 							<td>
-								<% if query.track_with.include? 'sn' %>
-									<%= link_to 'Соц. сети', stop_work_path(query.id, source: 'sn'), class: 'btn btn-success' %>
-								<% else %>
-									<%= link_to 'Соц. сети', start_work_path(query.id, source: 'sn'), class: 'btn btn-primary' %>
-								<% end %>
-								
+								<%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('sn').count %>
 								</span>)
 							</td>
 							<td>
-								<% if query.track_with.include? 'blogs' %>
-									<%= link_to 'Блоги', stop_work_path(query.id, source: 'blogs'), class: 'btn btn-success' %>
-								<% else %>
-									<%= link_to 'Блоги', start_work_path(query.id, source: 'blogs'), class: 'btn btn-primary' %>
-								<% end %>
+								<%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
 									<%= query.texts.source_text('blogs').count %>
 								</span>)
+
 							</td>
 						</tr>
 						<tr>
@@ -64,6 +52,9 @@
 								</p>
 								<p>
 									Количество текстов: <%= query.texts.count %>
+								</p>
+								<p>
+									<%= link_to 'Ключевые слова', query_keyphrases_path(query.id) %>
 								</p>
 								<p>
 									<%= link_to 'Удалить запрос', 

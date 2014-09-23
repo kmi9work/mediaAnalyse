@@ -28,11 +28,11 @@ class EfeedController < FeedController
   def delete
     origin = Origin.find(params[:id])
     origin.destroy
-    redirect_to 'edit', layout: false
+    render '/efeed/edit', layout: false
   end
   def create
     origin = Origin.create(origin_params)
-    redirect_to 'edit', layout: false
+    redirect_to '/efeed/edit', layout: false
   end
   private
   def origin_params

@@ -10,44 +10,27 @@
       </ul>
     </div>
   <% end %>
-  <div class="form-group">
-    <% unless @category %>
-      <label class="col-sm-6 control-label" style="padding: 20px 0px"> Категория:</label>
-      <div class="col-sm-6">
-        <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :title) %>
+  <div class="row">
+    <div class="form-group" style="padding: 20px 0px">
+      <label class="col-sm-4 control-label" style="padding: 20px"> Категория:</label>
+      <div class="col-sm-8">
+        <% unless @category %>
+          <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :title) %>
+        <% else %>
+          <div class="col-sm-12" style="padding: 20px;"> <%= @category.title%> </div>
+          <%= f.hidden_field :category_id, value: @category.id %>
+        <% end %>
       </div>
-    <% else %>
-      <%= f.hidden_field :category_id, value: @category.id %>
-    <% end %>
-  </div>
-  <div class="form-group" style="padding: 20px 0px">
-    <label class="col-sm-6 control-label">Заголовок запроса:</label>
-    <div class="col-sm-6">
-      <%= f.text_field :title, class: "form-control" %>
     </div>
   </div>
-  <div class="form-group" style="padding: 20px 0px">
-    <label class="col-sm-6 control-label">Запрос:</label>
-    <div class="col-sm-6">
-      <%= f.text_field :body, class: "form-control" %>
+  <div class="row">
+    <div class="form-group" style="padding: 20px 0px">
+      <label class="col-sm-4 control-label">Заголовок запроса:</label>
+      <div class="col-sm-8">
+        <%= f.text_field :title, class: "form-control" %>
+      </div>
     </div>
   </div>
-  <!-- <div class="form-group" style="padding: 20px 0px">
-    <label class="col-sm-6 control-label">Поисковая система:</label>
-    <div class="col-sm-6">
-      <%= hidden_field_tag "query[search_engine_ids][]", nil%>
-      <% SearchEngine.all.each do |se| %>
-        <%= check_box_tag "query[search_engine_ids][]", se.id, @query.search_engine_ids.include?(se.id), id: dom_id(se) %>
-        <%= label_tag dom_id(se), se.title %><br>
-      <% end %>
-    </div>
-  </div> 
-  <div class="form-group" style="padding: 60px 0px">
-    <label class="col-sm-6 control-label">Сортировка:</label>
-    <div class="col-sm-6">
-      <%= f.select "sort_by_date", [["По времени",true],["По релевантности",false]], {}, class: "form-control" %>
-    </div>
-  </div>  -->
   <%= f.submit "Готово", class: "btn btn-default col-md-offset-2 col-md-2" %>
   <%= link_to 'Отмена', :back, class: 'col-md-offset-4 col-md-2 btn btn-default' %>
 <% end %>

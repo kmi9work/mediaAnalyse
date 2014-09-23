@@ -12,7 +12,8 @@ class CreateTexts < ActiveRecord::Migration
       t.integer :emot
       t.integer :my_emot
       t.datetime :datetime
-      t.timestamps
+      t.boolean :novel, default: true
+      t.datetime :created_at
     end
   end
 end

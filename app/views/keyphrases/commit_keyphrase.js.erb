@@ -1,0 +1,6 @@
+$('#keyphrases_table tbody').append('\
+  <tr id="keyphrase_<%= @keyphrase.id %>">\
+    <td><%= @keyphrase.body %></td>\
+    <td><%= link_to "Удалить", keyphrase_path(@keyphrase.id), method: :delete, remote: true %></td>\
+  </tr>');
+$('input#keyphrase_body').val("");

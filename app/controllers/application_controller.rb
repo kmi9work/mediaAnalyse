@@ -5,13 +5,6 @@ class ApplicationController < ActionController::Base
   before_filter :time_zone
   before_filter :require_login
 
-
-  def disable_tracking
-    session[:track_on] = false
-  end
-  def enable_tracking
-    session[:track_on] = true
-  end
   private
   def not_authenticated
     redirect_to login_url, :alert => "First log in to view this page."

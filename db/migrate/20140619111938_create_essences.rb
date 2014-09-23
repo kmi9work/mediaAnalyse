@@ -4,7 +4,6 @@ class CreateEssences < ActiveRecord::Migration
     	t.string :title
     	t.integer :rating
     	t.belongs_to :text
-    	t.timestamps
     end
   end
 end

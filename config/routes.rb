@@ -26,6 +26,10 @@ MediaAnalyse::Application.routes.draw do
   match '/feed/create' => 'feed#create', via: :post, as: :create_feed
   get '/feed/puchkov' => 'feed#puchkov', as: :puchkov
 
+  get '/queries/:query_id/keyphrases' => 'queries#keyphrases' , as: :query_keyphrases
+  match '/queries/:query_id/commit_keyphrase' => 'keyphrases#commit_keyphrase', via: :post, as: :commit_keyphrase
+  delete '/keyphrase/:id' => 'keyphrases#destroy', as: :keyphrase
+
   get '/queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
@@ -35,11 +39,6 @@ MediaAnalyse::Application.routes.draw do
   get '/texts/:id/get_emot' => 'texts#get_emot', as: :get_emot
   get '/queries/new(.:format)' => 'queries#new', as: :new_query
   match "/queries" => 'queries#create', via: :post, as: :queries
-  get '/queries/:query_id/start_work' => 'queries#start_work', as: :start_work
-  get '/queries/:query_id/stop_work' => 'queries#stop_work', as: :stop_work
-  get '/texts/get_new_links' => 'texts#get_new_links', as: :get_new_links
-  get '/disable_tracking' => 'application#disable_tracking', as: :disable_tracking
-  get '/enable_tracking' => 'application#enable_tracking', as: :enable_tracking
 
   # category_id
   get '/categories(.:format)' => 'categories#index', as: :categories

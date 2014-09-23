@@ -76,7 +76,6 @@ def parse_rss logger, origin, text
     save_feeds << f
   end
   logger.info "#{origin.title}: New texts: #{save_feeds.count}"
-  
   save_feeds.reverse_each do |f|
     t = Text.new
     t.origin = origin
@@ -245,6 +244,17 @@ def get_emot title, content
 end
 
 
+def fill_and_add_to_query logger, query, texts
+  texts.each do |text|
+    if text.origin.origin_type =~ /rca/
+      text.content = get_link_content(text.url)[1]
+    end
+    text.emot = get_emot(text.title, (text.content.presence || text.description))
+    text.queries << query
+    text.save
+  end
+end
+
 def fill_and_save logger, origin, query, texts
   if origin.group != 1917
     texts.each do |t|
@@ -325,8 +335,8 @@ require File.join(root, "config", "environment")
 
 while true
   begin
-    origins = Origin.where.not(origin_type: 'browser').reload.reverse
-    origins_browser = Origin.where(origin_type: 'browser').reload
+    origins = Origin.where.not(origin_type: 'browser')
+    origins_browser = Origin.where(origin_type: 'browser')
     @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
     #Отдельно работаем с источниками browser, т.к. у них свои ограничения
     threads = []
@@ -365,6 +375,13 @@ while true
     @my_logger.info "Threads done."
     GC.start
     s 20
+    # Прошло 10 минут. Теперь отсеиваем нужные тексты.
+    Query.all.each do |query|
+      texts = Text.select_novel_for_query query
+      fill_and_add_to_query @my_logger, query, texts
+    end
+    Text.where(novel: true).update_all(novel: false)
+    
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
