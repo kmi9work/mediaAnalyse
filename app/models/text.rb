@@ -56,9 +56,9 @@ class Text < ActiveRecord::Base
     end
   end
   def Text.source_text source
-    if source = "smi"
-    elsif source = "sn"
-    elsif source = "blogs"
+    if source == "smi"
+    elsif source == "sn"
+    elsif source == "blogs"
     end
     return []
   end
