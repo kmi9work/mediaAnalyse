@@ -63,13 +63,13 @@ end
 cat1 = Category.create(title: "Руководство МЧС")
 cat2 = Category.create(title: "Президент России")
 
-q1 = Query.new(title: "Пучков МЧС", body: "Пучков МЧС")
+q1 = Query.new(title: "Пучков МЧС")
 q1.save
-q2 = Query.new(title: "Пучков Владимир Андреевич", body: "Пучков Владимир Андреевич")
+q2 = Query.new(title: "Пучков Владимир Андреевич")
 q2.save
-q3 = Query.new(title: "Шляков МЧС", body: "Шляков МЧС")
+q3 = Query.new(title: "Шляков МЧС")
 q3.save
-q4 = Query.new(title: "Шляков Сергей Анатольевич", body: "Шляков Сергей Анатольевич")
+q4 = Query.new(title: "Шляков Сергей Анатольевич")
 q4.save
 
 cat1.queries << q1 << q2 << q3 << q4
