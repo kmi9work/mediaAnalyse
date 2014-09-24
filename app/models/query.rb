@@ -51,7 +51,7 @@ class Query < ActiveRecord::Base
     n = 0
     sum = 0.0
     texts.each do |t| 
-      sum += t.my_emot || t.emot
+      sum += t.my_emot || t.emot || 0
       n += 1
     end
     return 0 if n == 0 

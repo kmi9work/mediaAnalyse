@@ -30,10 +30,6 @@ eurls = {
 'http://partyofregions.ua/news/rss/' => 'Партия регионов',
 'http://www.svoboda.org.ua/feed/' => 'Свобода',
 'http://batkivshchyna.com.ua/rss' => 'Батьковщина',
-'http://news.yandex.ru/society.rss' => 'Яндекс.Общество',
-'http://news.yandex.ru/fire.rss' => 'Яндекс.Пожары',
-'http://news.yandex.ru/politics.rss' => 'Яндекс.Политика',
-'http://news.yandex.ru/incident.rss' => 'Яндекс.Происшествия',
 'http://itar-tass.com/rss/v2.xml' => 'ТАСС',
 'http://www.interfax.ru/rss.asp' => 'Интерфакс',
 'http://interfax.com.ua/news/last.rss' => 'Интерфакс-Украина',
@@ -45,7 +41,7 @@ eurls = {
 }
 
 eurls.each do |url, name|
-  Origin.create(url: url, origin_type: "rss", title: name, group: 1917)
+  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name, group: 1917)
 end
 
 urls = {
@@ -56,7 +52,7 @@ urls = {
 }
 
 urls.each do |url, name|
-  Origin.create(url: url, origin_type: "rss", title: name)
+  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name)
 end
 
 
@@ -73,3 +69,13 @@ q4 = Query.new(title: "Шляков Сергей Анатольевич")
 q4.save
 
 cat1.queries << q1 << q2 << q3 << q4
+
+url = "https://api.vk.com/method/newsfeed.search?q=&extended=1&count=140"
+url_query_pos = 44
+name = "VK API"
+Origin.create(url: url, origin_type: "json_vk_api_search_sourcesn", title: name, query_position: url_query_pos, timeout: 60)
+
+url = "http://blogs.yandex.ru/search.rss?text=&ft=all"
+url_query_pos = 39
+name = "Yandex Blogs API"
+Origin.create(url: url, origin_type: "rss_ya_blogs_search_sourceblogs", title: name, query_position: url_query_pos, timeout: 60)

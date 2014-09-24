@@ -59,8 +59,8 @@ def select_texts texts, queries
 end
 
 def parse_rss logger, origin, text
+  logger.info "#{origin.title} parsing RSS..."
   texts = []
-  logger.info "get_rss_texts URL: #{origin.url}"
   feed = Feedjira::Feed.parse(text)
   if feed == 0 or (feed.class.parent != Feedjira::Parser)
     logger.info "Can't parse."
@@ -110,6 +110,7 @@ rescue Exception => e
 end
 
 def parse_vk_api logger, origin, text
+  logger.info "#{origin.title} parsing vk_api..."
   texts = []
   begin
     resp = JSON.parse text
@@ -139,7 +140,7 @@ def parse_vk_api logger, origin, text
       t.author = ""
       t.url = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       t.guid = t.url
-      t.datetime = DateTime.now
+      t.datetime = f['date'] ? Time.at(f['date'].to_i).to_datetime : DateTime.now
       texts << t unless t.content.blank?
     end
   end
@@ -204,7 +205,7 @@ def open_url_curb logger, link
 end
 
 def open_url logger, url, url_query_pos = -1, insert_text = ""
-  link = URI.escape url.insert(url_query_pos || -1, insert_text)
+  link = URI.escape url.dup.insert(url_query_pos || -1, insert_text)
   return open_url_curb logger, link
 end
 
@@ -256,6 +257,8 @@ def fill_and_add_to_query logger, query, texts
 end
 
 def fill_and_save logger, origin, query, texts
+  logger.info "fill_and_save Texts: #{texts.count}"
+  count = 0
   if origin.group != 1917
     texts.each do |t|
       if origin.origin_type =~ /rca/
@@ -264,15 +267,16 @@ def fill_and_save logger, origin, query, texts
       t.emot = get_emot(t.title, (t.content.presence || t.description))
       t.origin = origin
       t.queries << query
-      t.save
+      count += 1 if t.save
     end
   else
     texts.each do |t|
       t.origin = origin
       t.queries << query
-      t.save
+      count += 1 if t.save
     end
   end
+  return count
 end
 
 def start_work origins, logger
@@ -281,16 +285,22 @@ def start_work origins, logger
     begin
       origins.each do |origin|
         unless origin.destroyed?
-          logger.info "#{origin.title} parsing..."
+          logger.info "#{origin.title} processing..."
           if origin.origin_type =~ /search/
             origin.queries.each do |query|
-              text = open_url logger, origin.url, origin.url_query_pos, query.body
-              unless text.blank?
-                if origin.origin_type =~ /cp1251/
-                  text.force_encoding('WINDOWS-1251')
+              query.keyphrases.each do |keyphrase|
+                text = open_url logger, origin.url, origin.query_position, keyphrase.body
+                unless text.blank?
+                  if origin.origin_type =~ /cp1251/
+                    text.force_encoding('WINDOWS-1251')
+                  end
+                  texts = parse logger, origin, text
+                  n = fill_and_save(logger, origin, query, texts)
+                  logger.info "#{origin.title} - #{query.title} - #{keyphrase.body}: #{n} saved."
+                else
+                  logger.error "#{origin.title} - #{query.title} - #{keyphrase.body}: Text is empty."
                 end
-                texts = parse logger, origin, text
-                fill_and_save(logger, texts, origin, query)
+                s 3
               end
             end
           else
@@ -302,7 +312,7 @@ def start_work origins, logger
               texts = parse logger, origin, text
               tt_all = []
               origin.queries.each do |query|
-                tt = select_texts(logger, origin, texts, query)
+                tt = [] #select_texts(logger, origin, query, texts)
                 fill_and_save(logger, origin, query, tt)
                 tt_all += tt
               end

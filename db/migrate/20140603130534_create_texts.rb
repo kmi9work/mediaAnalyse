@@ -1,7 +1,6 @@
 class CreateTexts < ActiveRecord::Migration
   def change
-    create_table :texts, id: false, primary_key: :id do |t|
-      t.integer :id, :limit => 8
+    create_table :texts do |t|
     	t.string :title
       t.text :description
     	t.text :content, :limit => 16777215

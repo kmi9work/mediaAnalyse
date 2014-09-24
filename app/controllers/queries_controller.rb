@@ -12,10 +12,8 @@ class QueriesController < ApplicationController
   end
   def create
     query = Query.new(query_params)
-    query.title = params[:query][:body] if params[:query][:title].blank?
-    query.body = params[:query][:title] if params[:query][:body].blank?
-    
     query.save
+    Origin.all.each{|o| o.queries << query}
     redirect_to query_path(query.id)
   end
   
@@ -26,7 +24,10 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
-    @texts = @query.texts.from_to_date(session[@query.id][:from], session[@query.id][:to])
+    @texts = @query.texts.source(params['source']).from_to_date(session[@query.id][:from], session[@query.id][:to])
+    if @texts.empty?
+      @texts = @query.texts.source(params['source']).last(50)
+    end
   end
   def change_interval
     session[@query.id] ||= {}
@@ -45,25 +46,24 @@ class QueriesController < ApplicationController
   end
 
   def chart_data
-    source_ses = SearchEngine.source params['source']
-    texts = @query.texts.source(source_ses).order(:created_at).load
-    #Faster with right SQL-query: select emot, created_at from texts
+    texts = @query.texts.source(params['source']).order(:datetime).load
+    #Faster with right SQL-query: select emot, datetime from texts
     chdata = {}
     chdata['emot'] = []
     chdata['count'] = []
     return render(json: chdata.to_json) if texts.empty?
     med = texts[0].my_emot || texts[0].emot
     n = 1.0
-    fst = texts.first.created_at.beginning_of_hour
+    fst = texts.first.datetime.beginning_of_hour
     cur = fst.dup
-    lst = texts.last.created_at
+    lst = texts.last.datetime
     index = 0
     cur += 3600
-    while cur <= lst      
+    while cur <= lst
       n = 0
       med = 0
-      while index < texts.size - 1 and texts[index].created_at < cur
-        med += texts[index].my_emot || texts[index].emot
+      while index < texts.size - 1 and texts[index].datetime < cur
+        med += texts[index].my_emot || texts[index].emot || 0
         n += 1
         index += 1
       end
@@ -80,8 +80,8 @@ class QueriesController < ApplicationController
     unless (cur > DateTime.now)
       n = 0
       med = 0
-      while index < texts.size - 1 and texts[index].created_at < cur
-        med += texts[index].my_emot || texts[index].emot
+      while index < texts.size - 1 and texts[index].datetime < cur
+        med += texts[index].my_emot || texts[index].emot || 0
         n += 1
         index += 1
       end

@@ -8,7 +8,9 @@ class Text < ActiveRecord::Base
   self.primary_key = :id
 
   searchable do
-    text :title, :description, :content
+    text :title
+    text :description
+    text :content
     integer :origin_id
     boolean :novel
     string :author
@@ -55,12 +57,9 @@ class Text < ActiveRecord::Base
       return where('created_at > ?', DateTime.now.beginning_of_day).load
     end
   end
-  def Text.source_text source
-    if source == "smi"
-    elsif source == "sn"
-    elsif source == "blogs"
-    end
-    return []
+  def Text.source source
+    origins = Origin.where('origin_type like ?', "%source#{source}%")
+    return where(origin_id: origins.map(&:id)).uniq
   end
   def Text.from_to_date from, to
     return where(created_at: from..to).load

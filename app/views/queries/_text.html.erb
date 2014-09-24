@@ -1,8 +1,8 @@
 <div class="article">
-  <button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%= category_query_text_path(text.query.category_id, text.query_id, text.id) %>'">Выделить сущности</button>
+  <button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%#= category_query_text_path(text.query.category_id, text.query_id, text.id) %>'">Выделить сущности</button> <!-- !!!!!!!!!!! -->
   <p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
   <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-  <p> <%= text.content.html_safe %> </p>
+  <p> <%= (text.content.presence || text.description.presence).try(:html_safe) %> </p>
   <p align="right"> Новость от: <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
   <hr>
   <div id="emotion_<%= text.id %>">

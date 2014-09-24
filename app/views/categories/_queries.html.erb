@@ -11,9 +11,9 @@
 									<span style="font-size: 24px"> <%= query.title %> </span>
 								<% else %>
 									<%= link_to query.title, query,
-																					 id: "query_show_#{query.id}",
-																					 class: "query_show",
-																					 queryid: query.id %>
+												id: "query_show_#{query.id}",
+												class: "query_show",
+												queryid: query.id %>
 								<% end %>
 								&nbsp; | &nbsp;
 								<span style="font-size: 12px;">
@@ -27,19 +27,19 @@
 							<td>
 								<%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_text('smi').count %>
+									<%= query.texts.source('smi').count %>
 								</span>)
 							</td>
 							<td>
 								<%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_text('sn').count %>
+									<%= query.texts.source('sn').count %>
 								</span>)
 							</td>
 							<td>
 								<%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_text('blogs').count %>
+									<%= query.texts.source('blogs').count %>
 								</span>)
 
 							</td>
@@ -47,9 +47,6 @@
 						<tr>
 							<td>
 								<div id="options_<%= query.id %>" class="options" style="display: none;">
-								<p>
-									Запрос: <%= query.body %>
-								</p>
 								<p>
 									Количество текстов: <%= query.texts.count %>
 								</p>
