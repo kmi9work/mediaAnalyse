@@ -41,7 +41,7 @@ eurls = {
 }
 
 eurls.each do |url, name|
-  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name, group: 1917)
+  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name)
 end
 
 urls = {

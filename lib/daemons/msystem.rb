@@ -188,6 +188,7 @@ def open_url_curb logger, link
       logger.error "#{link} was not open. Sleep(#{k}). #{i}"
       logger.error e.message
       logger.error ''
+      easy.close
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
       str = "URL: #{link}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
@@ -259,22 +260,14 @@ end
 def fill_and_save logger, origin, query, texts
   logger.info "fill_and_save Texts: #{texts.count}"
   count = 0
-  if origin.group != 1917
-    texts.each do |t|
-      if origin.origin_type =~ /rca/
-        t.content = get_link_content(t.url)[1]
-      end
-      t.emot = get_emot(t.title, (t.content.presence || t.description))
-      t.origin = origin
-      t.queries << query
-      count += 1 if t.save
+  texts.each do |t|
+    if origin.origin_type =~ /rca/
+      t.content = get_link_content(t.url)[1]
     end
-  else
-    texts.each do |t|
-      t.origin = origin
-      t.queries << query
-      count += 1 if t.save
-    end
+    t.emot = get_emot(t.title, (t.content.presence || t.description))
+    t.origin = origin
+    t.queries << query
+    count += 1 if t.save
   end
   return count
 end

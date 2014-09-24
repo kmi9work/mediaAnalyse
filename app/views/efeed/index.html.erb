@@ -5,11 +5,9 @@
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
-
-  <!-- <link href='http://fonts.googleapis.com/css?family=Unica+One' rel='stylesheet' type='text/css'> -->
 </head>
 <body>
-<!-- <div id="logout"><%= link_to 'Выйти', logout_path %></div> -->
+<div id="logout"><%= link_to 'Выйти', logout_path %></div>
 
 <div>
   <p id="notice"><%= flash[:notice] %></p>
@@ -46,7 +44,7 @@
         <input type="checkbox" name="selectAll" id="selectAllDomainList" /> Все <br>
         <%= form_tag select_esources_path do %>
           <label>Источники:</label><br>
-          <% origins = Origin.where(group: 1917) %>
+          <% origins = Origin.all %>
           <% origins.each do |origin| %>
             <%= check_box_tag "select_sources[]", origin.id, session[:eorigins].include?(origin.id), id: dom_id(origin) %>
             <%= label_tag dom_id(origin), origin.title %><br>

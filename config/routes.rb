@@ -16,16 +16,6 @@ MediaAnalyse::Application.routes.draw do
   match '/efeed/:id' => 'efeed#delete', via: :delete, as: :delete_efeed
   match '/efeed/create' => 'efeed#create', via: :post, as: :create_efeed
 
-  get '/feed' => 'feed#index', as: :feed
-  get '/show_new_messages' => 'feed#show_new_messages', as: :show_new_messages
-  get '/new_messages' => 'feed#new_messages', as: :new_messages
-  match '/select_sources' => 'feed#select_sources', via: :post, as: :select_sources
-  get '/feed/edit' => 'feed#edit', as: :edit_feed
-  get '/feed/new' => 'feed#new', as: :new_feed
-  match '/feed/:id' => 'feed#delete', via: :delete, as: :delete_feed
-  match '/feed/create' => 'feed#create', via: :post, as: :create_feed
-  get '/feed/puchkov' => 'feed#puchkov', as: :puchkov
-
   get '/queries/:query_id/keyphrases' => 'queries#keyphrases' , as: :query_keyphrases
   match '/queries/:query_id/commit_keyphrase' => 'keyphrases#commit_keyphrase', via: :post, as: :commit_keyphrase
   delete '/keyphrase/:id' => 'keyphrases#destroy', as: :keyphrase
