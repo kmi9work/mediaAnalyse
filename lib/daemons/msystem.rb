@@ -188,6 +188,7 @@ def open_url_curb logger, link
       logger.error "#{link} was not open. Sleep(#{k}). #{i}"
       logger.error e.message
       logger.error ''
+      easy.close
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
       str = "URL: #{link}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
