@@ -191,7 +191,7 @@ def open_url_curb logger, link
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
       str = "URL: #{link}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
-      send_email "Fatal error in rss parser.", "Fatal error in open_url_curb (#{link}) inside rss project.\nMessage:\n\n" + str
+      send_email "Fatal error in rss parser inside RSSER.", "Fatal error in open_url_curb (#{link}) inside RSSER.\nMessage:\n\n" + str
       logger.error "FATAL ERROR! --- #{e.message} ---"
       logger.error e.backtrace.join("\n")
       logger.error "============================================"
@@ -257,24 +257,12 @@ def fill_and_add_to_query logger, query, texts
 end
 
 def fill_and_save logger, origin, query, texts
-  logger.info "fill_and_save Texts: #{texts.count}"
+  logger.info "save Texts: #{texts.count}"
   count = 0
-  if origin.group != 1917
-    texts.each do |t|
-      if origin.origin_type =~ /rca/
-        t.content = get_link_content(t.url)[1]
-      end
-      t.emot = get_emot(t.title, (t.content.presence || t.description))
-      t.origin = origin
-      t.queries << query
-      count += 1 if t.save
-    end
-  else
-    texts.each do |t|
-      t.origin = origin
-      t.queries << query
-      count += 1 if t.save
-    end
+  texts.each do |t|
+    t.origin = origin
+    t.queries << query
+    count += 1 if t.save
   end
   return count
 end
@@ -310,13 +298,7 @@ def start_work origins, logger
             end
             unless text.blank?
               texts = parse logger, origin, text
-              tt_all = []
-              origin.queries.each do |query|
-                tt = [] #select_texts(logger, origin, query, texts)
-                fill_and_save(logger, origin, query, tt)
-                tt_all += tt
-              end
-              fill_and_save(logger, origin, [], texts - tt_all)
+              fill_and_save(logger, origin, texts)
             end
           end #if origin.origin_type =~ /search/
           s 2
@@ -325,7 +307,7 @@ def start_work origins, logger
       s 30
     rescue Exception => e
       str = "Thread: #{Thread.current.thread_variable_get(:thread_number)};\n" + e.message + "\n\n" + e.backtrace.join("\n")
-      send_email "Fatal error in msystem.", "Fatal error in start_work inside msystem.\nMessage:\n\n" + str
+      send_email "Fatal error in RSSER.", "Fatal error in start_work inside RSSER.\nMessage:\n\n" + str
       @my_logger.error "FATAL ERROR! --- #{e.message} --- Thread: #{Thread.current.thread_variable_get(:thread_number)};"
       @my_logger.error e.backtrace.join("\n")
       @my_logger.error "============================================"
@@ -346,8 +328,8 @@ require File.join(root, "config", "environment")
 while true
   begin
     origins = Origin.where.not(origin_type: 'browser')
-    origins_browser = Origin.where(origin_type: 'browser')
-    @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
+    # origins_browser = Origin.where(origin_type: 'browser')
+    @my_logger.info "Still monitoring... Origins: #{origins.count};"
     #Отдельно работаем с источниками browser, т.к. у них свои ограничения
     threads = []
     loggers = []
@@ -380,21 +362,21 @@ while true
       end
     end
     # threads.each(&:w)
-    @my_logger.info "Waiting threads..."
-    threads.each(&:join)
-    @my_logger.info "Threads done."
+    # @my_logger.info "Waiting threads..."
+    # threads.each(&:join)
+    # @my_logger.info "Threads done."
     GC.start
     s 20
     # Прошло 10 минут. Теперь отсеиваем нужные тексты.
-    Query.all.each do |query|
-      texts = Text.select_novel_for_query query
-      fill_and_add_to_query @my_logger, query, texts
-    end
-    Text.where(novel: true).update_all(novel: false)
+    # Query.all.each do |query|
+    #   texts = Text.select_novel_for_query query
+    #   fill_and_add_to_query @my_logger, query, texts
+    # end
+    # Text.where(novel: true).update_all(novel: false)
     
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
-    send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
+    send_email "Fatal error in RSSER.", "Fatal error in root inside RSSER.\nMessage:\n\n" + str
     @my_logger.error "FATAL ERROR! --- #{e.message} ---"
     @my_logger.error e.backtrace.join("\n")
     @my_logger.error "============================================"
