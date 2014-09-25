@@ -257,12 +257,11 @@ def fill_and_add_to_query logger, query, texts
   end
 end
 
-def fill_and_save logger, origin, query, texts
+def fill_and_save logger, origin, texts
   logger.info "save Texts: #{texts.count}"
   count = 0
   texts.each do |t|
     t.origin = origin
-    t.queries << query
     count += 1 if t.save
   end
   return count
@@ -272,36 +271,18 @@ def start_work origins, logger
   t = Time.now
   while Time.now - t < 600
     begin
+      origins.reload
       origins.each do |origin|
         unless origin.destroyed?
           logger.info "#{origin.title} processing..."
-          if origin.origin_type =~ /search/
-            origin.queries.each do |query|
-              query.keyphrases.each do |keyphrase|
-                text = open_url logger, origin.url, origin.query_position, keyphrase.body
-                unless text.blank?
-                  if origin.origin_type =~ /cp1251/
-                    text.force_encoding('WINDOWS-1251')
-                  end
-                  texts = parse logger, origin, text
-                  n = fill_and_save(logger, origin, query, texts)
-                  logger.info "#{origin.title} - #{query.title} - #{keyphrase.body}: #{n} saved."
-                else
-                  logger.error "#{origin.title} - #{query.title} - #{keyphrase.body}: Text is empty."
-                end
-                s 3
-              end
-            end
-          else
-            text = open_url logger, origin.url
-            if origin.origin_type =~ /cp1251/
-              text.force_encoding('WINDOWS-1251')
-            end
-            unless text.blank?
-              texts = parse logger, origin, text
-              fill_and_save(logger, origin, texts)
-            end
-          end #if origin.origin_type =~ /search/
+          text = open_url logger, origin.url
+          if origin.origin_type =~ /cp1251/
+            text.force_encoding('WINDOWS-1251')
+          end
+          unless text.blank?
+            texts = parse logger, origin, text
+            fill_and_save(logger, origin, texts)
+          end
           s 2
         end
       end
