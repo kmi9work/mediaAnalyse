@@ -300,6 +300,11 @@ def start_work origins, logger
   end
 end
 
+def save_origins root
+  f = File.open("#{root}/tmp/dump.yml", 'w+')
+  f.puts Origin.all.to_yaml
+end
+
 # ----------------------------- BEGIN -----------------------------
 ENV["RAILS_ENV"] ||= "production"
 NTHREADS = 1
@@ -346,19 +351,9 @@ while true
         end
       end
     end
-    # threads.each(&:w)
-    # @my_logger.info "Waiting threads..."
-    # threads.each(&:join)
-    # @my_logger.info "Threads done."
     GC.start
-    s 20
-    # Прошло 10 минут. Теперь отсеиваем нужные тексты.
-    # Query.all.each do |query|
-    #   texts = Text.select_novel_for_query query
-    #   fill_and_add_to_query @my_logger, query, texts
-    # end
-    # Text.where(novel: true).update_all(novel: false)
-    
+    s 20 
+    save_origins root
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in RSSER.", "Fatal error in root inside RSSER.\nMessage:\n\n" + str
@@ -368,66 +363,3 @@ while true
   end
 end
 
-# ----------------------------- END ------------------------------------
-
-=begin
-origins.each do |origin|
-  if type == :rss
-    thr_rss = Thread.new do
-      while (true) do
-        otracked = otyped #.where('tracked_count > 0') ??? Пока не нужны, т.к. для каждого запроса в одном типе парсятся все источники
-        @my_logger_rss.info "----------------------"
-        @my_logger_rss.info "Still parsing RSS's. Count: #{otracked.count}"
-        count_rss = 0
-        selected_rss = 0
-        otracked.each do |o|
-          texts = get_rss_texts o
-          count_rss += texts.count
-          selected_rss += select_texts(texts, o.quieries) #save is inside. returns count selected
-        end
-        @my_logger_rss.info "=== New messages: #{count_rss} | Selected: #{selected_rss}==="
-        GC.start
-        s 50
-      end
-    end
-  elsif type == :api
-    thr_api = Thread.new do
-      while (true) do
-        otracked = otyped #.where('tracked_count > 0') ???
-        @my_logger_api.info "----------------------"
-        @my_logger_api.info "Still parsing API's. Count: #{otracked.count}"
-        count_api = 0
-        otracked.each do |o|
-          count_api += get_api_texts o
-        end
-        @my_logger_api.info "=== New messages: #{count_api} ==="
-        GC.start
-        s 50
-      end
-    end
-  elsif type == :browser
-    next
-    # thr_browser = Thread.new do
-    #   if Rails.env.production?
-    #     headless = Headless.new
-    #     headless.start
-    #     logger.info "Headless started."
-    #   end
-    #   wait = Selenium::WebDriver::Wait.new(:timeout => 60)
-    #   browsers = {}
-    #   while (true) do
-    #     otracked = otyped #.where('tracked_count > 0') ???
-    #     @my_logger_browser.info "----------------------"
-    #     @my_logger_browser.info "Still parsing Browser's. Count: #{otracked.count}"
-    #     count_browser = 0
-    #     otracked.each do |o|
-    #       count_browser += get_browser_texts o
-    #     end
-    #     @my_logger_browser.info "=== New messages: #{count_browser} ==="
-    #     GC.start
-    #     s 500
-    #   end
-    # end
-  end
-end
-=end
