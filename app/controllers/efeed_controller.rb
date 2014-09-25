@@ -1,7 +1,8 @@
 class EfeedController < ApplicationController
   # skip_before_filter :require_login
+  before_action :get_origins, only: [:show_new_messages, :new_messages]
+  before_action :set_session, only: [:index, :puchkov]
   def index
-    set_session
     get_texts
     session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     render 'index', layout: false
@@ -35,20 +36,10 @@ class EfeedController < ApplicationController
     redirect_to 'edit', layout: false
   end
   private
+  
   def origin_params
     params.require(:origin).permit(:title, :url, :origin_type, :query_position)
   end
-  def set_session
-    if session[:eorigins].blank?
-      session[:eorigins] = Origin.all.map(&:id)
-    end
-    @origins = Origin.where(id: session[:eorigins])
-    if session[:elast].blank?
-      session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
-    end
-  end
-
-  private
   def get_origins
     @origins = Origin.all
   end
@@ -64,13 +55,14 @@ class EfeedController < ApplicationController
                  .order(:datetime => :desc).where('id > ?', id).count
     render json: {tcount: @tcount.to_s}.to_json
   end
-
   def set_session
-    if session[:origins].blank?
-      session[:origins] = Origin.all.map(&:id)
+    if session[:eorigins].blank?
+      session[:eorigins] = Origin.all.map(&:id)
     end
-    if session[:last].blank?
-      session[:last] = Text.order(id: :asc).last.id
+    @origins = Origin.where(id: session[:eorigins])
+    if session[:elast].blank?
+      session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     end
   end
+
 end

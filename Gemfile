@@ -22,14 +22,13 @@ end
 
 group :production do
 	gem 'mysql2'
-  gem 'feedjira'
 end
 group :development, :test do
 	# gem 'sqlite3'
 	gem 'pg'
 end
 
-
+gem 'feedjira'
 gem 'nokogiri'
 gem 'daemons'
 gem 'daemons-rails'
