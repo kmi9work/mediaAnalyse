@@ -379,6 +379,8 @@ while true
     GC.start
     s 20
     # Прошло 10 минут. Теперь отсеиваем нужные тексты.
+    Text.where(novel: true).each(&:index)
+    Sunspot.commit
     Query.all.each do |query|
       texts = Text.select_novel_for_query query
       fill_and_add_to_query @my_logger, query, texts
