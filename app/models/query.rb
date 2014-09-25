@@ -17,29 +17,32 @@ class Query < ActiveRecord::Base
     integral(texts.all)
   end
   def integral_emot_smi
+    integral(texts.source('smi'))
   end
   def integral_emot_sn
+    integral(texts.source('sn'))
   end
   def integral_emot_blogs
+    integral(texts.source('blogs'))
   end
 
   def last_hour_emot_smi
     ret = {}
-    ret[:value] = integral texts.from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    ret[:value] = integral texts.source('smi').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     ret[:rate] = ret[:value] - prev
     return ret
   end
   def last_hour_emot_sn
     ret = {}
-    ret[:value] = integral texts.from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    ret[:value] = integral texts.source('sn').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     ret[:rate] = ret[:value] - prev
     return ret
   end
   def last_hour_emot_blogs
     ret = {}
-    ret[:value] = integral texts.from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    ret[:value] = integral texts.source('blogs').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     ret[:rate] = ret[:value] - prev
     return ret
