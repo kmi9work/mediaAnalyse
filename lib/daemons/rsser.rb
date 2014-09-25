@@ -288,7 +288,7 @@ def start_work origins, logger
           s 2
         end
       end
-      s 30
+      s 60
     rescue Exception => e
       str = "Thread: #{Thread.current.thread_variable_get(:thread_number)};\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in RSSER.", "Fatal error in start_work inside RSSER.\nMessage:\n\n" + str
@@ -351,8 +351,8 @@ while true
       end
     end
     GC.start
-    s 20 
     save_origins root
+    sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in RSSER.", "Fatal error in root inside RSSER.\nMessage:\n\n" + str
