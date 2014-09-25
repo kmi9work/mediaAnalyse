@@ -67,3 +67,4 @@ name = "Yandex Blogs API"
 Origin.create(url: url, origin_type: "rss_ya_blogs_search_sourceblogs", title: name, query_position: url_query_pos, timeout: 60)
 
 User.create(username: 'admin', password: 'gfhjkm')
+

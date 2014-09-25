@@ -79,8 +79,8 @@ def parse_rss logger, origin, text
   save_feeds.reverse_each do |f|
     t = Text.new
     t.origin = origin
-    t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '')
-    t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '')
+    t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
+    t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
     t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url)
@@ -136,7 +136,7 @@ def parse_vk_api logger, origin, text
       t = Text.new
       t.origin = origin
       t.title = ""
-      t.content = f['text'] || ""
+      t.content = (f['text'] || "").gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
       t.author = ""
       t.url = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       t.guid = t.url
