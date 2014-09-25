@@ -314,7 +314,7 @@ def start_work origins, logger
           s 2
         end
       end
-      s 30
+      s 60
     rescue Exception => e
       str = "Thread: #{Thread.current.thread_variable_get(:thread_number)};\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in msystem.", "Fatal error in start_work inside msystem.\nMessage:\n\n" + str
@@ -375,8 +375,8 @@ while true
     threads.each(&:join)
     @my_logger.info "Threads done."
     GC.start
-    s 20
-    # Прошло 10 минут. Теперь отсеиваем нужные тексты.
+    
+    # Прошло 12 минут. Теперь отсеиваем нужные тексты.
     Text.where(novel: true).each(&:index)
     Sunspot.commit
     Query.all.each do |query|
@@ -384,7 +384,7 @@ while true
       fill_and_add_to_query @my_logger, query, texts
     end
     Text.where(novel: true).update_all(novel: false)
-    
+    sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
