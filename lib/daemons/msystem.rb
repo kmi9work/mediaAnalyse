@@ -38,17 +38,16 @@ def s k
   end
 end
 
-def get_link_content link, def_title = ""
-  @my_logger.debug "Getting rich content."
+def get_link_content logger, link, def_title = ""
+  logger.debug "Getting rich content."
   yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
-  doc = open_url(yandex_rich_url, "URL: #{link}")
+  text = open_url(logger, yandex_rich_url)
   s -50
-  if (doc)
-    doc = doc.readlines.join
-    rich_ret = JSON.parse(doc)
+  unless text.blank?
+    rich_ret = JSON.parse(text)
     return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
   else
-    @my_logger.debug "Can't download #{link}. -----------------"
+    logger.error "Can't download RCA: #{link}."
     return nil
   end
 end
@@ -181,27 +180,26 @@ def open_url_curb logger, link
       else
         text = easy.body_str
       end
-      break
+      i += 100
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
       text = nil
       k = rand(5) + 5
       logger.error "#{link} was not open. Sleep(#{k}). #{i}"
       logger.error e.message
       logger.error ''
-      easy.close
       sleep(k)
     rescue IO::EAGAINWaitReadable, Exception => e
+      text = nil
       str = "URL: #{link}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in rss parser.", "Fatal error in open_url_curb (#{link}) inside rss project.\nMessage:\n\n" + str
       logger.error "FATAL ERROR! --- #{e.message} ---"
       logger.error e.backtrace.join("\n")
       logger.error "============================================"
-      easy.close
       s 10
-      return nil
+    ensure
+      easy.close
     end
   end
-  easy.close
   return text
 end
 
@@ -249,7 +247,7 @@ end
 def fill_and_add_to_query logger, query, texts
   texts.each do |text|
     if text.origin.origin_type =~ /rca/
-      text.content = get_link_content(text.url)[1]
+      text.content = get_link_content(logger, text.url)[1]
     end
     text.emot = get_emot(text.title, (text.content.presence || text.description))
     text.queries << query
@@ -262,7 +260,7 @@ def fill_and_save logger, origin, query, texts
   count = 0
   texts.each do |t|
     if origin.origin_type =~ /rca/
-      t.content = get_link_content(t.url)[1]
+      t.content = get_link_content(logger, t.url)[1]
     end
     t.emot = get_emot(t.title, (t.content.presence || t.description))
     t.origin = origin
