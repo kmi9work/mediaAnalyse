@@ -301,7 +301,7 @@ def start_work origins, logger
 end
 
 def save_origins root
-  f = File.open("#{root}/tmp/dump.yml", 'w+')
+  f = File.open("#{root}/tmp/dump.yml", 'w')
   f.puts Origin.all.to_yaml
 end
 
