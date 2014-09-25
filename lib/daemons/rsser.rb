@@ -38,17 +38,16 @@ def s k
   end
 end
 
-def get_link_content link, def_title = ""
+def get_link_content logger, link, def_title = ""
   @my_logger.debug "Getting rich content."
   yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
-  doc = open_url(yandex_rich_url, "URL: #{link}")
+  text = open_url(logger, yandex_rich_url)
   s -50
   if (doc)
-    doc = doc.readlines.join
-    rich_ret = JSON.parse(doc)
+    rich_ret = JSON.parse(text)
     return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
   else
-    @my_logger.debug "Can't download #{link}. -----------------"
+    logger.error "Can't RCA #{link}. -----------------"
     return nil
   end
 end
@@ -184,6 +183,7 @@ def open_url_curb logger, link
       else
         text = easy.body_str
       end
+      easy.close
       break
     rescue StandardError, Curl::Err::CurlError, Timeout::Error => e
       text = nil
@@ -204,7 +204,6 @@ def open_url_curb logger, link
       return nil
     end
   end
-  easy.close
   return text
 end
 
@@ -233,7 +232,7 @@ def select_texts logger, texts, query
 end
 
 
-def get_emot title, content
+def get_emot logger, title, content
   s -50
   t = title || ""
   c = content || ""
@@ -252,9 +251,9 @@ end
 def fill_and_add_to_query logger, query, texts
   texts.each do |text|
     if text.origin.origin_type =~ /rca/
-      text.content = get_link_content(text.url)[1]
+      text.content = get_link_content(logger, text.url)[1]
     end
-    text.emot = get_emot(text.title, (text.content.presence || text.description))
+    text.emot = get_emot(logger, text.title, (text.content.presence || text.description))
     text.queries << query
     text.save
   end
