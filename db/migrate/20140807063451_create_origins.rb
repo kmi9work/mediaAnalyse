@@ -7,6 +7,7 @@ class CreateOrigins < ActiveRecord::Migration
       t.string :origin_type
       t.integer :group, default: 0
       t.integer :timeout, default: 20
+      t.boolean :corrupted, default: false
       t.timestamps
     end
   end

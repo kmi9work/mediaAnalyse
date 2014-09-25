@@ -23,14 +23,11 @@
     <td><%= f.text_field 'url' %></td>
   </tr>
   <tr>
-    <td>Тип потока:</td>
-    <td><%= f.text_field 'origin_type', value: 'rss' %></td>
-    <td>rss / json_search_vk_api / rss_search_ya_blogs</td>
-  </tr>
-  <tr>
-    <td>Позиция поискового запроса:</td>
-    <td><%= f.text_field 'query_position', value: '0' %></td>
-    <td>В случае, если источник предполагает вставку запроса</td>
+    <td>
+      Тип потока: RSS 
+      <%= f.hidden_field 'origin_type', value: 'rss' %>
+      <%= f.hidden_field 'query_position', value: '0' %>
+    </td>
   </tr>
   <tr>
     <td><%= f.submit 'Создать' %></td>   

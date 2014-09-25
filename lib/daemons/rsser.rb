@@ -96,12 +96,15 @@ rescue Feedjira::NoParserAvailable => e
   str = "Text: #{text}\n\n" + e.message + "\n" + e.backtrace.join("\n")
   logger.info "Text: #{text}"
   logger.info "------------------------------------"
-  # send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
+  unless origin.corrupted?
+    send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
+  end
   return []
 rescue Exception => e
   str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
-  send_email "Fatal error in msystem project.", "Fatal error in parse_rss inside msystem project.\nMessage:\n\n" + str
-
+  unless origin.corrupted?
+    send_email "Fatal error in msystem project.", "Fatal error in parse_rss inside msystem project.\nMessage:\n\n" + str
+  end
   logger.error "FATAL ERROR! --- #{e.message} ---"
   logger.error e.backtrace.join("\n")
   logger.error "============================================"

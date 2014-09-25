@@ -19,7 +19,6 @@ eurls = {
 'http://www.unn.com.ua/rss/news_ru.xml' => 'Украинские Национальные Новости',
 'http://rss.unian.net/site/news_rus.rss' => 'ИА УНИАН',
 'http://regnum.ru/rss/ukraina.xml' => 'ИА REGNUM',
-'http://novorossy.ru/news/rss/1' => 'Заря Новороссии',
 'http://k.img.com.ua/rss/ru/all_news2.0.xml' => 'Корреспондент.net',
 'http://112.ua/rss' => '112.ua',
 'http://vesti.ua/feed/53-glavnye-vesti-strany.rss' => 'Вести UA',
@@ -37,9 +36,13 @@ eurls = {
 'http://ria.ru/export/rss2/politics/index.xml' => 'РИА Новости - Политика',
 'http://rian.com.ua/export/rss2/world/index.xml' => 'РИА Новости Украина - В мире',
 'http://rian.com.ua/export/rss2/politics/index.xml' => 'РИА Новости Украина - Политика',
+'http://novorossy.ru/news/rss/1' => 'Заря Новороссии',
 'http://www.ukrinform.ua/rus/rss/news/lastnews	' => 'Укринформ'
 }
 
 eurls.each do |url, name|
-  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name, group: 1917)
+  Origin.create(url: url, origin_type: "rss_sourcesmi", title: name)
 end
+
+oo = Origin.all.last(2).each{|o| o.corrupted = true; o.save}
+

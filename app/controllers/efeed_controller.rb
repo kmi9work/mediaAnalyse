@@ -40,7 +40,7 @@ class EfeedController < FeedController
   end
   def set_session
     if session[:eorigins].blank?
-      session[:eorigins] = Origin.where(group: 1917).map(&:id)
+      session[:eorigins] = Origin.all.map(&:id)
     end
     @origins = Origin.where(id: session[:eorigins])
     if session[:elast].blank?

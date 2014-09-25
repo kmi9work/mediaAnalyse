@@ -46,10 +46,12 @@
         <input type="checkbox" name="selectAll" id="selectAllDomainList" /> Все <br>
         <%= form_tag select_esources_path do %>
           <label>Источники:</label><br>
-          <% origins = Origin.where(group: 1917) %>
+          <% origins = Origin.all %>
           <% origins.each do |origin| %>
             <%= check_box_tag "select_sources[]", origin.id, session[:eorigins].include?(origin.id), id: dom_id(origin) %>
-            <%= label_tag dom_id(origin), origin.title %><br>
+            <%= label_tag dom_id(origin), origin.title %>
+            <%= "<font size='5' color='red'>!</font>".html_safe if origin.corrupted? %>
+            <br>
           <% end %>
           <%= submit_tag 'Применить' %>
         <% end %>
