@@ -5,44 +5,6 @@ class Text < ActiveRecord::Base
   has_many :queries, through: :queries_texts
   belongs_to :origin
   has_many :essences
-  self.primary_key = :id
-
-  searchable do
-    text :title
-    text :description
-    text :content
-    integer :origin_id
-    boolean :novel
-    string :author
-    string :url
-    integer :sort_emot do
-      my_emot || emot
-    end
-    time :datetime
-    time :created_at
-    boolean :novel
-  end
-
-  def Text.select_novel_for_query query
-    texts = []
-    query.keyphrases.each do |kp|
-      texts += Text.search do
-        fulltext kp.body
-        with :novel, true
-      end.results
-    end
-    return texts
-  end
-
-  def Text.select_all_for_query query
-    texts = []
-    query.keyphrases.each do |kp|
-      texts += Text.search do
-        fulltext kp.body
-      end.results
-    end
-    return texts
-  end
 
   def Text.from_to from, to
     if from and to
