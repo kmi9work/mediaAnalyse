@@ -96,7 +96,7 @@ rescue Feedjira::NoParserAvailable => e
   str = "Text: #{text}\n\n" + e.message + "\n" + e.backtrace.join("\n")
   logger.info "Text: #{text}"
   logger.info "------------------------------------"
-  send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
+  # send_email "Can't parse in rss project.", "parse_rss: Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
   return []
 rescue Exception => e
   str = "Origin: #{origin.title}\n\n" + e.message + "\n\n" + e.backtrace.join("\n")
