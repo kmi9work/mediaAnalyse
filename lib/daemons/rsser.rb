@@ -43,7 +43,7 @@ def get_link_content logger, link, def_title = ""
   yandex_rich_url = "http://rca.yandex.com/?key=#{RICH_CONTENT_KEY}&url=#{URI.escape(link)}&content=full"
   text = open_url(logger, yandex_rich_url)
   s -50
-  if (doc)
+  if (text)
     rich_ret = JSON.parse(text)
     return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
   else
