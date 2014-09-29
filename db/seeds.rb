@@ -37,7 +37,7 @@ eurls = {
 'http://rian.com.ua/export/rss2/world/index.xml' => 'РИА Новости Украина - В мире',
 'http://rian.com.ua/export/rss2/politics/index.xml' => 'РИА Новости Украина - Политика',
 'http://novorossy.ru/news/rss/1' => 'Заря Новороссии',
-'http://www.ukrinform.ua/rus/rss/news/lastnews	' => 'Укринформ'
+'http://www.ukrinform.ua/rus/rss/news/lastnews' => 'Укринформ'
 }
 
 eurls.each do |url, name|
