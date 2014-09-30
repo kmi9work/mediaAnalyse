@@ -28,22 +28,43 @@ class Query < ActiveRecord::Base
 
   def last_hour_emot_smi
     ret = {}
-    ret[:value] = integral texts.source('smi').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
-    prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    tt = texts.source('smi').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    if tt.blank?
+      tt = texts.source('smi').last(10) 
+      ttt = texts.source('smi').last(20) - tt
+    else
+      ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    end
+    ret[:value] = integral tt
+    prev = integral ttt  
     ret[:rate] = ret[:value] - prev
     return ret
   end
   def last_hour_emot_sn
     ret = {}
-    ret[:value] = integral texts.source('sn').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
-    prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    tt = texts.source('sn').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    if tt.blank?
+      tt = texts.source('sn').last(10) 
+      ttt = texts.source('sn').last(20) - tt
+    else
+      ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    end
+    ret[:value] = integral tt
+    prev = integral ttt  
     ret[:rate] = ret[:value] - prev
     return ret
   end
   def last_hour_emot_blogs
     ret = {}
-    ret[:value] = integral texts.source('blogs').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
-    prev = integral texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    tt = texts.source('blogs').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    if tt.blank?
+      tt = texts.source('blogs').last(10) 
+      ttt = texts.source('blogs').last(20) - tt
+    else
+      ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
+    end
+    ret[:value] = integral tt
+    prev = integral ttt  
     ret[:rate] = ret[:value] - prev
     return ret
   end
