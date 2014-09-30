@@ -7,146 +7,7 @@ $(function() {
 });
 
 $(function() {
-    window.options_emot = {
-      colors: ["#90ee7e", "#2b908f", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
-        "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
-      chart: {
-        renderTo: 'chart_emot',
-        type: 'spline',
-        spacingBottom: 30,
-        marginTop: 60,
-        zoomType: 'x'
-      },
-
-      title: {
-        text: 'Эмоциональность статей'
-      },
-
-      subtitle: {
-        text: null
-      },
-
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 24 * 3600 * 1000,
-        tickWidth: 0,
-        gridLineWidth: 1,
-        labels: {
-          align: 'left',
-          x: 3,
-          y: 16
-        }
-      },
-
-      yAxis: [{ // left y axis
-        title: {
-          text: null
-        },
-        labels: {
-          align: 'left',
-          x: 3,
-          y: 16,
-          format: '{value:.,0f}'
-        },
-        showFirstLabel: true,
-        min: -3,
-        max: 3
-      }],
-
-      legend: {
-        align: 'left',
-        verticalAlign: 'top',
-        y: 20,
-        floating: true,
-        borderWidth: 0
-      },
-
-      tooltip: {
-        shared: true,
-        crosshairs: true
-      },
-
-      plotOptions: {
-        series: {
-          name: 'Эмоциональность',
-          cursor: 'pointer',
-          marker: {
-            lineWidth: 1
-          }
-        }
-      },
-
-      series: [{}]
-    };//Options emot
-
-    window.options_count = {
-      chart: {
-        renderTo: 'chart_count',
-        type: 'spline',
-        spacingBottom: 30,
-        marginTop: 60,
-        zoomType: 'x'
-      },
-
-      title: {
-        text: 'Количество статей'
-      },
-
-      subtitle: {
-        text: null
-      },
-
-      xAxis: {
-        type: 'datetime',
-        tickInterval: 24 * 3600 * 1000,
-        tickWidth: 0,
-        gridLineWidth: 1,
-        labels: {
-          align: 'left',
-          x: 3,
-          y: 16
-        }
-      },
-
-      yAxis: [{ // left y axis
-        title: {
-          text: null
-        },
-        labels: {
-          align: 'left',
-          x: 3,
-          y: 16,
-          format: '{value:.,0f}'
-        },
-        showFirstLabel: true
-      }],
-
-      legend: {
-        align: 'left',
-        verticalAlign: 'top',
-        y: 20,
-        floating: true,
-        borderWidth: 0
-      },
-
-      tooltip: {
-        shared: true,
-        crosshairs: true
-      },
-
-      plotOptions: {
-        series: {
-          name: 'Количество',
-          cursor: 'pointer',
-          color: '#2b908f',
-          marker: {
-            lineWidth: 1
-          }
-        }
-      },
-
-      series: [{}]
-    };//Options count
+    
     window.options_both = {
       chart:  {
                 renderTo: 'chart_both',
@@ -253,13 +114,9 @@ $(function() {
     });
       var parsed_data_emot = data.emot.map(parseDate);
       var parsed_data_count = data.count.map(parseDate);
-      window.options_emot.series[0].data = parsed_data_emot;
-      window.options_count.series[0].data = parsed_data_count;
       window.options_both.series[0].data = parsed_data_count;
       window.options_both.series[1].data = parsed_data_emot;
       Highcharts.setOptions(Highcharts.theme);
-      var chart_emot = new Highcharts.Chart(window.options_emot);
-      var chart_count = new Highcharts.Chart(window.options_count);
       var chart_count = new Highcharts.Chart(window.options_both);
     });
   });  
