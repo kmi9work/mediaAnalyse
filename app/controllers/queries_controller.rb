@@ -58,7 +58,7 @@ class QueriesController < ApplicationController
     cur = fst.dup
     lst = texts.last.datetime
     index = 0
-    cur += 3600
+    cur += 3600*24
     while cur <= lst
       n = 0
       med = 0
@@ -75,7 +75,7 @@ class QueriesController < ApplicationController
         chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
         chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
       end
-      cur += 3600
+      cur += 3600*24
     end
     unless (cur > DateTime.now)
       n = 0
