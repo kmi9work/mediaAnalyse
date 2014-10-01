@@ -9,7 +9,7 @@ $(function() {
     return $.ajax({
       url: "/texts/" + id + "/feedback?score=" + score
     }).done(function(respond) {
-      $(my_this).after('Реальная эмоциональность: <div class="emot emot_' + (parseInt(score) + 3).toString() + '"> ' + score + ' </div>');
+      $(my_this).after('Реальная тональность: <div class="emot emot_' + (parseInt(score) + 3).toString() + '"> ' + score + ' </div>');
       return $(my_this).remove();
     });
   });
