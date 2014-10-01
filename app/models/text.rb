@@ -1,7 +1,7 @@
 require 'net/http'
 
 class Text < ActiveRecord::Base
-  has_many :queries_texts
+  has_many :queries_texts, dependent: :destroy
   has_many :queries, through: :queries_texts
   belongs_to :origin
   has_many :essences

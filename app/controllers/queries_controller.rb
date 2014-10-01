@@ -51,6 +51,8 @@ class QueriesController < ApplicationController
     chdata = {}
     chdata['emot'] = []
     chdata['count'] = []
+    chdata['day_emot'] = []
+    chdata['day_count'] = []
     return render(json: chdata.to_json) if texts.empty?
     med = texts[0].my_emot || texts[0].emot
     n = 1.0
@@ -58,38 +60,82 @@ class QueriesController < ApplicationController
     cur = fst.dup
     lst = texts.last.datetime
     index = 0
-    cur += 3600*24
+    day_count = 1
+    day_med = med
+    day_n = 1.0
+    cur += 3600
     while cur <= lst
       n = 0
       med = 0
       while index < texts.size - 1 and texts[index].datetime < cur
         med += texts[index].my_emot || texts[index].emot || 0
+        day_med += texts[index].my_emot || texts[index].emot || 0
         n += 1
+        day_n += 1
         index += 1
       end
       fst = cur
       if (n > 0)
         chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med.to_f / n]
         chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
+        if day_count >= 24
+          chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), day_med.to_f / day_n]
+          chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), day_n]
+          day_med = 0
+          day_n = 0
+        end
       else
+        if day_count >= 24
+          day_count = 0
+          if (day_n > 0)
+            chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), day_med.to_f / day_n]
+            chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), day_n]
+            day_med = 0
+            day_n = 0
+          else
+            chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['day_emot'].last[1]]
+            chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
+          end
+        end
         chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
         chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
       end
-      cur += 3600*24
+      cur += 3600
+      day_count += 1
     end
     unless (cur > DateTime.now)
       n = 0
       med = 0
       while index < texts.size - 1 and texts[index].datetime < cur
         med += texts[index].my_emot || texts[index].emot || 0
+        day_med += texts[index].my_emot || texts[index].emot || 0
         n += 1
+        day_n += 1
         index += 1
       end
       fst = cur
       if (n > 0)
         chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), med.to_f / n]
-        chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
+        chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), n]
+        if day_count >= 24
+          chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), day_med.to_f / day_n]
+          chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), day_n]
+          day_med = 0
+          day_n = 0
+        end
       else
+        if day_count >= 24
+          day_count = 0
+          if (day_n > 0)
+            chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), day_med.to_f / day_n]
+            chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), day_n]
+            day_med = 0
+            day_n = 0
+          else
+            chdata['day_emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['day_emot'].last[1]]
+            chdata['day_count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
+          end
+        end
         chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
         chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
       end

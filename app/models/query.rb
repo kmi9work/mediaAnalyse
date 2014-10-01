@@ -7,9 +7,9 @@ require 'headless'
 class Query < ActiveRecord::Base
 
 	belongs_to :category
-  has_many :queries_texts
+  has_many :queries_texts, dependent: :destroy
 	has_many :texts, through: :queries_texts
-  has_many :origins_queries
+  has_many :origins_queries, dependent: :destroy
   has_many :origins, through: :origins_queries
   has_many :keyphrases
   
