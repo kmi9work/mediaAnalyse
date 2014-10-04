@@ -23,9 +23,11 @@ end
 group :production do
 	gem 'mysql2'
 end
-group :development, :test do
+group :development do
 	# gem 'sqlite3'
 	gem 'pg'
+	gem 'capistrano'
+	gem 'rvm-capistrano'
 end
 
 gem 'feedjira'
@@ -38,6 +40,7 @@ gem 'kaminari'
 gem 'sunspot_rails', '2.0.0'
 gem 'sunspot_solr', '2.0.0'
 gem 'progress_bar'
+gem 'unicorn'
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
@@ -51,11 +54,7 @@ gem 'net-ssh-gateway'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
-# Use unicorn as the app server
-# gem 'unicorn'
-
 # Use Capistrano for deployment
-gem 'capistrano', group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
