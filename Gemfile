@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby '2.1.2'
 gem 'rails', '4.0.0'
 gem 'sass-rails', '~> 4.0.0'
 
@@ -23,12 +24,11 @@ end
 group :production do
 	gem 'mysql2'
 end
-group :development do
+# group :development do
 	# gem 'sqlite3'
 	gem 'pg'
-	gem 'capistrano'
-	gem 'rvm-capistrano'
-end
+	
+# end
 
 gem 'feedjira'
 gem 'nokogiri'
@@ -40,7 +40,14 @@ gem 'kaminari'
 gem 'sunspot_rails', '2.0.0'
 gem 'sunspot_solr', '2.0.0'
 gem 'progress_bar'
+
+#deploy
 gem 'unicorn'
+gem 'unicorn-rails'
+gem 'capistrano', '~> 2.15'
+gem "rvm-capistrano"
+# gem 'bundler-capistrano'
+
 
 # gem 'myaso', :git => 'https://github.com/dmchk/myaso.git'
 
