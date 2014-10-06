@@ -29,7 +29,7 @@ gem 'sorcery'
 gem 'logger'
 gem 'kaminari'
 gem 'sunspot_rails', '2.0.0'
-gem 'sunspot_solr', '2.0.0'
+gem 'sunspot_solr', '2.0.0', group: :development
 gem 'progress_bar'
 
 #deploy
