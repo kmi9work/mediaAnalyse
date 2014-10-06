@@ -21,14 +21,7 @@ end
 
 # mygems
 
-group :production do
-	gem 'mysql2'
-end
-# group :development do
-	# gem 'sqlite3'
-	gem 'pg'
-	
-# end
+gem 'pg'
 
 gem 'feedjira'
 gem 'nokogiri'
