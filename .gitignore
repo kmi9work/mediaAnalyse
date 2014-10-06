@@ -23,4 +23,6 @@
 /db/schema*
 /config/database.yml
 /.htaccess
-/solr/*
+/solr/data/*
+/solr/pids/development/*
+/solr/pids/production/*

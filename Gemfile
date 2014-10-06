@@ -15,10 +15,7 @@ gem 'jquery-rails'
 
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
-group :doc do
-  # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
-end
+
 
 # mygems
 
@@ -48,15 +45,3 @@ gem "rvm-capistrano"
 gem 'selenium-webdriver'
 gem 'headless'
 gem 'net-ssh-gateway'
-
-# gem 'pg'
-# gem 'websocket-rails'
-
-# Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
-
-# Use Capistrano for deployment
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
-
