@@ -127,8 +127,6 @@ GEM
       thor (>= 0.18.1, < 2.0)
     raindrops (0.13.0)
     rake (10.3.2)
-    rdoc (4.1.2)
-      json (~> 1.4)
     ref (1.0.5)
     rsolr (1.0.10)
       builder (>= 2.1.2)
@@ -142,9 +140,6 @@ GEM
       sprockets (~> 2.8, <= 2.11.0)
       sprockets-rails (~> 2.0)
     sax-machine (1.0.2)
-    sdoc (0.4.1)
-      json (~> 1.7, >= 1.7.7)
-      rdoc (~> 4.0)
     selenium-webdriver (2.43.0)
       childprocess (~> 0.5)
       multi_json (~> 1.0)
@@ -216,7 +211,6 @@ DEPENDENCIES
   rails (= 4.0.0)
   rvm-capistrano
   sass-rails (~> 4.0.0)
-  sdoc
   selenium-webdriver
   sorcery
   sunspot_rails (= 2.0.0)
