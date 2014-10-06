@@ -15,7 +15,7 @@
 /log/*
 /tmp/*
 
-/Gemfile.lock
+#/Gemfile.lock
 /vendor/*
 *.TMP
 /public/assets/*
