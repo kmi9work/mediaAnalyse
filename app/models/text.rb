@@ -6,6 +6,9 @@ class Text < ActiveRecord::Base
   belongs_to :origin
   has_many :essences
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   # searchable do
   #   text :title
   #   text :description
@@ -22,13 +25,24 @@ class Text < ActiveRecord::Base
   #   boolean :novel
   # end
 
+
+  def Text.search_novel query
+    tire.search do
+      query { string query } if query.present?
+      filter :novelty, novel: true
+    end
+  end
+
+  def Text.search query
+    tire.search do
+      query { string query } if query.present?
+    end
+  end  
+
   def Text.select_novel_for_query query
     texts = []
     query.keyphrases.each do |kp|
-      texts += Text.search do
-        fulltext kp.body
-        with :novel, true
-      end.results
+      texts += Text.search_novel(kp.body).results
     end
     return texts
   end
@@ -36,9 +50,7 @@ class Text < ActiveRecord::Base
   def Text.select_all_for_query query
     texts = []
     query.keyphrases.each do |kp|
-      texts += Text.search do
-        fulltext kp.body
-      end.results
+      texts += Text.search(kp.body).results
     end
     return texts
   end
