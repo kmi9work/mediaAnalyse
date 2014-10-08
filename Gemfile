@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 ruby '2.1.3'
-gem 'rails', '4.0.0'
-gem 'sass-rails', '~> 4.0.0'
+gem 'rails', '4.1.6'
+gem 'sass-rails'
 
 # Use Uglifier as com	essor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.0.0'
+gem 'uglifier'
+gem 'coffee-rails'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 gem 'execjs'
@@ -14,7 +14,7 @@ gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
 
 gem 'turbolinks'
-gem 'jbuilder', '~> 1.2'
+gem 'jbuilder'
 
 
 # mygems

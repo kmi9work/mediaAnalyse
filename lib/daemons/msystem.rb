@@ -83,7 +83,7 @@ def parse_rss logger, origin, text
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
     t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url)
-    t.datetime = f.published || Time.now
+    t.datetime = f.published || DateTime.now
     #t.content = f.content || "" ???
     texts << t if !t.content.blank? or !t.title.blank? or !t.description.blank? or !t.url.blank?
   end
