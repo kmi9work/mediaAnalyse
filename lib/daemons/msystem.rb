@@ -22,11 +22,13 @@ def send_email subject, body
     ActionMailer::Base.smtp_settings = {  
       :openssl_verify_mode => 'none'
     }
-    ActionMailer::Base.mail(:from => "info@msystem2.amchs.ru", 
+    ActionMailer::Base.mail(:from => "info@31.24.30.28", 
                           :to => "kmi9.other@gmail.com", 
                           :subject => subject, :body => body).deliver
-  rescue
+  rescue Exception => e
     @my_logger.error "Send Email FAILED."
+    @my_logger.error e.message
+    @my_logger.error e.backtrace.join("\n")
   end
 end
 
@@ -44,17 +46,19 @@ def get_link_content logger, link, def_title = ""
   text = open_url(logger, yandex_rich_url)
   s -50
   unless text.blank?
-    rich_ret = JSON.parse(text)
+    begin
+      rich_ret = JSON.parse(text)
+    rescue Exception => e
+      logger.error "RCA json parse failed."
+      logger.error e.message
+      logger.error e.backtrace.join("\n")
+      return [nil, nil]
+    end
     return [rich_ret["title"] ? CGI.unescapeHTML(rich_ret["title"]) : def_title, rich_ret["content"] ? CGI.unescapeHTML(rich_ret["content"]) : ""]
   else
     logger.error "Can't download RCA: #{link}."
-    return nil
+    return [nil, nil]
   end
-end
-
-def select_texts texts, queries
-  #here You should choose only texts according quieries.
-  return texts.count
 end
 
 def parse_rss logger, origin, text
@@ -66,9 +70,10 @@ def parse_rss logger, origin, text
     logger.info "Can't parse."
     str = "Text: #{text}\n\n"
     send_email "Can't parse in rss project.", "Can't parse text #{origin.origin_type}\nMessage:\n\n" + str
-    return texts
+    return []
   end
   save_feeds = []
+  return [] if feed.entries.blank?
   logger.info "#{origin.title}: Texts: #{feed.entries.count}"
   feed.entries.each do |f|
     guid = f.entry_id || f.url
@@ -82,10 +87,10 @@ def parse_rss logger, origin, text
     t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
-    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
-    t.url = ActionView::Base.full_sanitizer.sanitize(f.url)
+    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '') 
+    t.url = ActionView::Base.full_sanitizer.sanitize(f.url || '')
     t.datetime = f.published || DateTime.now
-    #t.content = f.content || "" ???
+    t.content = ActionView::Base.full_sanitizer.sanitize(f.try(:content) || "").gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     texts << t if !t.content.blank? or !t.title.blank? or !t.description.blank? or !t.url.blank?
   end
   return texts
@@ -225,11 +230,6 @@ def parse logger, origin, text
   return texts
 end
 
-def select_texts logger, texts, query
-  return []
-end
-
-
 def get_emot title, content
   s -50
   t = title || ""
@@ -238,11 +238,15 @@ def get_emot title, content
   uri = URI('http://emot.zaelab.ru/analyze.json')
   begin
     response = Net::HTTP.post_form(uri, query)
+    overall = JSON.parse(response.body)['overall']
   rescue StandardError, Timeout::Error => e
     s 1
     return nil
+  rescue Exception => e
+    s 1
+    return nil
   end
-  return JSON.parse(response.body)['overall']
+  return overall
 end
 
 
@@ -299,18 +303,12 @@ def start_work origins, logger
             end
           else
             text = open_url logger, origin.url
-            if origin.origin_type =~ /cp1251/
-              text.force_encoding('WINDOWS-1251')
-            end
             unless text.blank?
-              texts = parse logger, origin, text
-              tt_all = []
-              origin.queries.each do |query|
-                tt = [] #select_texts(logger, origin, query, texts)
-                fill_and_save(logger, origin, query, tt)
-                tt_all += tt
+              if origin.origin_type =~ /cp1251/
+                text.force_encoding('WINDOWS-1251')
               end
-              fill_and_save(logger, origin, [], texts - tt_all)
+              texts = parse logger, origin, text
+              fill_and_save(logger, origin, [], texts)
             end
           end #if origin.origin_type =~ /search/
           s 2
@@ -335,6 +333,9 @@ root = File.expand_path(File.dirname(__FILE__))
 root = File.dirname(root) until File.exists?(File.join(root, 'config'))
 Dir.chdir(root)
 @my_logger = Logger.new("#{root}/log/monitoring.log")
+@my_logger.formatter = proc do |severity, datetime, progname, msg|
+  "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
+end
 require File.join(root, "config", "environment")
 
 while true
@@ -347,6 +348,9 @@ while true
     loggers = []
     if NTHREADS == 1
       logger = Logger.new("#{root}/log/monitoring_0.log")
+      logger.formatter = proc do |severity, datetime, progname, msg|
+        "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
+      end
       logger.info "------------------ STARTED. ------------------"
       Thread.current.thread_variable_set(:thread_number, 0)
       start_work(origins, logger)
@@ -355,6 +359,9 @@ while true
       for i in 0...NTHREADS
         torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
         loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
+        loggers.last.formatter = proc do |severity, datetime, progname, msg|
+          "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
+        end
         # Разбиваем источники по потокам.
         threads << Thread.new(torigins, loggers.last) do |to, logger|
           Thread.current.thread_variable_set(:thread_number, i)
@@ -386,6 +393,7 @@ while true
       fill_and_add_to_query @my_logger, query, texts
     end
     Text.where(novel: true).update_all(novel: false)
+    @my_logger.info "Sleeping."
     sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
