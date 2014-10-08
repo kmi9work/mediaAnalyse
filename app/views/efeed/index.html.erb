@@ -5,6 +5,11 @@
   <%= stylesheet_link_tag    "application", media: "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
+  <%= javascript_tag do %>
+    $(function() {
+      return window.track_efeed_on = true;
+    });
+  <%= end %>
 </head>
 <body>
 <div id="logout"><%= link_to 'Выйти', logout_path %></div>

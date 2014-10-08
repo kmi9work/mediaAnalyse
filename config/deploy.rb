@@ -28,8 +28,7 @@ after 'deploy:update_code', :roles => :app do
   run "rm -f #{current_release}/config/database.yml"
   run "ln -s #{deploy_to}/shared/config/database.yml #{current_release}/config/database.yml"
 
-  run "rm -rf #{current_release}/solr"
-  run "ln -s #{deploy_to}/shared/solr #{current_release}/solr"  
+  run "chmod +x #{current_release}/lib/daemons/msystem_ctl"
 end
 
 # Далее идут правила для перезапуска unicorn. Их стоит просто принять на веру - они работают.

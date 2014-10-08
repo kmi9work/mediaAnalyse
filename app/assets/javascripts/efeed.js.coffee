@@ -4,7 +4,7 @@
 
 $ -> setTimeout(getNewEMessages, 3000)
 
-window.track_efeed_on = true
+window.track_efeed_on = false
 
 window.getNewEMessages = () -> 
   if track_efeed_on 

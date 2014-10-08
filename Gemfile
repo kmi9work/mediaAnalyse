@@ -35,8 +35,10 @@ gem 'will_paginate'
 gem 'progress_bar'
 
 #deploy
-gem 'unicorn'
-gem 'unicorn-rails'
+group :production do
+	gem 'unicorn'
+	gem 'unicorn-rails'
+end
 gem 'capistrano', '~> 2.15'
 gem "rvm-capistrano"
 # gem 'bundler-capistrano'

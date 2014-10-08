@@ -249,8 +249,8 @@ def fill_and_add_to_query logger, query, texts
     if text.origin.origin_type =~ /rca/
       text.content = get_link_content(logger, text.url)[1]
     end
-    text.emot = get_emot(text.title, (text.content.presence || text.description))
-    text.queries << query
+    text.emot = get_emot(text.title, (text.content.presence || text.description)) if text.emot.blank?
+    text.queries << query unless text.queries.include?(query)
     text.save
   end
 end
@@ -379,7 +379,7 @@ while true
     # Прошло 12 минут. Теперь отсеиваем нужные тексты.
     Text.index.import Text.where(novel: true)
     Query.all.each do |query|
-      texts = Text.select_novel_for_query query
+      texts = Text.select_all_for_query query
       fill_and_add_to_query @my_logger, query, texts
     end
     Text.where(novel: true).update_all(novel: false)
