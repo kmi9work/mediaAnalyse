@@ -58,6 +58,7 @@ def select_texts texts, queries
 end
 
 def parse_rss logger, origin, text
+  s 1
   logger.info "#{origin.title} parsing RSS..."
   texts = []
   feed = Feedjira::Feed.parse(text)
@@ -110,6 +111,7 @@ end
 
 def parse_vk_api logger, origin, text
   logger.info "#{origin.title} parsing vk_api..."
+  s 1
   texts = []
   begin
     resp = JSON.parse text
@@ -246,11 +248,11 @@ end
 
 def fill_and_add_to_query logger, query, texts
   texts.each do |text|
-    if text.origin.origin_type =~ /rca/
+    if text.origin_type =~ /rca/
       text.content = get_link_content(logger, text.url)[1]
     end
     text.emot = get_emot(text.title, (text.content.presence || text.description)) if text.emot.blank?
-    text.queries << query unless text.queries.include?(query)
+    text.queries << query if text.queries.blank? or !text.queries.include?(query)
     text.save
   end
 end
@@ -380,6 +382,7 @@ while true
     Text.index.import Text.where(novel: true)
     Query.all.each do |query|
       texts = Text.select_all_for_query query
+      texts.select!{|t| t.origin_type =~ /sourcesmi/}
       fill_and_add_to_query @my_logger, query, texts
     end
     Text.where(novel: true).update_all(novel: false)

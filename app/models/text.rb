@@ -9,32 +9,25 @@ class Text < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  # searchable do
-  #   text :title
-  #   text :description
-  #   text :content
-  #   integer :origin_id
-  #   boolean :novel
-  #   string :author
-  #   string :url
-  #   integer :sort_emot do
-  #     my_emot || emot
-  #   end
-  #   time :datetime
-  #   time :created_at
-  #   boolean :novel
-  # end
-
+  mapping do
+    indexes :id,           index:    :not_analyzed
+    indexes :title,        analyzer: 'snowball', boost: 100
+    indexes :description,  analyzer: 'snowball', boost: 30
+    indexes :content,      analyzer: 'snowball'
+    indexes :novel,        type: 'boolean'
+    indexes :origin_type
+    indexes :emot,         as: 'my_emot || emot'
+    indexes :datetime,     type: 'date', :include_in_all => false
+  end
 
   def Text.search_novel query
-    tire.search do
+    tire.search(per_page: 1000000, load: true) do
       query { string query } if query.present?
-      filter :novelty, novel: true
     end
   end
 
   def Text.search query
-    tire.search do
+    tire.search(per_page: 1000000, load: true) do
       query { string query } if query.present?
     end
   end  
@@ -76,7 +69,13 @@ class Text < ActiveRecord::Base
     return where(created_at: from..to).load
   end
 
-  
+  def to_indexed_json
+    to_json methods: [:origin_type]
+  end
+
+  def origin_type
+    origin.try(:origin_type)
+  end
 
   def get_emot
     query = {"text" => title + "\n" + content}
