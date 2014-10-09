@@ -51,7 +51,10 @@ class FeedController < ApplicationController
   end
   def get_texts
     @texts = Text.where(origin_id: @origins.map(&:id))
-                 .order(:datetime => :desc).page(params[:page]).per(50)
+                 .order(:datetime => :desc)
+    if (@texts.try(:count) || 0) > 50
+      @texts = @texts.page(params[:page]).per(50)
+    end
   end
   def get_novel_texts id
     @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).where('id > ?', id)
