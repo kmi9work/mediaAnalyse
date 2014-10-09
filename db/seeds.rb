@@ -44,5 +44,7 @@ eurls.each do |url, name|
   Origin.create(url: url, origin_type: "rss_sourcesmi", title: name)
 end
 
-oo = Origin.all.last(2).each{|o| o.corrupted = true; o.save}
+oo = Origin.all.last(2).first
+oo.corrupted = true
+oo.save
 
