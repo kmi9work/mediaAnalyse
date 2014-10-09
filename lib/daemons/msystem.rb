@@ -230,7 +230,7 @@ def parse logger, origin, text
   return texts
 end
 
-def get_emot title, content
+def get_emot logger, title, content
   s -50
   t = title || ""
   c = content || ""
@@ -255,7 +255,7 @@ def fill_and_add_to_query logger, query, texts
     if text.origin_type =~ /rca/
       text.content = get_link_content(logger, text.url)[1]
     end
-    text.emot = get_emot(text.title, (text.content.presence || text.description)) if text.emot.blank?
+    text.emot = get_emot(logger, text.title, (text.content.presence || text.description)) if text.emot.blank?
     text.queries << query if text.queries.blank? or !text.queries.include?(query)
     text.save
   end
