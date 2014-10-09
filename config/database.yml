@@ -1,0 +1,26 @@
+production:
+  adapter: postgresql
+  encoding: utf8
+  database: mediaAnalyse
+  pool: 5
+  username: postgres
+  password: gfhjkm
+  timeout: 5000
+
+development:
+  adapter: postgresql
+  encoding: utf8
+  database: mediaAnalyse_dev
+  pool: 5
+  username: postgres
+  password: gfhjkm
+  timeout: 5000
+
+test:
+  adapter: postgresql
+  encoding: utf8
+  database: mediaAnalyse_test
+  pool: 5
+  username: postgres
+  password: gfhjkm
+  timeout: 5000
