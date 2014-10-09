@@ -1,9 +1,8 @@
 class EfeedController < ApplicationController
-  # skip_before_filter :require_login
-  before_action :get_origins, only: [:show_new_messages, :new_messages]
-  before_action :set_session, only: [:index, :puchkov]
+  skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
   def index
-    get_texts
+    set_session
+    @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).paginate(page: params[:page], per_page: 50)
     session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     render 'index', layout: false
   end
