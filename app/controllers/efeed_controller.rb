@@ -1,8 +1,8 @@
-class EfeedController < FeedController
-  # skip_before_filter :require_login
+class EfeedController < ApplicationController
+  skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
   def index
     set_session
-    get_texts
+    @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).paginate(page: params[:page], per_page: 50)
     session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     render 'index', layout: false
   end
@@ -46,5 +46,13 @@ class EfeedController < FeedController
     if session[:elast].blank?
       session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     end
+  end
+  def get_novel_texts id
+    @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).where('id > ?', id)
+  end
+  def render_tcount id
+    @tcount = Text.where(origin_id: @origins.map(&:id))
+                 .order(:datetime => :desc).where('id > ?', id).count
+    render json: {tcount: @tcount.to_s}.to_json
   end
 end
