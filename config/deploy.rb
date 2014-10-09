@@ -29,8 +29,6 @@ after 'deploy:update_code', :roles => :app do
   run "ln -s #{deploy_to}/shared/config/database.yml #{current_release}/config/database.yml"
 
   run "chmod +x #{current_release}/lib/daemons/rsser_ctl"
-  run "mkdir #{current_release}/tmp"
-  run "mkdir #{current_release}/tmp/pids"
 end
 
 # Далее идут правила для перезапуска unicorn. Их стоит просто принять на веру - они работают.
