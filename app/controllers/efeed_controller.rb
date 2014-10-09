@@ -39,13 +39,7 @@ class EfeedController < ApplicationController
   def origin_params
     params.require(:origin).permit(:title, :url, :origin_type, :query_position)
   end
-  def get_origins
-    @origins = Origin.all
-  end
-  def get_texts
-    @texts = Text.where(origin_id: @origins.map(&:id))
-                 .order(:datetime => :desc).page(params[:page]).per(50)
-  end
+
   def get_novel_texts id
     @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).where('id > ?', id)
   end
