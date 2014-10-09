@@ -268,7 +268,7 @@ def fill_and_save logger, origin, query, texts
     if origin.origin_type =~ /rca/
       t.content = get_link_content(logger, t.url)[1]
     end
-    t.emot = get_emot(t.title, (t.content.presence || t.description))
+    t.emot = get_emot(logger, t.title, (t.content.presence || t.description))
     t.origin = origin
     t.queries << query
     count += 1 if t.save
