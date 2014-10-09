@@ -24,7 +24,6 @@ before 'deploy:setup', 'rvm:install_rvm', 'rvm:install_ruby' # интеграц�
 
 after 'deploy:update_code', :roles => :app do
   # Здесь для примера вставлен только один конфиг с приватными данными - database.yml. Обычно для таких вещей создают папку /srv/myapp/shared/config и кладут файлы туда. При каждом деплое создаются ссылки на них в нужные места приложения.
-  puts "ololo"
   run "rm -f #{current_release}/config/database.yml"
   run "ln -s #{deploy_to}/shared/config/database.yml #{current_release}/config/database.yml"
 
