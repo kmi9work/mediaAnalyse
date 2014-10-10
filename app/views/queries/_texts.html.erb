@@ -51,9 +51,15 @@
 		  	С: <input type="text" id="datepicker_from" name="from" value="<%= session[@query.id][:from].strftime("%d.%m.%Y %H:%M") %>">&nbsp;
 		  	По: <input type="text" id="datepicker_to" name="to" value="<%= session[@query.id][:to].strftime("%d.%m.%Y %H:%M") %>">
 		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
+        <%= link_to 'По умолчанию', change_interval_path(@query.id), id: 'set_datepicker_default_date' %>
 		  </p>
 	  </form>
   </div>
+ </div>
+ <div class="row">
+   <div class="col-md-10 col-md-offset-1">
+    <span class="flash_notice"><%= flash[:notice] %></span>
+   </div>
  </div>
 <!-- 
   Оглавление

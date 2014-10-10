@@ -9,7 +9,8 @@
   <!-- <link href='http://fonts.googleapis.com/css?family=Unica+One' rel='stylesheet' type='text/css'> -->
 </head>
 <body>
-<div id="logout"><%= link_to 'Выйти', logout_path %></div>
+<div id="logout"> <%= link_to 'Просмотреть список источников', efeed_path %> | <%= link_to 'Выйти', logout_path %></div>
+
 <div class="page-header" style="position:relative; background-color: #eeeeee;">
 	<a id="qqq" href="/"></a><h1 align="center">Система мониторинга и анализа данных интернет-ресурсов</h1>
 </div>
@@ -25,11 +26,6 @@
   <% end %>
 </div>
 -->
-
-<div>
-  <p id="notice"><%= flash[:notice] %></p>
-  <p id="alert"><%= flash[:alert] %></p>
-</div>
 
 <div id="nav" class="col-md-12">
 	<div id="categories" class="col-md-4" style="padding: 0px 10px 10px 10px">

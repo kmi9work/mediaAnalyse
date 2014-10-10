@@ -24,15 +24,21 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
-    @texts = @query.texts.source(params['source']).from_to_date(session[@query.id][:from], session[@query.id][:to])
+    @texts = @query.texts.source(params['source']).from_to_date(session[@query.id][:from], session[@query.id][:to]).order(datetime: :desc)
     if @texts.empty?
-      @texts = @query.texts.source(params['source']).last(50)
+      flash[:notice] = "Нет сообщений за выбранный период. Показаны последние 50."
+      @texts = @query.texts.source(params['source']).order(datetime: :desc).first(50)
     end
   end
   def change_interval
     session[@query.id] ||= {}
-    session[@query.id][:from] = DateTime.strptime(params['from'] + " +0400", "%d.%m.%Y %H:%M %Z")
-    session[@query.id][:to] = DateTime.strptime(params['to'] + " +0400", "%d.%m.%Y %H:%M %Z")
+    if params['from'] and params['to']
+      session[@query.id][:from] = DateTime.strptime(params['from'] + " +0400", "%d.%m.%Y %H:%M %Z")
+      session[@query.id][:to] = DateTime.strptime(params['to'] + " +0400", "%d.%m.%Y %H:%M %Z")
+    else
+      session[@query.id][:from] = DateTime.now.beginning_of_day
+      session[@query.id][:to] = DateTime.now
+    end
     redirect_to query_path(@query.id, source: params['source'])
   end
 

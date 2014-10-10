@@ -25,4 +25,3 @@ $ -> $(".get_emot").click ->
 	$.ajax(url: "/texts/" + id + "/get_emot").done (html) ->
 		$("#get_emot_" + id).parent().html("<hr>" + html)
 	false
-	

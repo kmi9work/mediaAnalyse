@@ -52,18 +52,18 @@ class Text < ActiveRecord::Base
     if from and to
       f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
       t = DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z")
-      return where(created_at: f..t).load
+      return where(created_at: f..t)
     elsif from
-      return where('created_at > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone)).load
+      return where('created_at > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     elsif to
-      return where('created_at < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone)).load
+      return where('created_at < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     else
-      return where('created_at > ?', DateTime.now.beginning_of_day).load
+      return where('created_at > ?', DateTime.now.beginning_of_day)
     end
   end
   def Text.source source
     origins = Origin.where('origin_type like ?', "%source#{source}%")
-    return where(origin_id: origins.map(&:id)).uniq
+    return where(origin_id: origins.map(&:id))
   end
   def Text.from_to_date from, to
     return where(created_at: from..to).load
