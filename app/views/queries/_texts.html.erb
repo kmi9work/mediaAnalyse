@@ -61,21 +61,6 @@
     <span class="flash_notice"><%= flash[:notice] %></span>
    </div>
  </div>
-<!-- 
-  Оглавление
- <div class="row">
-	<div class="col-md-10 col-md-offset-1">
-		<% @texts.each do |text| %>
-			<p>
-				<%= link_to "#anc#{text.id}" do %>
-					<b> <%= text.title %> </b>
-					(<%= text.url.length > 20 ? text.url[0..20] + "..." : text.url %>)
-				<% end %>
-			</p>
-		<% end %>
-	</div>
-</div>
- -->
 <div class="row">
 <% @texts.each do |text| %>
 		<%= render 'text', text: text %>

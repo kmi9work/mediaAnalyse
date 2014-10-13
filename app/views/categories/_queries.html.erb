@@ -20,10 +20,6 @@
 									<%= link_to 'Настройки', '#', onclick: "$('#options_#{query.id}').toggle('blind', {}, 500); event.preventDefault();" %>
 								</span>
 							</td>
-							<!-- <td>
-								Общее:
-								<div class="emot emot_<%= query.integral_emot.round + 3 %>"> <%= query.integral_emot.round(2) %> </div>
-							</td> -->
 							<td>
 								<%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
