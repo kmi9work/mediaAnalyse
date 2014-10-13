@@ -24,7 +24,10 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
-    @texts = @query.texts.source(params['source']).from_to_date(session[@query.id][:from], session[@query.id][:to]).order(datetime: :desc)
+    @texts = @query.texts.source(params['source'])
+                   .from_to_date(session[@query.id][:from], session[@query.id][:to])
+                   .order(datetime: :desc)
+                   .paginate(page: params[:page], per_page: 50)
     if @texts.empty?
       flash[:notice] = "Нет сообщений за выбранный период. Показаны последние 50."
       @texts = @query.texts.source(params['source']).order(datetime: :desc).first(50)
