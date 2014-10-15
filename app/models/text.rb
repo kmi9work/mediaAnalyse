@@ -22,7 +22,10 @@ class Text < ActiveRecord::Base
 
   def Text.search_novel query
     tire.search(per_page: 1000000, load: true) do
-      query { string query } if query.present?
+      filtered do
+        query { string, query }
+        filter :term, :novel => true
+      end
     end
   end
 

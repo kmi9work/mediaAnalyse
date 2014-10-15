@@ -55,7 +55,7 @@ class QueriesController < ApplicationController
   end
 
   def chart_data
-    texts = @query.texts.source(params['source']).order(:datetime).where('datetime > ?', DateTime.now - 1.month).load
+    texts = @query.texts.source(params['source']).order(:datetime).where('datetime > ?', DateTime.now - 10.days).load
     #Faster with right SQL-query: select emot, datetime from texts
     chdata = {}
     chdata['emot'] = []

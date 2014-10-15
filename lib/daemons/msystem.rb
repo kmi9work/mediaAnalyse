@@ -82,7 +82,7 @@ def parse_rss logger, origin, text
   end
   logger.info "#{origin.title}: New texts: #{save_feeds.count}"
   save_feeds.reverse_each do |f|
-    t = Text.new
+    t = NovelText.new
     t.origin = origin
     t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
@@ -139,7 +139,7 @@ def parse_vk_api logger, origin, text
     end
     logger.info "#{origin.title}: New texts: #{save_feeds.count}"
     save_feeds.reverse_each do |f|
-      t = Text.new
+      t = NovelText.new
       t.origin = origin
       t.title = ""
       t.content = (f['text'] || "").gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
@@ -252,12 +252,21 @@ end
 
 def fill_and_add_to_query logger, query, texts
   texts.each do |text|
-    if text.origin_type =~ /rca/
-      text.content = get_link_content(logger, text.url)[1]
+    t = Text.new
+    t.title = text.title
+    t.description = text.description
+    t.content = text.content
+    t.author = text.author
+    t.url = text.url
+    t.guid = text.guid
+    t.origin_id = text.origin_id
+    t.datetime = text.datetime
+    if t.origin_type =~ /rca/
+      t.content = get_link_content(logger, t.url)[1]
     end
-    text.emot = get_emot(logger, text.title, (text.content.presence || text.description)) if text.emot.blank?
-    text.queries << query if text.queries.blank? or !text.queries.include?(query)
-    text.save
+    t.emot = get_emot(logger, t.title, (t.content.presence || t.description)) if t.emot.blank?
+    t.queries << query
+    t.save
   end
 end
 
@@ -265,10 +274,6 @@ def fill_and_save logger, origin, query, texts
   logger.info "fill_and_save Texts: #{texts.count}"
   count = 0
   texts.each do |t|
-    if origin.origin_type =~ /rca/
-      t.content = get_link_content(logger, t.url)[1]
-    end
-    t.emot = get_emot(logger, t.title, (t.content.presence || t.description))
     t.origin = origin
     t.queries << query
     count += 1 if t.save
@@ -309,6 +314,7 @@ def start_work origins, logger
               end
               texts = parse logger, origin, text
               fill_and_save(logger, origin, [], texts)
+              logger.info "#{origin.title}: #{n} saved."
             end
           end #if origin.origin_type =~ /search/
           s 2
@@ -340,6 +346,7 @@ require File.join(root, "config", "environment")
 
 while true
   begin
+    time_spent = Time.now
     origins = Origin.where.not(origin_type: 'browser')
     origins_browser = Origin.where(origin_type: 'browser')
     @my_logger.info "Still monitoring... Origins: #{origins.count}; Origins Browser: #{origins_browser.count};"
@@ -386,14 +393,15 @@ while true
     GC.start
     
     # Прошло 12 минут. Теперь отсеиваем нужные тексты.
-    Text.index.import Text.where(novel: true)
+    NovelText.index.import NovelText.all
     Query.all.each do |query|
-      texts = Text.select_all_for_query query
-      texts.select!{|t| t.origin_type =~ /sourcesmi/}
+      texts = NovelText.select_for_query query
+      texts.select!{|t| t.origin_type =~ /sourcesmi/} #!!!!!!! TO SQL
       fill_and_add_to_query @my_logger, query, texts
     end
-    Text.where(novel: true).update_all(novel: false)
-    @my_logger.info "Sleeping."
+
+    NovelText.all.each(&:destroy)
+    @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
