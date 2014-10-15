@@ -435,10 +435,10 @@ while true
     end
     fill_and_save @my_logger, NovelText.all
     NovelText.all.each(&:destroy)
-    @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     GC.start
     memory_usage = `ps -o rss= -p #{$$}`
     add_to_file root, "#{memory_usage}\n"
+    @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
