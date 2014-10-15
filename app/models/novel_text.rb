@@ -1,6 +1,4 @@
 class NovelText < ActiveRecord::Base
-	has_many :queries_texts, dependent: :destroy
-  has_many :queries, through: :queries_texts
   belongs_to :origin
   has_many :essences
 
@@ -13,13 +11,13 @@ class NovelText < ActiveRecord::Base
     indexes :description,  type: 'string', boost: 30
     indexes :content,      type: 'string'
 	end
-  def Text.search query
+  def NovelText.search query
     tire.search(per_page: 1000000, load: true) do
       query { string query } if query.present?
     end
   end  
 
-  def Text.select_for_query query
+  def NovelText.select_for_query query
     texts = []
     query.keyphrases.each do |kp|
       texts += Text.search(kp.body).results

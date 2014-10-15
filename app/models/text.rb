@@ -23,7 +23,7 @@ class Text < ActiveRecord::Base
   def Text.search_novel query
     tire.search(per_page: 1000000, load: true) do
       filtered do
-        query { string, query }
+        query { string query }
         filter :term, :novel => true
       end
     end

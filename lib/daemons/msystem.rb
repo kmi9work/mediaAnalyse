@@ -90,6 +90,7 @@ def parse_rss logger, origin, text
     t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '') 
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url || '')
     t.datetime = f.published || DateTime.now
+    t.origin_id = origin.id
     t.content = ActionView::Base.full_sanitizer.sanitize(f.try(:content) || "").gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     texts << t if !t.content.blank? or !t.title.blank? or !t.description.blank? or !t.url.blank?
   end
@@ -146,6 +147,7 @@ def parse_vk_api logger, origin, text
       t.author = ""
       t.url = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       t.guid = t.url
+      t.origin_id = origin.id
       t.datetime = f['date'] ? Time.at(f['date'].to_i).to_datetime : DateTime.now
       texts << t unless t.content.blank?
     end
@@ -250,32 +252,60 @@ def get_emot logger, title, content
 end
 
 
-def fill_and_add_to_query logger, query, texts
+def fill_and_save logger, texts
   texts.each do |text|
-    t = Text.new
-    t.title = text.title
-    t.description = text.description
-    t.content = text.content
-    t.author = text.author
-    t.url = text.url
-    t.guid = text.guid
-    t.origin_id = text.origin_id
-    t.datetime = text.datetime
-    if t.origin_type =~ /rca/
-      t.content = get_link_content(logger, t.url)[1]
+    if Text.where(guid: text.guid).blank?
+      t = Text.new
+      t.title = text.title
+      t.description = text.description
+      t.content = text.content
+      t.author = text.author
+      t.url = text.url
+      t.guid = text.guid
+      t.origin_id = text.origin_id
+      t.datetime = text.datetime
+      if t.origin_type =~ /rca/
+        t.content = get_link_content(logger, t.url)[1]
+      end
+      t.emot = get_emot(logger, t.title, (t.content.presence || t.description)) if t.emot.blank?
+      t.save
     end
-    t.emot = get_emot(logger, t.title, (t.content.presence || t.description)) if t.emot.blank?
-    t.queries << query
-    t.save
   end
 end
 
-def fill_and_save logger, origin, query, texts
-  logger.info "fill_and_save Texts: #{texts.count}"
+def fill_and_add_to_query logger, query, texts
+  count = 0
+  texts.each do |text|
+    if (t = Text.where(guid: text.guid).try(:first)).blank?
+      t = Text.new
+      t.title = text.title
+      t.description = text.description
+      t.content = text.content
+      t.author = text.author
+      t.url = text.url
+      t.guid = text.guid
+      t.origin_id = text.origin_id
+      t.datetime = text.datetime
+      if t.origin_type =~ /rca/
+        t.content = get_link_content(logger, t.url)[1]
+      end
+      t.emot = get_emot(logger, t.title, (t.content.presence || t.description)) if t.emot.blank?
+      t.queries << query
+      t.save
+      count += 1
+    else
+      t.queries << query if t.queries.blank? or !t.queries.include?(query)
+      t.save
+    end
+  end
+  return count
+end
+
+def save_other logger, origin, texts
+  logger.info "save_other Texts: #{texts.count}"
   count = 0
   texts.each do |t|
     t.origin = origin
-    t.queries << query
     count += 1 if t.save
   end
   return count
@@ -298,7 +328,7 @@ def start_work origins, logger
                     text.force_encoding('WINDOWS-1251')
                   end
                   texts = parse logger, origin, text
-                  n = fill_and_save(logger, origin, query, texts)
+                  n = fill_and_add_to_query(logger, query, texts)
                   logger.info "#{origin.title} - #{query.title} - #{keyphrase.body}: #{n} saved."
                 else
                   logger.error "#{origin.title} - #{query.title} - #{keyphrase.body}: Text is empty."
@@ -313,7 +343,7 @@ def start_work origins, logger
                 text.force_encoding('WINDOWS-1251')
               end
               texts = parse logger, origin, text
-              fill_and_save(logger, origin, [], texts)
+              n = save_other(logger, origin, texts)
               logger.info "#{origin.title}: #{n} saved."
             end
           end #if origin.origin_type =~ /search/
@@ -329,6 +359,11 @@ def start_work origins, logger
       @my_logger.error "============================================"
     end
   end
+end
+def add_to_file root, str
+  f = File.open("#{root}/tmp/memusage.csv", 'a+')
+  f.print str
+  f.close
 end
 
 # ----------------------------- BEGIN -----------------------------
@@ -390,18 +425,20 @@ while true
     @my_logger.info "Waiting threads..."
     threads.each(&:join)
     @my_logger.info "Threads done."
-    GC.start
+    
     
     # Прошло 12 минут. Теперь отсеиваем нужные тексты.
     NovelText.index.import NovelText.all
     Query.all.each do |query|
       texts = NovelText.select_for_query query
-      texts.select!{|t| t.origin_type =~ /sourcesmi/} #!!!!!!! TO SQL
       fill_and_add_to_query @my_logger, query, texts
     end
-
+    fill_and_save @my_logger, NovelText.all
     NovelText.all.each(&:destroy)
     @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
+    GC.start
+    memory_usage = `ps -o rss= -p #{$$}`
+    add_to_file root, "#{memory_usage}\n"
     sleep 120
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
