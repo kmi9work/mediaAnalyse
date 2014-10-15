@@ -437,7 +437,7 @@ while true
     NovelText.all.each(&:destroy)
     GC.start
     memory_usage = `ps -o rss= -p #{$$}`
-    add_to_file root, "#{memory_usage}\n"
+    add_to_file root, "#{memory_usage}"
     @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     sleep 120
   rescue Exception => e
