@@ -21,7 +21,7 @@ class Text < ActiveRecord::Base
   end
   def Text.source source
     origins = Origin.where('origin_type like ?', "%source#{source}%")
-    return where(origin_id: origins.map(&:id)).uniq
+    return where(origin_id: origins.map(&:id))
   end
   def Text.from_to_date from, to
     return where(created_at: from..to).load
