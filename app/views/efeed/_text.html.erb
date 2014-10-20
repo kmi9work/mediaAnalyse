@@ -8,9 +8,13 @@
   <div class="row">
     <div class="col-md-11">
       <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-      <p> <%= text.description.try(:html_safe) %> </p>
+
+      <p> 
+        <%= (text.content.presence || text.description.presence).gsub("\n\n", "<br>\n").try(:html_safe) %>
+      <% end %>
+      </p>
       <!-- <b>Полный текст статьи:</b>
-      <p> <%= text.content.gsub("\n\n", "<br>\n").html_safe if text.content %> </p> -->
+      <p> <%=  if text.content %> </p> -->
       <% if text.datetime %>
         <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
       <% else %>
