@@ -90,7 +90,7 @@ def parse_rss logger, origin, text
     t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '') 
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url || '')
     if origin.origin_type =~ /parseyarss/
-      t.url = URI.unescape(t.url.match(/http:\/\/news\.yandex\.ru\/yandsearch\?cl4url=(.*)/)[1])
+      t.url = "http://" + URI.unescape(t.url.match(/http:\/\/news\.yandex\.ru\/yandsearch\?cl4url=(.*)/)[1])
     end
     t.datetime = f.published || DateTime.now
     t.origin_id = origin.id
