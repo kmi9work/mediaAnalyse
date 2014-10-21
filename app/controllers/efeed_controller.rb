@@ -4,7 +4,7 @@ class EfeedController < ApplicationController
     set_session
     @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).paginate(page: params[:page], per_page: 50)
     session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
-    render 'index', layout: false
+    render action: :index, layout: false
   end
   def show_new_emessages
     @origins = Origin.where(id: session[:eorigins])
@@ -23,16 +23,16 @@ class EfeedController < ApplicationController
     session[:estyle] = params[:style]
   end
   def edit
-    render 'edit', layout: false
+    render action: :edit, layout: false
   end
   def delete
     origin = Origin.find(params[:id])
     origin.destroy
-    render 'edit', layout: false
+    render action: :edit, layout: false
   end
   def create
     origin = Origin.create(origin_params)
-    redirect_to 'edit', layout: false
+    redirect_to action: :edit, layout: false
   end
   private
   
