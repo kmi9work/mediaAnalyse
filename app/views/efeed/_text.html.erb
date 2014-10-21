@@ -11,10 +11,7 @@
 
       <p> 
         <%= (text.content.presence || text.description.presence).gsub("\n\n", "<br>\n").try(:html_safe) %>
-      <% end %>
       </p>
-      <!-- <b>Полный текст статьи:</b>
-      <p> <%=  if text.content %> </p> -->
       <% if text.datetime %>
         <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
       <% else %>
