@@ -80,82 +80,7 @@ $(function() {
                 type: 'spline',
                 yAxis: 1    
               }]
-    };//Options bot_day
-    window.options_both_hour = {
-      chart:  {
-                renderTo: 'chart_both',
-                spacingBottom: 30,
-                marginTop: 60,
-                zoomType: 'x'
-              },
-      title:  {
-                text: 'Общая динамика по дням'
-              },
-      subtitle: {
-                text: null
-              },
-      xAxis:  {
-                type: 'datetime',
-                tickInterval: 3 * 24 * 3600 * 1000,
-                tickWidth: 0,
-                gridLineWidth: 1,
-                labels: {
-                  align: 'left',
-                  x: 3,
-                  y: 16
-                }
-              },
-      yAxis: [{ // Primary yAxis
-                labels: {
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                title: {
-                    text: 'Количество статей',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                }
-              }, { // Secondary yAxis
-                title: {
-                  text: 'Тональность статей',
-                  style: {
-                    color: Highcharts.getOptions().colors[2]
-                  }
-                },
-                labels: {
-                  style: {
-                    color: Highcharts.getOptions().colors[2]
-                  }
-                },
-                opposite: true,
-                min: -3,
-                max: 3
-              }],
-      tooltip: {
-                shared: true
-                },
-      legend: {
-                layout: 'vertical',
-                align: 'left',
-                x: 120,
-                verticalAlign: 'top',
-                y: 100,
-                floating: true,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-              },
-      series: [{
-                name: 'Количество',
-                type: 'column'
-              }, {
-                name: 'Тональность',
-                type: 'spline',
-                yAxis: 1    
-              }]
-    };//Options both day
-
-
+    };//Options both_day
 
     window.options_both_hour = {
       chart:  {
@@ -231,82 +156,10 @@ $(function() {
                 lineWidth: 2,
                 marker: {
                     radius: 3
-                }    
-              }]
-    };//Options bot_day
-    window.options_both_hour = {
-      chart:  {
-                renderTo: 'chart_both_hour',
-                spacingBottom: 30,
-                marginTop: 60,
-                zoomType: 'x'
-              },
-      title:  {
-                text: 'Общая динамика по часам'
-              },
-      subtitle: {
-                text: null
-              },
-      xAxis:  {
-                type: 'datetime',
-                tickInterval: 3 * 24 * 3600 * 1000,
-                tickWidth: 0,
-                gridLineWidth: 1,
-                labels: {
-                  align: 'left',
-                  x: 3,
-                  y: 16
                 }
-              },
-      yAxis: [{ // Primary yAxis
-                labels: {
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                title: {
-                    text: 'Количество статей',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                }
-              }, { // Secondary yAxis
-                title: {
-                  text: 'Тональность статей',
-                  style: {
-                    color: Highcharts.getOptions().colors[2]
-                  }
-                },
-                labels: {
-                  style: {
-                    color: Highcharts.getOptions().colors[2]
-                  }
-                },
-                opposite: true,
-                min: -3,
-                max: 3
-              }],
-      tooltip: {
-                shared: true
-                },
-      legend: {
-                layout: 'vertical',
-                align: 'left',
-                x: 120,
-                verticalAlign: 'top',
-                y: 100,
-                floating: true,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-              },
-      series: [{
-                name: 'Количество',
-                type: 'column'
-              }, {
-                name: 'Тональность',
-                type: 'spline',
-                yAxis: 1    
               }]
     };//Options both hour
+
   });//function
   parseDate = function (s) {
     var match = s[0].match(/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2}) ([0-9]{1,2}):([0-9]{1,2})$/);
