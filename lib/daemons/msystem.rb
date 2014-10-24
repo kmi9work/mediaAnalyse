@@ -19,12 +19,7 @@ RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a8
 def send_email subject, body
   @my_logger.info "send_email"
   begin
-    ActionMailer::Base.smtp_settings = {  
-      :openssl_verify_mode => 'none'
-    }
-    ActionMailer::Base.mail(:from => "info@31.24.30.28", 
-                          :to => "kmi9.other@gmail.com", 
-                          :subject => subject, :body => body).deliver
+    ActionMailer::Base.mail(:from => "kmi9.tech@gmail.com", :to => "kmi9.other@gmail.com", :subject => subject, :body => body).deliver
   rescue Exception => e
     @my_logger.error "Send Email FAILED."
     @my_logger.error e.message

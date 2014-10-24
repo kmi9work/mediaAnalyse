@@ -79,6 +79,7 @@ MediaAnalyse::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
+  ActionMailer::Base.smtp_settings = { address: "smtp.gmail.com", port: 587, domain: "gmail.com", user_name: "kmi9.tech@gmail.com", password: "k5VZd_Tsbn", authentication: "plain", enable_starttls_auto: true}
   config.action_mailer.default_url_options = { :host => "31.24.30.28" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
