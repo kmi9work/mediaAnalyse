@@ -62,8 +62,8 @@ class QueriesController < ApplicationController
     chdata['day_count'] = []
     fst = (DateTime.now - 10.days).beginning_of_hour
     lst = DateTime.now
-    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 3600, params['source'])
-    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 3600*24, params['source'])
+    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 1.hour, params['source'])
+    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 1.day, params['source'])
     
     render json: chdata.to_json
   end
