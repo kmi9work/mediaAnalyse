@@ -55,16 +55,15 @@ class QueriesController < ApplicationController
   end
 
   def chart_data
-    #Faster with right SQL-query: select emot, datetime from texts
     chdata = {}
     chdata['emot'] = []
     chdata['count'] = []
     chdata['day_emot'] = []
     chdata['day_count'] = []
-    fst = texts.first.datetime.beginning_of_hour
-    lst = texts.last.datetime
-    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, texts, 3600, params['source'])
-    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, texts, 3600*24, params['source'])
+    fst = (DateTime.now - 10.days).beginning_of_hour
+    lst = DateTime.now
+    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 3600, params['source'])
+    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 3600*24, params['source'])
     
     render json: chdata.to_json
   end
@@ -73,7 +72,7 @@ class QueriesController < ApplicationController
   end
   private
 
-  def data_by_period first, last, texts, period, source
+  def data_by_period first, last, period, source
     emot = []
     count = []
     cur = first.dup
@@ -88,9 +87,6 @@ class QueriesController < ApplicationController
       cur += period
     end
     return [emot, count]
-  end
-  def data_by_days first, last, texts
-    cur = first.dup
   end
   def categories_find
     @categories = Category.all
