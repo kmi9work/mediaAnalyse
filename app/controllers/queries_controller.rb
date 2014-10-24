@@ -55,18 +55,16 @@ class QueriesController < ApplicationController
   end
 
   def chart_data
-    texts = @query.texts.source(params['source']).order(:datetime).where('datetime > ?', DateTime.now - 10.days).load
     #Faster with right SQL-query: select emot, datetime from texts
     chdata = {}
     chdata['emot'] = []
     chdata['count'] = []
     chdata['day_emot'] = []
     chdata['day_count'] = []
-    return render(json: chdata.to_json) if texts.empty?
     fst = texts.first.datetime.beginning_of_hour
     lst = texts.last.datetime
-    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, texts, 3600)
-    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, texts, 3600*24)
+    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, texts, 3600, params['source'])
+    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, texts, 3600*24, params['source'])
     
     render json: chdata.to_json
   end
@@ -75,29 +73,18 @@ class QueriesController < ApplicationController
   end
   private
 
-  def data_by_period first, last, texts, period
+  def data_by_period first, last, texts, period, source
     emot = []
     count = []
-    cur = first.dup + period
-    fst = first.dup
-    index = 0
-    while cur <= last
-      n = 0
-      med = 0
-      while index < texts.size - 1 and texts[index].datetime < cur
-        med += texts[index].my_emot || texts[index].emot || 0
-        n += 1
-        index += 1
+    cur = first.dup
+    while cur < last
+      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT \"origins\".id FROM \"origins\" WHERE (origin_type like ?)))", 
+              cur, cur + period, "%source#{source}%"]
+      f = Text.find_by_sql(q)[0]
+      if (f.count.to_i > 0)
+        emot << [cur.strftime("%d.%m.%y %H:%M"), f.avg.to_f]
+        count << [cur.strftime("%d.%m.%y %H:%M"), f.count.to_i]
       end
-      
-      if (n > 0)
-        emot << [fst.strftime("%d.%m.%y %H:%M"), med.to_f / n]
-        count << [fst.strftime("%d.%m.%y %H:%M"), n]
-      else
-        # chdata['emot'] << [fst.strftime("%d.%m.%y %H:%M"), chdata['emot'].last[1]]
-        # chdata['count'] << [fst.strftime("%d.%m.%y %H:%M"), 0]
-      end
-      fst = cur
       cur += period
     end
     return [emot, count]
