@@ -13,7 +13,7 @@ window.getNewLinks = () ->
         $(this).html(respond.counts[$(this).attr('id')])
     setTimeout(getNewLinks, 7000)
 
-$ -> $(".feedback").on("ajax:success", (e, data, status, xhr) ->
+$ -> $(".feedback").on("click", (e, data, status, xhr) ->
   id = $(this).attr('textid')
   my_this = this
   score = document.forms['feedback_' + id]['score'].value
