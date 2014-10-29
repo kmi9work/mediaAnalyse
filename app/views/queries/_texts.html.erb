@@ -18,8 +18,8 @@
     <% end %>
     <% emot_sn = @query.last_hour_emot_sn %>
     <%= emot_rate emot_sn %>
-    &nbsp; | &nbsp; 
-    
+    &nbsp; | &nbsp;
+
     <% if params['source'] == 'blogs' %>
       Блоги
     <% else %>
@@ -36,7 +36,7 @@
 
 <div class="row" style="padding-bottom: 20px">
   <div id="chart_both_day" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
-</div> 
+</div>
 
 <div class="row" style="padding-bottom: 20px">
   <div id="chart_both_hour" class="col-md-10 col-md-offset-1" style="height: 420px;"></div>
@@ -66,9 +66,13 @@
     <%= paginate @texts %>
    </div>
  </div>
- 
+
 <div class="row">
 <% @texts.each do |text| %>
-		<%= render 'text', text: text %>
+	<% if (session[:estyle] || "") == "blue" %>
+        <%= render 'text', {text: text, background_color: '#03004d', color: '#00c2a8'} %>
+      <% else %>
+        <%= render 'text', {text: text, background_color: '#e3ddb8', color: '#000'} %>
+      <% end %>
 <% end %>
 </div>

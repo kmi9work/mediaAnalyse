@@ -1,17 +1,35 @@
-<div class="article">
+<div class="article" style="background-color: <%= background_color %>; color: <%= color %>;">
   <button type="button" class="btn btn-info essence" onclick="javascript:location.href='<%#= category_query_text_path(text.query.category_id, text.query_id, text.id) %>'">Выделить сущности</button> <!-- !!!!!!!!!!! -->
-  <p><a name="<%= "anc#{text.id}" %>"></a><b> <%= text.title %> </b> </p>
-  <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
-  <p> <%= (text.content.presence || text.description.presence || "").gsub("\n\n", "<br>\n").html_safe %> </p>
-  <p align="right"> Новость от: <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
-  <hr>
+  <div class="row">
+    <p><a name="<%= "anc#{text.id}" %>"></a>
+    <div class="col-md-11">
+      <b> <%= text.title.try(:html_safe) %> </b> </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-11">
+      <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
+
+      <p>
+        <%= (text.content.presence || text.description.presence || "").gsub("\n\n", "<br>\n").html_safe %>
+      </p>
+      <% if text.datetime %>
+        <p align="right"> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
+      <% else %>
+        <b> Новость получена: </b>
+        <p align="right"> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
+      <% end %>
+      <hr>
+
+    </div>
+  </div>
   <div id="emotion_<%= text.id %>">
     Тональность: <div class="emot emot_<%= text.emot.to_i + 3 %>"> <%= text.emot %> </div>
 <% if text.my_emot %>
-    Реальная тональность: <div class="emot emot_<%= text.my_emot.to_i + 3 %>"> <%= text.my_emot %> </div>
+      <br> Реальная тональность: <div class="emot emot_<%= text.my_emot.to_i + 3 %>"> <%= text.my_emot %> </div>
   </div>
 <% else %>
   </div>
-  <%= render 'feedback', text: text %>
+  <%= render 'queries/feedback', text: text %>
 <% end %>
 </div>
