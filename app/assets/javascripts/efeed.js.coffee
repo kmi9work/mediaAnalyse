@@ -11,7 +11,7 @@ window.getNewEMessages = () ->
     $.ajax(url: "/new_emessages").done (respond) ->
       if respond.tcount > 0
         $('#tcount').html(respond.tcount);
-        document.title = '(' + 5 + ') MediaAnalyse';
+        document.title = '(' + respond.tcount + ') MediaAnalyse';
         $('#new_rows').show();
     setTimeout(getNewEMessages, 7000)
 
