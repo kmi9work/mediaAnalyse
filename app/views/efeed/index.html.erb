@@ -16,7 +16,7 @@
   <p id="alert"><%= flash[:alert] %></p>
 </div>
 
-<!-- <font size="50" color="red"> Система не работает </font> -->
+<font size="50" color="red"> Время в системе на час вперёд. </font>
 <div id="main" class="col-md-12">
   <a name="anctexts"></a>
   <div id="new_rows" style="display: none;">
@@ -27,9 +27,9 @@
   <div class="row">
     <div class="row" style="margin-left: 30px;">
       <%= paginate @texts %>
-      &nbsp; | &nbsp; 
-      Внешний вид: 
-      <%= link_to 'Обычный', '/efeed/style/default', remote: true %>, 
+      &nbsp; | &nbsp;
+      Внешний вид:
+      <%= link_to 'Обычный', '/efeed/style/default', remote: true %>,
       <%= link_to 'Синий', '/efeed/style/blue', remote: true %>
     </div>
     <div class="row">
