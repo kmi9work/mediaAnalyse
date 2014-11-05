@@ -16,7 +16,7 @@ class QueriesController < ApplicationController
     Origin.all.each{|o| o.queries << query}
     redirect_to query_path(query.id)
   end
-  
+
   def show
     @category = @query.category
     @queries = @category.queries
@@ -64,7 +64,7 @@ class QueriesController < ApplicationController
     lst = DateTime.now
     chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 1.hour, params['source'])
     chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 1.day, params['source'])
-    
+
     render json: chdata.to_json
   end
   def keyphrases
@@ -77,7 +77,7 @@ class QueriesController < ApplicationController
     count = []
     cur = first.dup
     while cur < last
-      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT \"origins\".id FROM \"origins\" WHERE (origin_type like ?)))", 
+      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT \"origins\".id FROM \"origins\" WHERE (origin_type like ?)))",
               cur, cur + period, "%source#{source}%"]
       f = Text.find_by_sql(q)[0]
       if (f.count.to_i > 0)

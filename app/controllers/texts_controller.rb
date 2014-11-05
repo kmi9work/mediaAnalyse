@@ -1,4 +1,5 @@
 class TextsController < ApplicationController
+	skip_before_filter :require_login, only: :feedback
 	def show
 		@categories = Category.all
 		@category = Category.find(params[:category_id])

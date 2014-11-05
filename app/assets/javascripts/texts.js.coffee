@@ -19,7 +19,7 @@ $ -> $(".feedback").on("click", (e) ->
   score = document.forms['feedback_' + id]['score'].value
   $.ajax(url: "/texts/" + id + "/feedback?score=" + score).done (respond) ->
     $(my_this).after('Реальная тональность: <div class="emot emot_'+ (parseInt(score) + 3).toString() + '"> ' + score + ' </div>')
-    $(my_this).remove()
+    #$(my_this).remove()
   e.preventDefault();
   false;
 )
