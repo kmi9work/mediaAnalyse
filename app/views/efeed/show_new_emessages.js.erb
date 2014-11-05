@@ -1,4 +1,5 @@
 $('#new_rows').hide();
+document.title = 'MediaAnalyse';
 $("hr").remove();
 <% if session[:estyle] == "blue" %>
   $(".article").css('background-color', '#03004d');
@@ -14,5 +15,5 @@ $('#texts').prepend('<hr>');
   <% else %>
     $('#texts').prepend('<%= j render "text", text: text, background_color: "#d6d5cf", color: "#000" %>');
   <% end %>
-  
+
 <% end %>

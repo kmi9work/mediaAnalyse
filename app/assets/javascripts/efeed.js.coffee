@@ -6,14 +6,15 @@ $ -> setTimeout(getNewEMessages, 3000)
 
 window.track_efeed_on = true
 
-window.getNewEMessages = () -> 
-  if track_efeed_on 
+window.getNewEMessages = () ->
+  if track_efeed_on
     $.ajax(url: "/new_emessages").done (respond) ->
       if respond.tcount > 0
         $('#tcount').html(respond.tcount);
+        document.title = '(' + 5 + ') MediaAnalyse';
         $('#new_rows').show();
     setTimeout(getNewEMessages, 7000)
 
-$ -> 
+$ ->
   $(':checkbox[name=selectAll]').click () ->
     $(':checkbox[name="select_sources[]"]').prop('checked', this.checked)
