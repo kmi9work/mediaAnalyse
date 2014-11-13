@@ -1,6 +1,6 @@
 <% if @queries %>
 	<% unless @queries.empty? %>
-		<div id="queries_accord">	
+		<div id="queries_accord">
 		<table id="queries_table">
 			<tbody>
 				<% @queries.each do |query| %>
@@ -23,19 +23,19 @@
 							<td>
 								<%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source('smi').count %>
+									<%= query.texts.source_count('smi') %>
 								</span>)
 							</td>
 							<td>
 								<%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source('sn').count %>
+									<%= query.texts.source_count('sn') %>
 								</span>)
 							</td>
 							<td>
 								<%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
 								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source('blogs').count %>
+									<%= query.texts.source_count('blogs') %>
 								</span>)
 
 							</td>
@@ -50,10 +50,10 @@
 									<%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %>
 								</p>
 								<p>
-								<!-- 
-									<%= link_to 'Удалить запрос', 
-															query_path(query.id), 
-															:method => :delete, 
+								<!--
+									<%= link_to 'Удалить запрос',
+															query_path(query.id),
+															:method => :delete,
 															data: {confirm: "Уверены?"} %> -->
 								</p>
 								</div>
@@ -67,17 +67,17 @@
 	<% else %>
 		<p>
 			Нет запросов.
-		</p>	 
+		</p>
 	<% end %>
 <% end %>
 
 <hr>
 <p>
 	<% if not_new %>
-		<% if @category %> 
-			<%= link_to("Добавить запрос", new_category_query_path(@category.id), class: 'btn btn-default') %> 
+		<% if @category %>
+			<%= link_to("Добавить запрос", new_category_query_path(@category.id), class: 'btn btn-default') %>
 		<% else %>
-			<%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %> 
+			<%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %>
 		<% end %>
 	<% end %>
 </p>

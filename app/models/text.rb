@@ -33,7 +33,7 @@ class Text < ActiveRecord::Base
     tire.search(per_page: 1000000, load: true) do
       query { string query } if query.present?
     end.results
-  end  
+  end
 
   def Text.select_novel_for_query query
     texts = []
@@ -68,6 +68,12 @@ class Text < ActiveRecord::Base
     origins = Origin.where('origin_type like ?', "%source#{source}%")
     return where(origin_id: origins.map(&:id))
   end
+
+  def Text.source_count source
+    origins = Origin.where('origin_type like ?', "%source#{source}%")
+    return where(origin_id: origins.map(&:id)).count
+  end
+
   def Text.from_to_date from, to
     return where(created_at: from..to).load
   end
@@ -89,7 +95,7 @@ class Text < ActiveRecord::Base
 
   def get_text
     if (html = open_url(self.url))
-      doc = Nokogiri::HTML(html)  
+      doc = Nokogiri::HTML(html)
       return doc.text
     else
       return nil
@@ -111,9 +117,9 @@ class Text < ActiveRecord::Base
         doc = nil
         k = rand(10) + 5
         $stderr.puts "#{url} was not open. Sleep(#{k}). #{i}"
-        $stderr.puts e.message 
+        $stderr.puts e.message
         $stderr.puts err_text
-        $stderr.puts 
+        $stderr.puts
         # ОБРАБОТАТЬ ПРАВИЛЬНО ОШИБКИ
         sleep(k)
       end
