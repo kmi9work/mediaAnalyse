@@ -82,7 +82,7 @@ def parse_rss logger, origin, text
     t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
-    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '') 
+    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '')
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url || '')
     if origin.origin_type =~ /parseyarss/
       t.url = "http://" + URI.unescape(t.url.match(/http:\/\/news\.yandex\.ru\/yandsearch\?cl4url=(.*)/)[1])
@@ -94,6 +94,11 @@ def parse_rss logger, origin, text
   end
   return texts
 rescue Feedjira::NoParserAvailable => e
+  if text.strip == '<?xml version="1.0" encoding="utf-8"?>'
+    logger.info "Nothing to parse."
+    s 5
+    return []
+  end
   logger.error "93: FATAL ERROR! --- #{e.message} ---"
   logger.error e.backtrace.join("\n")
   logger.info "Can't parse."
@@ -176,10 +181,10 @@ def open_url_curb logger, link
     begin
       easy = Curl::Easy.new
       easy.follow_location = true
-      easy.max_redirects = 3 
+      easy.max_redirects = 3
       easy.url = link
       easy.useragent = "Ruby/Curb"
-      Timeout.timeout(30) do   
+      Timeout.timeout(30) do
         easy.perform
       end
       if easy.header_str =~ /Content-Encoding: gzip/
@@ -226,7 +231,7 @@ def parse logger, origin, text
   else
     texts = []
     #There is no parser yet
-  end  
+  end
   return texts
 end
 
@@ -274,26 +279,30 @@ end
 def fill_and_add_to_query logger, query, texts
   count = 0
   texts.each do |text|
-    if (t = Text.where(guid: text.guid).try(:first)).blank?
-      t = Text.new
-      t.title = text.title
-      t.description = text.description
-      t.content = text.content
-      t.author = text.author
-      t.url = text.url
-      t.guid = text.guid
-      t.origin_id = text.origin_id
-      t.datetime = text.datetime
-      if t.content.blank? and (t.origin_type =~ /rca/ or t.origin_type =~ /sourcesmi/ or t.origin_type =~ /ya_blogs/)
-        t.content = get_link_content(logger, t.url)[1]
+    begin
+      if (t = Text.where(guid: text.guid).try(:first)).blank?
+        t = Text.new
+        t.title = text.title
+        t.description = text.description
+        t.content = text.content
+        t.author = text.author
+        t.url = text.url
+        t.guid = text.guid
+        t.origin_id = text.origin_id
+        t.datetime = text.datetime
+        if t.content.blank? and (t.origin_type =~ /rca/ or t.origin_type =~ /sourcesmi/ or t.origin_type =~ /ya_blogs/)
+          t.content = get_link_content(logger, t.url)[1]
+        end
+        t.emot = get_emot(logger, t.title, (t.content.presence || t.description.presence || "")) if t.emot.blank?
+        t.queries << query
+        t.save
+        count += 1
+      else
+        t.queries << query if t.queries.blank? or !t.queries.include?(query)
+        t.save
       end
-      t.emot = get_emot(logger, t.title, (t.content.presence || t.description.presence || "")) if t.emot.blank?
-      t.queries << query
-      t.save
-      count += 1
-    else
-      t.queries << query if t.queries.blank? or !t.queries.include?(query)
-      t.save
+    rescue PG::StringDataRightTruncation
+      next
     end
   end
   return count
@@ -376,7 +385,7 @@ Dir.chdir(root)
   "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
 end
 require File.join(root, "config", "environment")
-
+full_time = Time.now
 while true
   begin
     time_spent = Time.now
@@ -397,7 +406,7 @@ while true
       logger.info "------------------ COMPLITED. ------------------"
     elsif origins.count > NTHREADS
       for i in 0...NTHREADS
-        torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
+        torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS]
         loggers << Logger.new("#{root}/log/monitoring_#{i}_#{i*(origins.count-1)/NTHREADS}_#{(i+1)*(origins.count-1)/NTHREADS}.log")
         loggers.last.formatter = proc do |severity, datetime, progname, msg|
           "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
@@ -423,8 +432,8 @@ while true
     @my_logger.info "Waiting threads..."
     threads.each(&:join)
     @my_logger.info "Threads done."
-    
-    
+
+
     # Прошло 12 минут. Теперь отсеиваем нужные тексты.
     NovelText.index.import NovelText.all
     Query.all.each do |query|
@@ -438,6 +447,11 @@ while true
     add_to_file root, "#{memory_usage}"
     @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     sleep 120
+    if Time.now - full_time > 3600 * 8 #3 times in a day
+      full_time = Time.now
+      send_email "Everything is ok.", "Do not worry. I am working good. \n\n\n Your msystem."
+    end
+
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
