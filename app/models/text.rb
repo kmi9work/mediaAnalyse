@@ -75,7 +75,7 @@ class Text < ActiveRecord::Base
   end
 
   def Text.from_to_date from, to
-    return where(created_at: from..to).load
+    return where(datetime: from..to)
   end
 
   def to_indexed_json
