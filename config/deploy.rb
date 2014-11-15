@@ -1,5 +1,5 @@
 require 'rvm/capistrano' # Для работы rvm
-require 'bundler/capistrano' # Для работы bundler. При изменении гемов bundler автоматически обновит все гемы на сервере, чтобы они в точности соответствовали гемам разработчика. 
+require 'bundler/capistrano' # Для работы bundler. При изменении гемов bundler автоматически обновит все гемы на сервере, чтобы они в точности соответствовали гемам разработчика.
 
 set :application, "msystem"
 set :rails_env, "production"
@@ -8,10 +8,11 @@ set :deploy_to, "/srv/#{application}"
 set :use_sudo, false
 set :unicorn_conf, "#{deploy_to}/current/config/unicorn.rb"
 set :unicorn_pid, "#{deploy_to}/shared/pids/unicorn.pid"
+set :msystem_pid, "#{deploy_to}/shared/log/msystem.rb.pid"
 
 set :rvm_ruby_string, :local # Это указание на то, какой Ruby интерпретатор мы будем использовать.
 
-set :scm, :git # Используем git. Можно, конечно, использовать что-нибудь другое - svn, например, но общая рекомендация для всех кто не использует git - используйте git. 
+set :scm, :git # Используем git. Можно, конечно, использовать что-нибудь другое - svn, например, но общая рекомендация для всех кто не использует git - используйте git.
 set :repository,  "git@github.com:kmi9work/mediaAnalyse.git" # Путь до вашего репозитария. Кстати, забор кода с него происходит уже не от вас, а от сервера, поэтому стоит создать пару rsa ключей на сервере и добавить их в deployment keys в настройках репозитария.
 set :branch, "msystem" # Ветка из которой будем тянуть код для деплоя.
 set :deploy_via, :remote_cache # Указание на то, что стоит хранить кеш репозитария локально и с каждым деплоем лишь подтягивать произведенные изменения. Очень актуально для больших и тяжелых репозитариев.
@@ -44,6 +45,14 @@ namespace :deploy do
     run "if [ -f #{unicorn_pid} ] && [ -e /proc/$(cat #{unicorn_pid}) ]; then kill -QUIT `cat #{unicorn_pid}`; fi"
   end
 end
+
+namespace :msystem do
+  task :restart do
+    run "if [ -f #{msystem_pid} ] && [ -e /proc/$(cat #{msystem_pid}) ]; then kill -9 `cat #{msystem_pid}`; fi"
+    run "cd #{deploy_to}/current && bundle exec rake daemon:msystem:start"
+  end
+end
+
 
 # # config valid only for Capistrano 3.1
 # lock '3.2.1'
