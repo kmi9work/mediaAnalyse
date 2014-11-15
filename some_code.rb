@@ -16,3 +16,7 @@ q = Query.find(5)
 tt{q.texts.count}
 
 tt{q.texts.source_count('sn')}
+
+
+Category.all.each{|c| c.user = u; c.save}
+Query.all.each{|c| c.user = u; c.save}

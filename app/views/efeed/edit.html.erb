@@ -32,16 +32,16 @@
 <tbody>
   <thead>
     <tr>
-      <td>Заголовок</td> 
+      <td>Заголовок</td>
       <td>RSS URL</td>
       <td>Действия</td>
     </tr>
   </thead>
   <% origins.each do |origin| %>
     <tr>
-      <td><%= origin.title %></td> 
+      <td><%= origin.title %></td>
       <td><%= origin.url %></td>
-<!--       <td><%= link_to 'Удалить', delete_efeed_path(origin.id), method: :delete, data: {confirm: 'Удалить?'} %></td> -->
+      <!--<td><%= link_to 'Удалить', delete_efeed_path(origin.id), method: :delete, data: {confirm: 'Удалить?'} %></td> -->
     </tr>
   <% end %>
 </tbody>

@@ -1,3 +1,3 @@
 class Keyphrase < ActiveRecord::Base
-	belongs_to :query
+  belongs_to :query
 end

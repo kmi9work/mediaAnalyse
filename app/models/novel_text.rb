@@ -10,12 +10,12 @@ class NovelText < ActiveRecord::Base
     indexes :title,        type: 'string', boost: 100
     indexes :description,  type: 'string', boost: 30
     indexes :content,      type: 'string'
-	end
+  end
   def NovelText.search query
     tire.search(per_page: 1000000, load: true) do
       query { string query } if query.present?
     end
-  end  
+  end
 
   def NovelText.select_for_query query
     texts = []

@@ -1,5 +1,5 @@
 class EfeedController < ApplicationController
-  skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
+  #skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
   def index
     set_session
     @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).paginate(page: params[:page], per_page: 50)
@@ -16,7 +16,10 @@ class EfeedController < ApplicationController
     render_tcount session[:elast]
   end
   def select_esources
-    session[:eorigins] = params[:select_sources] ? params[:select_sources].map(&:to_i) : [] 
+    session[:eorigins] = params[:select_sources] ? params[:select_sources].map(&:to_i) : []
+    if params[:commit] == "Сохранить"
+      current_user.origin_ids = session[:eorigins]
+    end
     redirect_to efeed_path
   end
   def style
@@ -35,7 +38,7 @@ class EfeedController < ApplicationController
     redirect_to action: :edit, layout: false
   end
   private
-  
+
   def origin_params
     params.require(:origin).permit(:title, :url, :origin_type, :query_position)
   end
@@ -49,8 +52,12 @@ class EfeedController < ApplicationController
     render json: {tcount: @tcount.to_s}.to_json
   end
   def set_session
-    if session[:eorigins].blank?
-      session[:eorigins] = Origin.all.map(&:id)
+    if logged_in?
+      session[:eorigins] = current_user.origin_ids
+    else
+      if session[:eorigins].blank?
+        session[:eorigins] = Origin.all.map(&:id)
+      end
     end
     @origins = Origin.where(id: session[:eorigins])
     if session[:elast].blank?

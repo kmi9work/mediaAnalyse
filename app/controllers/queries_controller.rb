@@ -11,10 +11,15 @@ class QueriesController < ApplicationController
     end
   end
   def create
-    query = Query.new(query_params)
-    query.save
-    Origin.all.each{|o| o.queries << query}
-    redirect_to query_path(query.id)
+    if logged_in?
+      query = Query.new(query_params)
+      query.user = current_user
+      query.save
+      Origin.all.each{|o| o.queries << query}
+      redirect_to query_path(query.id)
+    else
+      redirect_back_or_default root_url
+    end
   end
 
   def show
@@ -89,7 +94,7 @@ class QueriesController < ApplicationController
     return [emot, count]
   end
   def categories_find
-    @categories = Category.all
+    @categories = current_user.categories
   end
   def query_find
     @query = Query.find(params[:query_id])

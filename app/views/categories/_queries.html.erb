@@ -1,83 +1,82 @@
 <% if @queries %>
-	<% unless @queries.empty? %>
-		<div id="queries_accord">
-		<table id="queries_table">
-			<tbody>
-				<% @queries.each do |query| %>
-					<% if query.id %>
-						<tr style="margin-bottom: 40px">
-							<td>
-								<% if params[:category_id] and params[:id] == query.id.to_s %>
-									<span style="font-size: 24px"> <%= query.title %> </span>
-								<% else %>
-									<%= link_to query.title, query,
-												id: "query_show_#{query.id}",
-												class: "query_show",
-												queryid: query.id %>
-								<% end %>
-								&nbsp; | &nbsp;
-								<span style="font-size: 12px;">
-									<%= link_to 'Настройки', '#', onclick: "$('#options_#{query.id}').toggle('blind', {}, 500); event.preventDefault();" %>
-								</span>
-							</td>
-							<td>
-								<%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
-								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_count('smi') %>
-								</span>)
-							</td>
-							<td>
-								<%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
-								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_count('sn') %>
-								</span>)
-							</td>
-							<td>
-								<%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
-								(<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-									<%= query.texts.source_count('blogs') %>
-								</span>)
+  <% unless @queries.empty? %>
+    <div id="queries_accord">
+    <table id="queries_table">
+      <tbody>
+        <% @queries.each do |query| %>
+          <% if query.id %>
+            <tr style="margin-bottom: 40px">
+              <td>
+                <% if params[:category_id] and params[:id] == query.id.to_s %>
+                  <span style="font-size: 24px"> <%= query.title %> </span>
+                <% else %>
+                  <%= link_to query.title, query,
+                        id: "query_show_#{query.id}",
+                        class: "query_show",
+                        queryid: query.id %>
+                <% end %>
+                &nbsp; | &nbsp;
+                <span style="font-size: 12px;">
+                  <%= link_to 'Настройки', '#', onclick: "$('#options_#{query.id}').toggle('blind', {}, 500); event.preventDefault();" %>
+                </span>
+              </td>
+              <td>
+                <%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
+                (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+                  <%= query.texts.source_count('smi') %>
+                </span>)
+              </td>
+              <td>
+                <%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
+                (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+                  <%= query.texts.source_count('sn') %>
+                </span>)
+              </td>
+              <td>
+                <%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
+                (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
+                  <%= query.texts.source_count('blogs') %>
+                </span>)
 
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div id="options_<%= query.id %>" class="options" style="display: none;">
-								<p>
-									Количество текстов: <%= query.texts.count %>
-								</p>
-								<p>
-									<%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %>
-								</p>
-								<p>
-								<!--
-									<%= link_to 'Удалить запрос',
-															query_path(query.id),
-															:method => :delete,
-															data: {confirm: "Уверены?"} %> -->
-								</p>
-								</div>
-							</td>
-						</tr>
-					<% end %>
-				<% end %>
-			</tbody>
-		</table>
-		</div>
-	<% else %>
-		<p>
-			Нет запросов.
-		</p>
-	<% end %>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div id="options_<%= query.id %>" class="options" style="display: none;">
+                <p>
+                  Количество текстов: <%= query.texts.count %>
+                </p>
+                <p>
+                  <%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %>
+                </p>
+                <p>
+                  <%= link_to 'Удалить запрос',
+                              query_path(query.id),
+                              :method => :delete,
+                              data: {confirm: "Уверены?"} %>
+                </p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+  <% else %>
+    <p>
+      Нет запросов.
+    </p>
+  <% end %>
 <% end %>
 
 <hr>
 <p>
-	<% if not_new %>
-		<% if @category %>
-			<%= link_to("Добавить запрос", new_category_query_path(@category.id), class: 'btn btn-default') %>
-		<% else %>
-			<%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %>
-		<% end %>
-	<% end %>
+  <% if not_new %>
+    <% if @category %>
+      <%= link_to("Добавить запрос", new_category_query_path(@category.id), class: 'btn btn-default') %>
+    <% else %>
+      <%= link_to("Добавить запрос", new_query_path, class: 'btn btn-default') %>
+    <% end %>
+  <% end %>
 </p>
