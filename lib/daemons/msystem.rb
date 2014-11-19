@@ -280,6 +280,7 @@ def fill_and_add_to_query logger, query, texts
   count = 0
   texts.each do |text|
     begin
+      next unless text.origin.user_ids.include?(query.user_id)
       if (t = Text.where(guid: text.guid).try(:first)).blank?
         t = Text.new
         t.title = text.title
@@ -301,7 +302,7 @@ def fill_and_add_to_query logger, query, texts
         t.queries << query if t.queries.blank? or !t.queries.include?(query)
         t.save
       end
-    rescue PG::StringDataRightTruncation
+    rescue PG::StringDataRightTruncation, ActiveRecord::StatementInvalid
       next
     end
   end
@@ -328,6 +329,7 @@ def start_work origins, logger
           logger.info "#{origin.title} processing..."
           if origin.origin_type =~ /search/
             origin.queries.each do |query|
+              next unless origin.user_ids.include?(query.user_id)
               query.keyphrases.each do |keyphrase|
                 text = open_url logger, origin.url, origin.query_position, keyphrase.body
                 unless text.blank?

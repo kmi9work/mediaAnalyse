@@ -20,3 +20,63 @@ tt{q.texts.source_count('sn')}
 
 Category.all.each{|c| c.user = u; c.save}
 Query.all.each{|c| c.user = u; c.save}
+
+#Send data to zaelab.
+uri = URI('http://emot.zaelab.ru/feedback.json')
+Text.where('my_emot > -5').each do |t|
+  res = Net::HTTP.post_form(uri, 'text' => t.title + "\n" + (t.content || t.description), 'revision' => '3', 'score' => t.my_emot)
+end
+#last id: 610906
+
+
+# Интерфейс ================================
+function herak(elementID){
+    var textArea = $('#' + elementID);
+    var len = textArea.val().length;
+    var start = textArea[0].selectionStart;
+    var end = textArea[0].selectionEnd;
+    var selectedText = textArea.val().substring(start, end);
+
+    alert(selectedText)
+}
+
+classNameArr = [[30, "эбола"],[31, "цена на нефть"]]
+texts = {
+  11: {
+    30: {
+      "className": "эбола",
+      "words": ["лихорадка", "болезнь", "нигеры"]
+    },
+    31: {
+      "className": "цена на нефть",
+      "words": ["маленькая", "80$", "нигеры"]
+    }
+  },
+  12: {
+    31: {
+      "className": "цена на нефть",
+      "words": ["нормальная", "80$", "франция"]
+    }
+  }
+};
+
+Добавить в класс -->
+    div.show(); -- в нём список классов всех.
+    чеклист из названий классов.
+    Юзер выбирает класс. Нажимает "Ок". Выделенное слово добавляется в массив texts[id][classId].words.
+
+Создать класс -->
+    Появляется input, содержащий выделенный текст. Юзер правит или нет, жмакает "Ok", создаётся новый класс (Добавляется в массив.) Слово добавляется в массив texts[id][classId].words
+
+
+
+$('#create').click(function() {
+    herak("myTa");
+});
+$('#select').click(function() {
+    herak("myTa");
+});
+#===========================
+
+
+

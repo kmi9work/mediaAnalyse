@@ -29,7 +29,7 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
-    @texts = @query.texts.source(params['source'])
+    @texts = @query.texts.source_user(params['source'], current_user)
                    .from_to_date(session[@query.id][:from], session[@query.id][:to])
                    .order(datetime: :desc)
                    .paginate(page: params[:page], per_page: 25)
@@ -82,8 +82,8 @@ class QueriesController < ApplicationController
     count = []
     cur = first.dup
     while cur < last
-      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT \"origins\".id FROM \"origins\" WHERE (origin_type like ?)))",
-              cur, cur + period, "%source#{source}%"]
+      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT origins.id FROM origins WHERE (origin_type like ? and origins.id IN (?))))",
+              cur, cur + period, "%source#{source}%", current_user.origins.map(&:id)]
       f = Text.find_by_sql(q)[0]
       if (f.count.to_i > 0)
         emot << [cur.strftime("%d.%m.%y %H:%M"), f.avg.to_f]

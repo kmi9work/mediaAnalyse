@@ -69,6 +69,11 @@ class Text < ActiveRecord::Base
     return where(origin_id: origins.map(&:id))
   end
 
+  def Text.source_user source, user
+    origins = Origin.where('origin_type like ?', "%source#{source}%").where(id: user.origins.map(&:id))
+    return where(origin_id: origins.map(&:id))
+  end
+
   def Text.source_count source
     origins = Origin.where('origin_type like ?', "%source#{source}%")
     return where(origin_id: origins.map(&:id)).count
