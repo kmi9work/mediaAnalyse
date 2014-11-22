@@ -7,7 +7,7 @@
     <% else %>
       <%= link_to 'СМИ', query_path(@query.id, source: 'smi') %>
     <% end %>
-    <% emot_smi = @query.last_hour_emot_smi %>
+    <% emot_smi = @query.last_hour_emot_smi current_user%>
     <%= emot_rate emot_smi %>
     &nbsp; | &nbsp;
 
@@ -16,7 +16,7 @@
     <% else %>
       <%= link_to 'Соц. сети', query_path(@query.id, source: 'sn') %>
     <% end %>
-    <% emot_sn = @query.last_hour_emot_sn %>
+    <% emot_sn = @query.last_hour_emot_sn current_user %>
     <%= emot_rate emot_sn %>
     &nbsp; | &nbsp;
 
@@ -25,7 +25,7 @@
     <% else %>
       <%= link_to 'Блоги', query_path(@query.id, source: 'blogs') %>
     <% end %>
-    <% emot_blogs = @query.last_hour_emot_blogs %>
+    <% emot_blogs = @query.last_hour_emot_blogs current_user %>
     <%= emot_rate emot_blogs %>
   </span>
 </div>

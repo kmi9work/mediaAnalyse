@@ -52,7 +52,11 @@
           <% origins = Origin.all %>
           <% origins.each do |origin| %>
             <%= check_box_tag "select_sources[]", origin.id, session[:eorigins].include?(origin.id), id: dom_id(origin) %>
-            <%= label_tag dom_id(origin), origin.title %><br>
+            <% if @origins_saved.include?(origin.id) %>
+              <%= label_tag dom_id(origin), "<font color='blue'>#{origin.title}</font>".html_safe %><br>
+            <% else %>
+              <%= label_tag dom_id(origin), origin.title %><br>
+            <% end %>
           <% end %>
           <%= submit_tag 'Применить' %>
           <%= submit_tag 'Сохранить' %>

@@ -64,10 +64,10 @@ class Text < ActiveRecord::Base
       return where('created_at > ?', DateTime.now.beginning_of_day)
     end
   end
-  def Text.source source
-    origins = Origin.where('origin_type like ?', "%source#{source}%")
-    return where(origin_id: origins.map(&:id))
-  end
+  # def Text.source source
+  #   origins = Origin.where('origin_type like ?', "%source#{source}%")
+  #   return where(origin_id: origins.map(&:id))
+  # end
 
   def Text.source_user source, user
     origins = Origin.where('origin_type like ?', "%source#{source}%").where(id: user.origins.map(&:id))

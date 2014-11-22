@@ -52,14 +52,11 @@ class EfeedController < ApplicationController
     render json: {tcount: @tcount.to_s}.to_json
   end
   def set_session
-    if logged_in?
-      session[:eorigins] = current_user.origin_ids
-    else
-      if session[:eorigins].blank?
-        session[:eorigins] = Origin.all.map(&:id)
-      end
+    if session[:eorigins].blank?
+      session[:eorigins] = Origin.all.map(&:id)
     end
     @origins = Origin.where(id: session[:eorigins])
+    @origins_saved = current_user.origin_ids
     if session[:elast].blank?
       session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
     end

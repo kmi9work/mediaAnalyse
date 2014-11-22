@@ -17,22 +17,22 @@ class Query < ActiveRecord::Base
   def integral_emot
     integral(texts.all)
   end
-  def integral_emot_smi
-    integral(texts.source('smi'))
+  def integral_emot_smi user
+    integral(texts.source_user('smi', user))
   end
-  def integral_emot_sn
-    integral(texts.source('sn'))
+  def integral_emot_sn user
+    integral(texts.source_user('sn', user))
   end
-  def integral_emot_blogs
-    integral(texts.source('blogs'))
+  def integral_emot_blogs user
+    integral(texts.source_user('blogs', user))
   end
 
-  def last_hour_emot_smi
+  def last_hour_emot_smi user
     ret = {}
-    tt = texts.source('smi').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    tt = texts.source_user('smi', user).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     if tt.blank?
-      tt = texts.source('smi').last(10)
-      ttt = texts.source('smi').last(20) - tt
+      tt = texts.source_user('smi', user).last(10)
+      ttt = texts.source_user('smi', user).last(20) - tt
     else
       ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     end
@@ -41,12 +41,12 @@ class Query < ActiveRecord::Base
     ret[:rate] = ret[:value] - prev
     return ret
   end
-  def last_hour_emot_sn
+  def last_hour_emot_sn user
     ret = {}
-    tt = texts.source('sn').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    tt = texts.source_user('sn', user).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     if tt.blank?
-      tt = texts.source('sn').last(10)
-      ttt = texts.source('sn').last(20) - tt
+      tt = texts.source_user('sn', user).last(10)
+      ttt = texts.source_user('sn', user).last(20) - tt
     else
       ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     end
@@ -55,12 +55,12 @@ class Query < ActiveRecord::Base
     ret[:rate] = ret[:value] - prev
     return ret
   end
-  def last_hour_emot_blogs
+  def last_hour_emot_blogs user
     ret = {}
-    tt = texts.source('blogs').from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
+    tt = texts.source_user('blogs', user).from_to_date(DateTime.now.beginning_of_hour - 1.hour, DateTime.now.beginning_of_hour)
     if tt.blank?
-      tt = texts.source('blogs').last(10)
-      ttt = texts.source('blogs').last(20) - tt
+      tt = texts.source_user('blogs', user).last(10)
+      ttt = texts.source_user('blogs', user).last(20) - tt
     else
       ttt = texts.from_to_date(DateTime.now.beginning_of_hour - 2.hour, DateTime.now.beginning_of_hour - 1.hour)
     end

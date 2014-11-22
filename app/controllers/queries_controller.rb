@@ -35,7 +35,7 @@ class QueriesController < ApplicationController
                    .paginate(page: params[:page], per_page: 25)
     if @texts.empty?
       flash[:notice] = "Нет сообщений за выбранный период. Показаны последние 50."
-      @texts = @query.texts.source(params['source']).order(datetime: :desc).limit(50).paginate(page: params[:page], per_page: 25)
+      @texts = @query.texts.source_user(params['source'], current_user).order(datetime: :desc).limit(50).paginate(page: params[:page], per_page: 25)
     end
   end
   def change_interval
