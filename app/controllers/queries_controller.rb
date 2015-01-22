@@ -82,7 +82,7 @@ class QueriesController < ApplicationController
     count = []
     cur = first.dup
     while cur < last
-      q = ["SELECT AVG(emot), COUNT(*) FROM texts INNER JOIN queries_texts WHERE query_id = ? ON (texts.id = queries_texts.text_id) AND (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT origins.id FROM origins WHERE (origin_type like ? and origins.id IN (?))))",
+      q = ["SELECT AVG(emot), COUNT(*) FROM texts INNER JOIN queries_texts ON (texts.id = queries_texts.text_id) WHERE query_id = ? AND (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT origins.id FROM origins WHERE (origin_type like ? and origins.id IN (?))))",
               query_id, cur, cur + period, "%source#{source}%", current_user.origins.map(&:id)]
       f = Text.find_by_sql(q)[0]
       if (f.count.to_i > 0)
