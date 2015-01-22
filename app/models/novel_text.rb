@@ -19,8 +19,8 @@ class NovelText < ActiveRecord::Base
 
   def NovelText.select_for_query query
     texts = []
-    query.keyphrases.each do |kp|
-      texts += NovelText.search(kp.body).results
+    query.keyqueries.each do |kq|
+      texts += NovelText.search(kq.body).results
     end
     return texts
   end

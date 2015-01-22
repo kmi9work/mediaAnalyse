@@ -17,14 +17,14 @@ require 'thwait'
 RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
 
 def send_email subject, body
-  @my_logger.info "send_email"
-  begin
-    ActionMailer::Base.mail(:from => "kmi9.tech@gmail.com", :to => "kmi9.other@gmail.com", :subject => subject, :body => body).deliver
-  rescue Exception => e
-    @my_logger.error "Send Email FAILED."
-    @my_logger.error e.message
-    @my_logger.error e.backtrace.join("\n")
-  end
+  # @my_logger.info "send_email"
+  # begin
+  #   ActionMailer::Base.mail(:from => "", :to => "", :subject => subject, :body => body).deliver
+  # rescue Exception => e
+  #   @my_logger.error "Send Email FAILED."
+  #   @my_logger.error e.message
+  #   @my_logger.error e.backtrace.join("\n")
+  # end
 end
 
 def s k
@@ -387,7 +387,7 @@ Dir.chdir(root)
   "#{datetime.strftime('%d.%m %H:%M:%S')} -#{severity}-: #{msg}\n"
 end
 require File.join(root, "config", "environment")
-full_time = Time.now
+# full_time = Time.now
 while true
   begin
     time_spent = Time.now
@@ -449,10 +449,10 @@ while true
     add_to_file root, "#{memory_usage}"
     @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
     sleep 120
-    if Time.now - full_time > 3600 * 8 #3 times in a day
-      full_time = Time.now
-      send_email "Everything is ok.", "Do not worry. I am working good. \n\n\n Your msystem."
-    end
+    # if Time.now - full_time > 3600 * 8 #3 times in a day
+    #   full_time = Time.now
+    #   send_email "Everything is ok.", "Do not worry. I am working good. \n\n\n Your msystem."
+    # end
 
   rescue Exception => e
     str = e.message + "\n\n" + e.backtrace.join("\n")

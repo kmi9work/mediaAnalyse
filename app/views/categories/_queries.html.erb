@@ -47,7 +47,7 @@
                   Количество текстов: <%= query.texts.count %>
                 </p>
                 <p>
-                  <%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %>
+                  <%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %> | <%= link_to 'Запросы', query_keyqueries_path(query.id) %>
                 </p>
                 <p>
                   <%= link_to 'Удалить запрос',

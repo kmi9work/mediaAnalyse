@@ -1,0 +1,20 @@
+<%= content_for :main do %>
+  <h2 align="center"> <%= @query.title %> </h2>
+  <div id="query">
+    <div id="keyqueries" class="col-md-6 col-md-offset-3">
+      <table id="keyqueries_table">
+        <tbody>
+          <% @query.keyqueries.each do |keyquery| %>
+            <tr id="keyquery_<%= keyquery.id %>">
+              <td><%= keyquery.body %></td>
+              <td><%= link_to 'Удалить', keyquery_path(keyquery.id), method: :delete, remote: true %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render 'keyquery_form', query: @query %>
+      <hr>
+      <%= link_to "Назад", query_path(@query) %>
+    </div>
+  </div>
+<% end %>

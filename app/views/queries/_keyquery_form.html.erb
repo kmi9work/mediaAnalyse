@@ -1,0 +1,8 @@
+<%= form_tag commit_keyquery_path(query.id), class: "form-inline", role: 'form', remote: true do %>
+  <div id="keyquery_fields">
+    <div id="keyquery">
+      <%= text_field_tag 'keyquery[body]', nil, class: 'form-control', placeholder: "Ключевая фраза" %>
+      <%= submit_tag "Ок" %>
+    </div>
+  </div>
+<% end %>

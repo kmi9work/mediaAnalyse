@@ -1,0 +1,6 @@
+$('#keyqueries_table tbody').append('\
+  <tr id="keyquery_<%= @keyquery.id %>">\
+    <td><%= @keyquery.body %></td>\
+    <td><%= link_to "Удалить", keyquery_path(@keyquery.id), method: :delete, remote: true %></td>\
+  </tr>');
+$('input#keyquery_body').val("");

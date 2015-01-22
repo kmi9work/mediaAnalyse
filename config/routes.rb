@@ -20,6 +20,10 @@ MediaAnalyse::Application.routes.draw do
   match '/queries/:query_id/commit_keyphrase' => 'keyphrases#commit_keyphrase', via: :post, as: :commit_keyphrase
   delete '/keyphrase/:id' => 'keyphrases#destroy', as: :keyphrase
 
+  get '/queries/:query_id/keyqueries' => 'queries#keyqueries' , as: :query_keyqueries
+  match '/queries/:query_id/commit_keyquery' => 'keyqueries#commit_keyquery', via: :post, as: :commit_keyquery
+  delete '/keyquery/:id' => 'keyqueries#destroy', as: :keyquery
+
   get '/queries/:query_id/chart_data' => 'queries#chart_data', as: :chart_data
   get '/texts/:id/feedback' => 'texts#feedback', as: :feedback
   get '/negative_category' => 'categories#negative_category', as: :negative_category
@@ -63,6 +67,6 @@ MediaAnalyse::Application.routes.draw do
       resources :texts
     end
   end
-  
+
   root 'categories#index'
 end

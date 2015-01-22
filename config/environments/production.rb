@@ -28,7 +28,7 @@ MediaAnalyse::Application.configure do
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true
-  config.assets.precompile =  ['*.js', '*.css', '*.css.erb'] 
+  config.assets.precompile =  ['*.js', '*.css', '*.css.erb']
   config.assets.compress = true
   # Generate digests for assets URLs.
   config.assets.digest = true
@@ -54,7 +54,7 @@ MediaAnalyse::Application.configure do
 
   # Use a different cache store in production.
   config.cache_store = :memory_store
-  
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = "http://assets.example.com"
 
@@ -79,7 +79,7 @@ MediaAnalyse::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  ActionMailer::Base.smtp_settings = { address: "smtp.gmail.com", port: 587, domain: "gmail.com", user_name: "kmi9.tech@gmail.com", password: "k5VZd_Tsbn", authentication: "plain", enable_starttls_auto: true}
+  ActionMailer::Base.smtp_settings = { address: "smtp.gmail.com", port: 587, domain: "gmail.com", user_name: "", password: "", authentication: "plain", enable_starttls_auto: true}
   config.action_mailer.default_url_options = { :host => "31.24.30.28" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
