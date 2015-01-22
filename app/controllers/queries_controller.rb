@@ -1,6 +1,6 @@
 class QueriesController < ApplicationController
   before_action :categories_find, only: [:new, :show]
-  before_action :query_find, only: [:show, :change_interval, :destroy, :chart_data, :keyphrases]
+  before_action :query_find, only: [:show, :change_interval, :destroy, :chart_data, :keyphrases, :keyqueries]
   def new
     if params[:category_id]
       @category = Category.find(params[:category_id])
@@ -74,6 +74,9 @@ class QueriesController < ApplicationController
   end
   def keyphrases
     render 'keyphrases', layout: 'only_header'
+  end
+  def keyqueries
+    render 'keyqueries', layout: 'only_header'
   end
   private
 
