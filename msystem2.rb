@@ -12,16 +12,16 @@ require 'timeout'
 
 # require 'get_browser_texts.rb'
 
-RICH_CONTENT_KEY = "rca.1.1.20140325T124443Z.4617706c8eb8ca49.f55bbec26c11f882a82500daa69448a3e80dfef9"
+RICH_CONTENT_KEY =  ------------- Необходимо присвоить ключ.
 
 def send_email subject, body
   @my_logger.info "send_email"
   begin
-    ActionMailer::Base.smtp_settings = {  
+    ActionMailer::Base.smtp_settings = {
       :openssl_verify_mode => 'none'
     }
-    ActionMailer::Base.mail(:from => "info@msystem2.amchs.ru", 
-                          :to => "kmi9.other@gmail.com", 
+    ActionMailer::Base.mail(:from => "info@msystem2.amchs.ru",
+                          :to => "",
                           :subject => subject, :body => body).deliver
   rescue
     @my_logger.error "Send Email FAILED."
@@ -73,14 +73,14 @@ def parse_rss logger, origin, text
     save_feeds << f
   end
   logger.info "#{origin.title}: New texts: #{save_feeds.count}"
-  
+
   save_feeds.reverse_each do |f|
     t = Text.new
     t.origin = origin
     t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '')
     t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '')
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
-    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url) 
+    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url)
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url)
     t.datetime = f.published || DateTime.now
     #t.content = f.content || "" ???
@@ -165,10 +165,10 @@ def open_url_curb logger, link, text
   while (i += 1 ) <= 2
     begin
       easy.follow_location = true
-      easy.max_redirects = 3 
+      easy.max_redirects = 3
       easy.url = url
       easy.useragent = "Ruby/Curb"
-      Timeout.timeout(30) do   
+      Timeout.timeout(30) do
         easy.perform
       end
       text = easy.body_str
@@ -212,7 +212,7 @@ def parse logger, origin, text
   else
     texts = []
     #There is no parser yet
-  end  
+  end
   return texts
 end
 
@@ -237,22 +237,14 @@ end
 
 
 def fill_and_save logger, origin, query, texts
-  if origin.group != 1917
-    texts.each do |t|
-      if origin.origin_type =~ /rca/
-        t.content = get_link_content(t.url)[1]
-      end
-      t.emot = get_emot t.title, (t.content.presence || t.description)
-      t.origin = origin
-      t.query = query
-      t.save
+  texts.each do |t|
+    if origin.origin_type =~ /rca/
+      t.content = get_link_content(t.url)[1]
     end
-  else
-    texts.each do |t|
-      t.origin = origin
-      t.query = query
-      t.save
-    end
+    t.emot = get_emot t.title, (t.content.presence || t.description)
+    t.origin = origin
+    t.query = query
+    t.save
   end
 end
 
@@ -293,14 +285,14 @@ Dir.chdir(root)
 require File.join(root, "config", "environment")
 
 origins = Origin.where.not(origin_type: 'browser')
-origins_browser = Origin.where(origin_type: 'browser') 
+origins_browser = Origin.where(origin_type: 'browser')
 #Отдельно работаем с источниками browser, т.к. у них свои ограничения
 
 
 threads = []
 loggers = []
 for i in 0...NTHREADS
-  torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS] 
+  torigins = origins[i*(origins.count-1)/NTHREADS..(i+1)*(origins.count-1)/NTHREADS]
   loggers << Logger.new("#{root}/log/monitoring_#{i}.log")
   # Разбиваем источники по потокам.
   threads << Thread.new do

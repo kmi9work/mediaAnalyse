@@ -67,8 +67,8 @@ class QueriesController < ApplicationController
     chdata['day_count'] = []
     fst = (DateTime.now - 10.days).beginning_of_hour
     lst = DateTime.now
-    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 1.hour, params['source'])
-    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 1.day, params['source'])
+    chdata['emot'], chdata['count'] = *data_by_period(fst, lst, 1.hour, params['source'], params['query_id'])
+    chdata['day_emot'], chdata['day_count'] = *data_by_period(fst, lst, 1.day, params['source'], params['query_id'])
 
     render json: chdata.to_json
   end
@@ -77,12 +77,12 @@ class QueriesController < ApplicationController
   end
   private
 
-  def data_by_period first, last, period, source
+  def data_by_period first, last, period, source, query_id
     emot = []
     count = []
     cur = first.dup
     while cur < last
-      q = ["SELECT AVG(emot), COUNT(*) FROM \"texts\" WHERE (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT origins.id FROM origins WHERE (origin_type like ? and origins.id IN (?))))",
+      q = ["SELECT AVG(emot), COUNT(*) FROM texts INNER JOIN queries_texts WHERE query_id = #{query_id} AND (datetime > ? AND datetime < ?) AND (origin_id IN (SELECT origins.id FROM origins WHERE (origin_type like ? and origins.id IN (?))))",
               cur, cur + period, "%source#{source}%", current_user.origins.map(&:id)]
       f = Text.find_by_sql(q)[0]
       if (f.count.to_i > 0)

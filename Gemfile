@@ -40,6 +40,7 @@ group :production do
 	gem 'unicorn-rails'
 end
 gem 'capistrano', '~> 2.15'
+gem "net-ssh", "~> 2.7.0"
 gem "rvm-capistrano"
 # gem 'bundler-capistrano'
 
