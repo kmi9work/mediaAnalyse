@@ -1,3 +1,3 @@
 # Be sure to restart your server when you modify this file.
 
-MediaAnalyse::Application.config.session_store :cookie_store, key: '_mediaAnalyse_session', :expire_after => 10.minutes
+MediaAnalyse::Application.config.session_store :cookie_store, key: '_mediaAnalyse_session', :expire_after => 2.days

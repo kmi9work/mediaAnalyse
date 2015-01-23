@@ -30,7 +30,7 @@ class Text < ActiveRecord::Base
   end
 
   def Text.search query
-    tire.search(per_page: 1000000, load: true) do
+    tire.search(per_page: 100, load: true) do
       query { string query } if query.present?
     end.results
   end

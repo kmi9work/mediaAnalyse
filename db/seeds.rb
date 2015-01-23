@@ -14,7 +14,7 @@
  #      t.integer :group, default: 0
  #      t.integer :timeout, default: 20
  #origin_type: rss, xml, json, vk_api, browser
-eurls = { 
+eurls = {
 'http://regnum.ru/rss/ukraina.xml' => 'ИА REGNUM',
 'http://lifenews.ru/xml/feed.xml' => 'Lifenews',
 'http://russian.rt.com/rss/' => 'Russia Today',
@@ -68,4 +68,5 @@ Origin.create(url: url, origin_type: "rss_ya_blogs_search_sourceblogs", title: n
 
 User.create(username: 'admin', password: 'gfhjkm')
 User.create(username: 'user', password: '123456')
+User.create(username: 'sys112', password: 'qwerty')
 
