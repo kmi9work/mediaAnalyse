@@ -138,7 +138,9 @@ def parse_vk_api logger, origin, text
       f = resp['response'][i]
       link = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       guid = link
+      puts "1----------------------------------"
       break unless Text.where({origin_id: origin.id, guid: guid}).blank?
+      puts "2----------------------------------"
       save_feeds << f
     end
     logger.info "#{origin.title}: New texts: #{save_feeds.count}"
