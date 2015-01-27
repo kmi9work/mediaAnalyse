@@ -53,7 +53,7 @@ class Text < ActiveRecord::Base
 
   def Text.from_to from, to
     if (from.class  == DateTime and to.class == DateTime)
-      return where(datetime: f..t)
+      return where(datetime: from..to)
     end
     if from and to
       f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
