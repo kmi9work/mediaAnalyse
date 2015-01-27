@@ -7,9 +7,9 @@ class NovelText < ActiveRecord::Base
 
   mapping do
     indexes :id,           index:    :not_analyzed
-    indexes :title,        type: 'string', boost: 100
-    indexes :description,  type: 'string', boost: 30
-    indexes :content,      type: 'string'
+    indexes :title,        type: 'string', analyzer: 'snowball'
+    indexes :description,  type: 'string', analyzer: 'snowball'
+    indexes :content,      type: 'string', analyzer: 'snowball'
   end
   def NovelText.search query
     tire.search(per_page: 1000000, load: true) do
