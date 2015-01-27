@@ -52,16 +52,19 @@ class Text < ActiveRecord::Base
   end
 
   def Text.from_to from, to
+    if (from.class  == DateTime and to.class == DateTime)
+      return where(datetime: f..t)
+    end
     if from and to
       f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
       t = DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z")
-      return where(created_at: f..t)
+      return where(datetime: f..t)
     elsif from
-      return where('created_at > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
+      return where('datetime > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     elsif to
-      return where('created_at < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
+      return where('datetime < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     else
-      return where('created_at > ?', DateTime.now.beginning_of_day)
+      return where('datetime > ?', DateTime.now.beginning_of_day)
     end
   end
   # def Text.source source

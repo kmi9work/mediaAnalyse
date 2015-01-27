@@ -47,6 +47,10 @@ class QueriesController < ApplicationController
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now
     end
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to])
+    @count_by_period = t.count
+    @average_emot_by_period = average_emot(t)
+
     redirect_to query_path(@query.id, source: params['source'])
   end
 
@@ -79,7 +83,13 @@ class QueriesController < ApplicationController
     render 'keyqueries', layout: 'only_header'
   end
   private
-
+  def average_emot texts
+    emot = 0
+    texts.each do |t|
+      emot += t.my_emot || t.emot
+    end
+    return emot.to_f / texts.count.to_f
+  end
   def data_by_period first, last, period, source, query_id
     emot = []
     count = []
