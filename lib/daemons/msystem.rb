@@ -366,6 +366,7 @@ def start_work origins, logger
       end
       s 60
     rescue Exception => e
+      Tire.index("novel_texts").delete
       str = "Thread: #{Thread.current.thread_variable_get(:thread_number)};\n" + e.message + "\n\n" + e.backtrace.join("\n")
       send_email "Fatal error in msystem.", "Fatal error in start_work inside msystem.\nMessage:\n\n" + str
       @my_logger.error "FATAL ERROR! --- #{e.message} --- Thread: #{Thread.current.thread_variable_get(:thread_number)};"
@@ -448,7 +449,7 @@ while true
       fill_and_add_to_query @my_logger, query, texts
     end
     fill_and_save @my_logger, NovelText.all
-    NovelText.all.each(&:destroy)
+    NovelText.all.each(&:destroy) Tire.index("novel_texts").delete
     GC.start
     memory_usage = `ps -o rss= -p #{$$}`
     add_to_file root, "#{memory_usage}"
@@ -460,6 +461,7 @@ while true
     # end
 
   rescue Exception => e
+    Tire.index("novel_texts").delete
     str = e.message + "\n\n" + e.backtrace.join("\n")
     send_email "Fatal error in msystem.", "Fatal error in root inside msystem.\nMessage:\n\n" + str
     @my_logger.error "FATAL ERROR! --- #{e.message} ---"
