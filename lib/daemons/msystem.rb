@@ -449,7 +449,8 @@ while true
       fill_and_add_to_query @my_logger, query, texts
     end
     fill_and_save @my_logger, NovelText.all
-    NovelText.all.each(&:destroy) Tire.index("novel_texts").delete
+    NovelText.all.each(&:destroy)
+    Tire.index("novel_texts").delete
     GC.start
     memory_usage = `ps -o rss= -p #{$$}`
     add_to_file root, "#{memory_usage}"
