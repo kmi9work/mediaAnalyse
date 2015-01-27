@@ -318,11 +318,13 @@ end
 
 def save_other logger, origin, texts
   logger.info "save_other Texts: #{texts.count}"
+  t = Time.now
   count = 0
   texts.each do |t|
     t.origin = origin
     count += 1 if t.save
   end
+  logger.info "save_other: Time run: #{Time.now - t}"
   return count
 end
 
