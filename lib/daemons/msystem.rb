@@ -123,9 +123,7 @@ def parse_vk_api logger, origin, text
   s 1
   texts = []
   begin
-    logger.info "0----------------------------------"
     resp = JSON.parse text
-    logger.info "0=============="
   rescue Exception => e
     logger.error "Can't parse vk_api --- #{e.message} ---"
     logger.error e.backtrace.join("\n")
@@ -140,9 +138,7 @@ def parse_vk_api logger, origin, text
       f = resp['response'][i]
       link = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       guid = link
-      logger.info "1----------------------------------"
       break unless Text.where({origin_id: origin.id, guid: guid}).blank?
-      logger.info "1=============="
       save_feeds << f
     end
     logger.info "#{origin.title}: New texts: #{save_feeds.count}"
