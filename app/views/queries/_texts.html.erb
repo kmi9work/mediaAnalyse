@@ -54,9 +54,9 @@
         <%= link_to 'По умолчанию', change_interval_path(@query.id), id: 'set_datepicker_default_date' %>
 		  </p>
 	  </form>
-        <% if @count_by_period and @average_emot_by_period %>
+        <% if session[@query.id][:count_by_period] and session[@query.id][:average_emot_by_period] %>
           <p>
-            Количество сообщений за период: <%= @count_by_period %>; Средняя эмоциональность: <%= @average_emot_by_period %>
+            Количество сообщений за период: <%= session[@query.id][:count_by_period] %>; Средняя эмоциональность: <%= session[@query.id][:average_emot_by_period] %>
           </p>
         <% end %>
   </div>

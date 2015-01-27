@@ -47,9 +47,10 @@ class QueriesController < ApplicationController
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now
     end
+    session[@query.id][:count_by_period]
     t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to])
-    @count_by_period = t.count
-    @average_emot_by_period = average_emot(t)
+    session[@query.id][:count_by_period] = t.count
+    session[@query.id][:average_emot_by_period] = average_emot(t)
 
     redirect_to query_path(@query.id, source: params['source'])
   end
