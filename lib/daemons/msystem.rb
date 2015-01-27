@@ -119,11 +119,13 @@ rescue Exception => e
 end
 
 def parse_vk_api logger, origin, text
-  logger.info "#{origin.title} parsing vk_api..."
+  logger.info "parse_vk_api: #{origin.title} parsing vk_api..."
   s 1
   texts = []
   begin
+    logger.info "0----------------------------------"
     resp = JSON.parse text
+    logger.info "0=============="
   rescue Exception => e
     logger.error "Can't parse vk_api --- #{e.message} ---"
     logger.error e.backtrace.join("\n")
@@ -138,9 +140,9 @@ def parse_vk_api logger, origin, text
       f = resp['response'][i]
       link = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
       guid = link
-      puts "1----------------------------------"
+      logger.info "1----------------------------------"
       break unless Text.where({origin_id: origin.id, guid: guid}).blank?
-      puts "2----------------------------------"
+      logger.info "1=============="
       save_feeds << f
     end
     logger.info "#{origin.title}: New texts: #{save_feeds.count}"
@@ -157,6 +159,7 @@ def parse_vk_api logger, origin, text
       texts << t unless t.content.blank?
     end
   end
+  logger.info "parse_vk_api: end"
   return texts
 end
 
@@ -177,6 +180,7 @@ def parse_json logger, origin, text
 end
 
 def open_url_curb logger, link
+  logger.info "open_url_curb: start"
   i = 0
   text = nil
   while (i += 1 ) <= 2
@@ -214,6 +218,7 @@ def open_url_curb logger, link
       easy.close
     end
   end
+  logger.info "open_url_curb: end"
   return text
 end
 
