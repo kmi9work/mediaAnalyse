@@ -23,19 +23,19 @@
               <td>
                 <%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= query.texts_source_count('smi') %>
+                  <%= n1 = query.texts_source_count('smi') %>
                 </span>)
               </td>
               <td>
                 <%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= query.texts_source_count('sn') %>
+                  <%= n2 = query.texts_source_count('sn') %>
                 </span>)
               </td>
               <td>
                 <%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= query.texts_source_count('blogs') %>
+                  <%= n3 = query.texts_source_count('blogs') %>
                 </span>)
 
               </td>
@@ -44,7 +44,7 @@
               <td>
                 <div id="options_<%= query.id %>" class="options" style="display: none;">
                 <p>
-                  Количество текстов: <%= query.texts.count %>
+                  Количество текстов: <%= n1 + n2 + n3 %>
                 </p>
                 <p>
                   <%= link_to 'Запросы', query_keyqueries_path(query.id) %> | <%= link_to 'Ключевые фразы', query_keyphrases_path(query.id) %>
