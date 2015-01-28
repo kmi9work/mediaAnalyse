@@ -29,11 +29,11 @@ class Query < ActiveRecord::Base
   end
 
   def texts_source_count source
-    text_counts.where(source: source).tcount
+    text_counts.where(source: source).first.tcount
   end
 
   def integral_emot source
-    text_counts.where(source: source).emot
+    text_counts.where(source: source).first.emot
   end
 
   def last_hour_emot_smi user
