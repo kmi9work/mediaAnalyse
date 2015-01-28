@@ -271,7 +271,7 @@ def fill_and_save logger, texts
       t.origin_id = text.origin_id
       t.datetime = text.datetime
       if t.content.blank? and (t.origin_type =~ /rca/ or t.origin_type =~ /sourcesmi/ or t.origin_type =~ /ya_blogs/)
-        t.content = get_link_content(logger, t.url)[1]
+        # t.content = get_link_content(logger, t.url)[1]
       end
       t.emot = get_emot(logger, t.title, (t.content.presence || t.description.presence || "")) if t.emot.blank?
       t.save
@@ -295,7 +295,7 @@ def fill_and_add_to_query logger, query, texts
         t.origin_id = text.origin_id
         t.datetime = text.datetime
         if t.content.blank? and (t.origin_type =~ /rca/ or t.origin_type =~ /sourcesmi/ or t.origin_type =~ /ya_blogs/)
-          t.content = get_link_content(logger, t.url)[1]
+          # t.content = get_link_content(logger, t.url)[1]
         end
         t.emot = get_emot(logger, t.title, (t.content.presence || t.description.presence || "")) if t.emot.blank?
         t.queries << query
