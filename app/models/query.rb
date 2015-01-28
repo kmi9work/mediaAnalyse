@@ -28,14 +28,12 @@ class Query < ActiveRecord::Base
     end
   end
 
-  def integral_emot_smi user
-    text_counts.where(source: "smi").count
+  def texts_source_count source
+    text_counts.where(source: source).count
   end
-  def integral_emot_sn user
-    text_counts.where(source: "sn").count
-  end
-  def integral_emot_blogs user
-    text_counts.where(source: "blogs").count
+
+  def integral_emot source
+    text_counts.where(source: source).emot
   end
 
   def last_hour_emot_smi user
