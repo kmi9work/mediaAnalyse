@@ -36,7 +36,7 @@
 
 <div class="row" style="padding-bottom: 20px">
   <div id="chart_both_day" class="col-md-10 col-md-offset-1" style="height: 420px;">
-    <%= image_tag "ajax_loader.gif", width: "50", align: "center", style: "margin: 30px" %>
+    <%= image_tag "ajax_loader.gif", width: "50", style: "margin: 30px; display: block; margin-left: auto; margin-right: auto;" %>
   </div>
 </div>
 
@@ -49,11 +49,11 @@
   <div class="col-md-10 col-md-offset-1">
 	  <form action="<%= change_interval_path(@query.id) %>" method="get">
 		  <p>
-        <%= hidden_field_tag :source, params[:source] if params[:source] %>
+                  <%= hidden_field_tag :source, params[:source] if params[:source] %>
 		  	С: <input type="text" id="datepicker_from" name="from" value="<%= session[@query.id][:from].strftime("%d.%m.%Y %H:%M") %>">&nbsp;
 		  	По: <input type="text" id="datepicker_to" name="to" value="<%= session[@query.id][:to].strftime("%d.%m.%Y %H:%M") %>">
 		  	<%= submit_tag "Изменить интервал", class: "btn btn-default" %>
-        <%= link_to 'По умолчанию', change_interval_path(@query.id), id: 'set_datepicker_default_date' %>
+                  <%= link_to 'По умолчанию', change_interval_path(@query.id), id: 'set_datepicker_default_date' %>
 		  </p>
 	  </form>
         <% if session[@query.id][:count_by_period] and session[@query.id][:average_emot_by_period] %>
