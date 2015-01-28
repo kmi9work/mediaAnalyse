@@ -22,14 +22,14 @@ class Query < ActiveRecord::Base
 
   def update_text_counts
     text_counts.each do |tc|
-      tc.count = texts.source_count(tc.source)
+      tc.tcount = texts.source_count(tc.source)
       tc.emot = integral(texts.source(tc.source))
       tc.save
     end
   end
 
   def texts_source_count source
-    text_counts.where(source: source).count
+    text_counts.where(source: source).tcount
   end
 
   def integral_emot source
