@@ -41,7 +41,7 @@ class QueriesController < ApplicationController
 
     if @texts.empty?
       flash[:notice] = "Нет сообщений за выбранный период. Показаны последние 25."
-      @texts = @query.texts.source_user(params['source'], current_user).last(25)
+      @texts = @query.texts.source_user(params['source'], current_user).last(25).paginate(page: params[:page], per_page: 25)
     end
     @time1 = Time.now - time
   end
