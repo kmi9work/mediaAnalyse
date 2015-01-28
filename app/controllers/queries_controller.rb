@@ -32,10 +32,12 @@ class QueriesController < ApplicationController
     t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user)
     session[@query.id][:count_by_period] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
+    time = Time.now
     @texts = @query.texts.source_user(params['source'], current_user)
                    .from_to_date(session[@query.id][:from], session[@query.id][:to])
                    .order(datetime: :desc)
                    .paginate(page: params[:page], per_page: 25)
+    @time1 = Time.now - time
     if @texts.empty?
       flash[:notice] = "Нет сообщений за выбранный период. Показаны последние 50."
       @texts = @query.texts.source_user(params['source'], current_user).order(datetime: :desc).limit(50).paginate(page: params[:page], per_page: 25)
