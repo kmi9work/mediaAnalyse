@@ -14,18 +14,27 @@ class Query < ActiveRecord::Base
   has_many :origins, through: :origins_queries
   has_many :keyphrases, dependent: :destroy
   has_many :keyqueries, dependent: :destroy
+  has_many :text_counts, dependent: :destroy
 
   def integral_emot
     integral(texts.all)
   end
+
+  def update_text_counts
+    text_counts.each do |tc|
+      tc.count = integral(texts.source(tc.source))
+      tc.save
+    end
+  end
+
   def integral_emot_smi user
-    integral(texts.source_user('smi', user))
+    text_counts.where(source: "smi").count
   end
   def integral_emot_sn user
-    integral(texts.source_user('sn', user))
+    text_counts.where(source: "sn").count
   end
   def integral_emot_blogs user
-    integral(texts.source_user('blogs', user))
+    text_counts.where(source: "blogs").count
   end
 
   def last_hour_emot_smi user

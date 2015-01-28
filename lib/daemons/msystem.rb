@@ -309,6 +309,7 @@ def fill_and_add_to_query logger, query, texts
       next
     end
   end
+  query.update_text_counts
   return count
 end
 
@@ -455,7 +456,6 @@ while true
     memory_usage = `ps -o rss= -p #{$$}`
     add_to_file root, "#{memory_usage}"
     @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
-    sleep 120
     # if Time.now - full_time > 3600 * 8 #3 times in a day
     #   full_time = Time.now
     #   send_email "Everything is ok.", "Do not worry. I am working good. \n\n\n Your msystem."
