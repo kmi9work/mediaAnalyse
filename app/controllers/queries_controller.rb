@@ -29,6 +29,9 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user)
+    session[@query.id][:count_by_period] = t.count
+    session[@query.id][:average_emot_by_period] = average_emot(t)
     @texts = @query.texts.source_user(params['source'], current_user)
                    .from_to_date(session[@query.id][:from], session[@query.id][:to])
                    .order(datetime: :desc)
@@ -47,8 +50,7 @@ class QueriesController < ApplicationController
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now
     end
-    session[@query.id][:count_by_period]
-    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to])
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source(params['source'])
     session[@query.id][:count_by_period] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
 
@@ -89,6 +91,7 @@ class QueriesController < ApplicationController
     texts.each do |t|
       emot += t.my_emot || t.emot
     end
+    return 0 if texts.count == 0
     return emot.to_f / texts.count.to_f
   end
   def data_by_period first, last, period, source, query_id
