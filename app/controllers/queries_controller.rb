@@ -50,7 +50,7 @@ class QueriesController < ApplicationController
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now
     end
-    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source(params['source'])
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user)
     session[@query.id][:count_by_period] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
 
