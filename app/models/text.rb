@@ -11,9 +11,9 @@ class Text < ActiveRecord::Base
 
   mapping do
     indexes :id,           index:    :not_analyzed
-    indexes :title,        analyzer: 'snowball', boost: 100
-    indexes :description,  analyzer: 'snowball', boost: 30
-    indexes :content,      analyzer: 'snowball'
+    indexes :title,        type: 'string'
+    indexes :description,        type: 'string'
+    indexes :content,        type: 'string'
   end
 
   def Text.search_novel query
