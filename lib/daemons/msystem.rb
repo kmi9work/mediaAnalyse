@@ -259,7 +259,7 @@ end
 
 
 def fill_and_save logger, texts
-  texts.each do |text|
+  texts.find_each do |text|
     if Text.where(guid: text.guid).blank?
       t = Text.new
       t.title = text.title
@@ -444,7 +444,7 @@ while true
 
     # Прошло 12 минут. Теперь отсеиваем нужные тексты.
     NovelText.index.import NovelText.all
-    Query.all.each do |query|
+    Query.find_each do |query|
       texts = NovelText.select_for_query query
       fill_and_add_to_query @my_logger, query, texts
       query.update_text_counts
