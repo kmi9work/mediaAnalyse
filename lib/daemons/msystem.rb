@@ -445,14 +445,16 @@ while true
     # Прошло не менее 12 минут. Теперь отсеиваем нужные тексты.
     @my_logger.info "------------------ CHECK THIS -------------------"
     NovelText.index.import NovelText.all
-    @my_logger.info "1"
+    @my_logger.info "1 mem: #{`ps -o rss= -p #{$$}`}"
     index = 1
     Query.find_each do |query|
       index += 1
       texts = NovelText.select_for_query query
+      @my_logger.info "Count: #{texts.count} mem: #{`ps -o rss= -p #{$$}`}"
       fill_and_add_to_query @my_logger, query, texts
+      @my_logger.info "Lets update mem: #{`ps -o rss= -p #{$$}`}"
       query.update_text_counts
-      @my_logger.info index
+      @my_logger.info "index mem: #{`ps -o rss= -p #{$$}`}"
       sleep 5
     end
     @my_logger.info "QUERY DONE."
