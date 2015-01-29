@@ -17,6 +17,7 @@ class Text < ActiveRecord::Base
     indexes :novel,        type: 'boolean'
     indexes :origin_type
     indexes :emot,         as: 'my_emot || emot'
+    indexes :guid
     indexes :datetime,     type: 'date', :include_in_all => false
   end
 

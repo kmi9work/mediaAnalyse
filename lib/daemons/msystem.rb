@@ -71,7 +71,7 @@ def parse_rss logger, origin, text
   return [] if feed.entries.blank?
   logger.info "#{origin.title}: Texts: #{feed.entries.count}"
   feed.entries.each do |f|
-    guid = f.entry_id || f.url
+    guid = (f.entry_id || f.url).truncate(250)
     next unless Text.where({origin_id: origin.id, guid: guid}).blank?
     save_feeds << f
   end
@@ -82,7 +82,7 @@ def parse_rss logger, origin, text
     t.title = ActionView::Base.full_sanitizer.sanitize(f.title || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.description = ActionView::Base.full_sanitizer.sanitize(f.summary || '').gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
     t.author = ActionView::Base.full_sanitizer.sanitize(f.author || '')
-    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '')
+    t.guid = ActionView::Base.full_sanitizer.sanitize(f.entry_id || f.url || '').truncate(250)
     t.url = ActionView::Base.full_sanitizer.sanitize(f.url || '')
     if origin.origin_type =~ /parseyarss/
       t.url = "http://" + URI.unescape(t.url.match(/http:\/\/news\.yandex\.ru\/yandsearch\?cl4url=(.*)/)[1])
@@ -137,7 +137,7 @@ def parse_vk_api logger, origin, text
     for i in 1...resp['response'].size
       f = resp['response'][i]
       link = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
-      guid = link
+      guid = link.truncate(250)
       break unless Text.where({origin_id: origin.id, guid: guid}).blank?
       save_feeds << f
     end
@@ -149,7 +149,7 @@ def parse_vk_api logger, origin, text
       t.content = (f['text'] || "").gsub(/[^\u{0}-\u{128}\u{0410}-\u{044F}ёЁ]/, '')
       t.author = ""
       t.url = 'https://vk.com/wall' + f['owner_id'].to_s + "_" + f['id'].to_s
-      t.guid = t.url
+      t.guid = t.url.truncate(250)
       t.origin_id = origin.id
       t.datetime = f['date'] ? Time.at(f['date'].to_i).to_datetime : DateTime.now
       texts << t unless t.content.blank?
