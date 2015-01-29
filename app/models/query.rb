@@ -17,13 +17,13 @@ class Query < ActiveRecord::Base
   has_many :text_counts, dependent: :destroy
 
   def integral_emot
-    integral(texts.all)
+    texts.all.average("emot").to_f
   end
 
   def update_text_counts
-    text_counts.each do |tc|
+    text_counts.find_each do |tc|
       tc.tcount = texts.source_count(tc.source)
-      tc.emot = integral(texts.source(tc.source))
+      tc.emot = texts.source(tc.source).average("emot").to_f
       tc.save
     end
   end
@@ -81,6 +81,7 @@ class Query < ActiveRecord::Base
 
 
   private
+
   def integral texts
     n = 0
     sum = 0.0
