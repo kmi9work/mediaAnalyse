@@ -309,7 +309,6 @@ def fill_and_add_to_query logger, query, texts
       next
     end
   end
-  query.update_text_counts
   return count
 end
 
@@ -448,6 +447,7 @@ while true
     Query.all.each do |query|
       texts = NovelText.select_for_query query
       fill_and_add_to_query @my_logger, query, texts
+      query.update_text_counts
     end
     fill_and_save @my_logger, NovelText.all
     NovelText.all.each(&:destroy)
