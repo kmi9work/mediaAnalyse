@@ -14,10 +14,6 @@ class Text < ActiveRecord::Base
     indexes :title,        analyzer: 'snowball', boost: 100
     indexes :description,  analyzer: 'snowball', boost: 30
     indexes :content,      analyzer: 'snowball'
-    indexes :novel,        type: 'boolean'
-    indexes :origin_type
-    indexes :emot,         as: 'my_emot || emot'
-    indexes :datetime,     type: 'date', :include_in_all => false
   end
 
   def Text.search_novel query
