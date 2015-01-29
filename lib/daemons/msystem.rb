@@ -442,16 +442,26 @@ while true
     @my_logger.info "Threads done."
 
 
-    # Прошло 12 минут. Теперь отсеиваем нужные тексты.
+    # Прошло не менее 12 минут. Теперь отсеиваем нужные тексты.
+    @my_logger.info "------------------ CHECK THIS -------------------"
     NovelText.index.import NovelText.all
+    @my_logger.info "1"
+    index = 1
     Query.find_each do |query|
+      index += 1
       texts = NovelText.select_for_query query
       fill_and_add_to_query @my_logger, query, texts
       query.update_text_counts
+      @my_logger.info index
+      sleep 5
     end
+    @my_logger.info "QUERY DONE."
     fill_and_save @my_logger, NovelText.all
+    @my_logger.info "NEXT"
     NovelText.all.each(&:destroy)
+    @my_logger.info "NEXT2"
     Tire.index("novel_texts").delete
+    @my_logger.info "END"
     GC.start
     memory_usage = `ps -o rss= -p #{$$}`
     add_to_file root, "#{memory_usage}"
