@@ -439,35 +439,24 @@ while true
     end
     @my_logger.info "Waiting threads..."
     threads.each(&:join)
-    @my_logger.info "Threads done."
+    @my_logger.info "Threads done. "
 
 
     # Прошло не менее 12 минут. Теперь отсеиваем нужные тексты.
-    @my_logger.info "------------------ CHECK THIS -------------------"
     NovelText.index.import NovelText.all
-    @my_logger.info "1 mem: #{`ps -o rss= -p #{$$}`}"
     index = 1
     Query.find_each do |query|
       index += 1
       texts = NovelText.select_for_query query
-      @my_logger.info "Count: #{texts.count} mem: #{`ps -o rss= -p #{$$}`}"
       fill_and_add_to_query @my_logger, query, texts
-      @my_logger.info "Lets update mem: #{`ps -o rss= -p #{$$}`}"
       query.update_text_counts
-      @my_logger.info "index mem: #{`ps -o rss= -p #{$$}`}"
       sleep 5
     end
-    @my_logger.info "QUERY DONE."
     fill_and_save @my_logger, NovelText.all
-    @my_logger.info "NEXT"
     NovelText.all.each(&:destroy)
-    @my_logger.info "NEXT2"
     Tire.index("novel_texts").delete
-    @my_logger.info "END"
     GC.start
-    memory_usage = `ps -o rss= -p #{$$}`
-    add_to_file root, "#{memory_usage}"
-    @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; Sleeping."
+    @my_logger.info "Step takes: #{Time.now - time_spent}s of 720s; mem: #{`ps -o rss= -p #{$$}`}; Sleeping."
     # if Time.now - full_time > 3600 * 8 #3 times in a day
     #   full_time = Time.now
     #   send_email "Everything is ok.", "Do not worry. I am working good. \n\n\n Your msystem."
