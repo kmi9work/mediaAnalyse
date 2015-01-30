@@ -25,7 +25,7 @@ class TextsController < ApplicationController
     data = text.title + (text.content || text.description)
     uri = URI('http://emot.zaelab.ru/feedback.json')
     res = Net::HTTP.post_form(uri, 'text' => data, 'score' => text.my_emot, 'revision' => 2)
-    @code = res.code
+    @code = "Responce: #{res.code}"
     render text: @code
   end
 end
