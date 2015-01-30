@@ -48,8 +48,8 @@ class QueriesController < ApplicationController
   def change_interval
     session[@query.id] ||= {}
     if params['from'] and params['to']
-      session[@query.id][:from] = DateTime.strptime(params['from'] + " +0400", "%d.%m.%Y %H:%M %Z")
-      session[@query.id][:to] = DateTime.strptime(params['to'] + " +0400", "%d.%m.%Y %H:%M %Z")
+      session[@query.id][:from] = DateTime.strptime(params['from'] + " +0300", "%d.%m.%Y %H:%M %Z")
+      session[@query.id][:to] = DateTime.strptime(params['to'] + " +0300", "%d.%m.%Y %H:%M %Z")
     else
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now

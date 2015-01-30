@@ -52,13 +52,13 @@ class Text < ActiveRecord::Base
       return where(datetime: from..to)
     end
     if from and to
-      f = DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z")
-      t = DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z")
+      f = DateTime.strptime(from + " +0300", "%d.%m.%Y %H:%M %Z")
+      t = DateTime.strptime(to + " +0300", "%d.%m.%Y %H:%M %Z")
       return where(datetime: f..t)
     elsif from
-      return where('datetime > ?', DateTime.strptime(from + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
+      return where('datetime > ?', DateTime.strptime(from + " +0300", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     elsif to
-      return where('datetime < ?', DateTime.strptime(to + " +0400", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
+      return where('datetime < ?', DateTime.strptime(to + " +0300", "%d.%m.%Y %H:%M %Z").in_time_zone(Time.zone))
     else
       return where('datetime > ?', DateTime.now.beginning_of_day)
     end
