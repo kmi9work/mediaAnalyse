@@ -318,7 +318,11 @@ def save_other logger, origin, texts
   count = 0
   texts.each do |t|
     t.origin = origin
-    count += 1 if t.save
+    begin
+      count += 1 if t.save
+    rescue #DB Save errors
+      next
+    end
   end
   logger.info "save_other: Time run: #{Time.now - t}"
   return count
