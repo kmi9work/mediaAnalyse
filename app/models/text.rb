@@ -31,6 +31,17 @@ class Text < ActiveRecord::Base
     end.results
   end
 
+  def self.cached_my_emot_count
+    Rails.cache.fetch([name, "cached_my_emot_count"]) do
+      where.not(my_emot: nil).count
+    end
+  end
+
+  def self.flush_cache_my_emot
+    Rails.cache.delete([name, "cached_my_emot_count"])
+  end
+
+
   def Text.select_novel_for_query query
     texts = []
     query.keyphrases.each do |kp|
