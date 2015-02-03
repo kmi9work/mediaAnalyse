@@ -31,13 +31,13 @@ class Text < ActiveRecord::Base
     end.results
   end
 
-  def self.cached_my_emot_count
+  def Text.cached_my_emot_count
     Rails.cache.fetch([name, "cached_my_emot_count"]) do
       where.not(my_emot: nil).count
     end
   end
 
-  def self.flush_cache_my_emot
+  def Text.flush_cache_my_emot
     Rails.cache.delete([name, "cached_my_emot_count"])
   end
 
