@@ -1,6 +1,7 @@
 class EfeedController < ApplicationController
   #skip_before_filter :require_login, except: [:new, :edit, :delete, :create]
   def index
+    @my_emot_count = Text.where.not(my_emot: nil)
     set_session
     @texts = Text.where(origin_id: @origins.map(&:id)).order(:datetime => :desc).paginate(page: params[:page], per_page: 50)
     session[:elast] = Text.where(origin_id: @origins.map(&:id)).order(id: :asc).last.try(:id)
