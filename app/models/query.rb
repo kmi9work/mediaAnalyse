@@ -17,7 +17,7 @@ class Query < ActiveRecord::Base
   has_many :text_counts, dependent: :destroy
 
   def integral_emot
-    texts.all.average("emot").to_f
+    texts.all.average("my_emot | emot").to_f
   end
 
   def update_text_counts
