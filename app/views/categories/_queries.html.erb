@@ -23,19 +23,19 @@
               <td>
                 <%= link_to 'СМИ', query_path(query.id, source: 'smi') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= n1 = query.texts_source_count('smi') %>
+                  <%= n1 = query.texts_source_count('smi') || 0 %>
                 </span>)
               </td>
               <td>
                 <%= link_to 'Соц. сети', query_path(query.id, source: 'sn') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= n2 = query.texts_source_count('sn') %>
+                  <%= n2 = query.texts_source_count('sn') || 0 %>
                 </span>)
               </td>
               <td>
                 <%= link_to 'Блоги', query_path(query.id, source: 'blogs') %>
                 (<span id="qtexts_count_<%= query.id %>" class="qtexts_count">
-                  <%= n3 = query.texts_source_count('blogs') %>
+                  <%= n3 = query.texts_source_count('blogs') || 0 %>
                 </span>)
 
               </td>
