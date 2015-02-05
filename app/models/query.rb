@@ -15,6 +15,7 @@ class Query < ActiveRecord::Base
   has_many :keyphrases, dependent: :destroy
   has_many :keyqueries, dependent: :destroy
   has_many :text_counts, dependent: :destroy
+  after_create :add_text_counts
 
   def integral_emot
     texts.all.average("my_emot | emot").to_f
@@ -82,6 +83,23 @@ class Query < ActiveRecord::Base
 
   private
 
+  def add_text_counts
+    t = TextCount.new
+    t.source = "blogs"
+    t.tcount = 0
+    t.save
+    text_counts << t
+    t = TextCount.new
+    t.source = "sn"
+    t.tcount = 0
+    t.save
+    text_counts << t
+    t = TextCount.new
+    t.source = "smi"
+    t.tcount = 0
+    t.save
+    text_counts << t
+  end
   def integral texts
     n = 0
     sum = 0.0
