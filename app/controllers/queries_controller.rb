@@ -30,7 +30,7 @@ class QueriesController < ApplicationController
     session[@query.id] ||= {}
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
-    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user)
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user).where.not(my_emot: nil, emot: nil)
     session[@query.id][:count_by_period] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
 
@@ -54,7 +54,7 @@ class QueriesController < ApplicationController
       session[@query.id][:from] = DateTime.now.beginning_of_day
       session[@query.id][:to] = DateTime.now
     end
-    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user)
+    t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user).where.not(my_emot: nil, emot: nil)
     session[@query.id][:count_by_period] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
 
