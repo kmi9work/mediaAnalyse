@@ -58,7 +58,7 @@
 	  </form>
         <% if session[@query.id][:count_by_period] and session[@query.id][:average_emot_by_period] %>
           <p>
-            Количество сообщений за период: <%= session[@query.id][:count_by_period] %>; Средняя эмоциональность: <%= session[@query.id][:average_emot_by_period] %><!--; <%= @time1 %> -->
+            Количество сообщений за период: с оценкой <%= session[@query.id][:count_by_period_emot] %> (Всего <%= session[@query.id][:count_by_period] %>); Средняя эмоциональность: <%= session[@query.id][:average_emot_by_period] %><!--; <%= @time1 %> -->
           </p>
         <% end %>
   </div>

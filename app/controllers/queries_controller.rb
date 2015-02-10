@@ -31,9 +31,9 @@ class QueriesController < ApplicationController
     session[@query.id][:from] ||= DateTime.now.beginning_of_day
     session[@query.id][:to] ||= DateTime.now
     t = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user).where('emot is not null or my_emot is not null')
-    session[@query.id][:count_by_period] = t.count
+    session[@query.id][:count_by_period_emot] = t.count
     session[@query.id][:average_emot_by_period] = average_emot(t)
-
+    session[@query.id][:count_by_period] = @query.texts.from_to(session[@query.id][:from], session[@query.id][:to]).source_user(params['source'], current_user).count
     @texts = @query.texts.source_user(params['source'], current_user)
                    .from_to_date(session[@query.id][:from], session[@query.id][:to])
                    .order(datetime: :desc)
