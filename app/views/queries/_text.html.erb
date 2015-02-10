@@ -17,7 +17,7 @@
         <p align="right"> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
       <% else %>
         <b> Новость получена: </b>
-        <p align="right"> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
+        <p align="right"> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %> | <%= text.origin.title %></p>
       <% end %>
       <hr>
 
