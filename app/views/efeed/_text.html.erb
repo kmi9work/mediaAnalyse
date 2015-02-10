@@ -9,14 +9,14 @@
     <div class="col-md-11">
       <p> <%= link_to text.url, text.url, target: "_blank" %> </p>
 
-      <p> 
+      <p>
         <%= (text.content.presence || text.description.presence || "").gsub("\n\n", "<br>\n").html_safe %>
       </p>
       <% if text.datetime %>
         <p> <%= text.datetime.strftime("%d.%m.%Y %H:%M") %></p>
       <% else %>
         <b> Новость получена: </b>
-        <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %></p>
+        <p> <%= text.created_at.strftime("%d.%m.%Y %H:%M") %> | <%= text.origin.title %></p>
       <% end %>
     </div>
   </div>
