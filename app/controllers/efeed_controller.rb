@@ -35,7 +35,8 @@ class EfeedController < ApplicationController
     render action: :edit, layout: false
   end
   def create
-    if @origin = Origin.create(origin_params)
+    @origin = Origin.new(origin_params)
+    if @origin.save
       redirect_to action: :edit, layout: false
     else
       render action: 'new'
