@@ -35,8 +35,16 @@ class EfeedController < ApplicationController
     render action: :edit, layout: false
   end
   def create
-    origin = Origin.create(origin_params)
-    redirect_to action: :edit, layout: false
+    if @origin = Origin.create(origin_params)
+      format.html { redirect_to action: :edit, layout: false }
+      format.json { head :no_content }
+    else
+      format.html { render action: 'new' }
+      format.json { render json: @origins.errors, status: :unprocessable_entity }
+    end
+  end
+  def new
+    @origin = Origin.new
   end
   private
 

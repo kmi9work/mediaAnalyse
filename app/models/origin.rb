@@ -5,4 +5,7 @@ class Origin < ActiveRecord::Base
 
   has_many :origins_users, dependent: :destroy
   has_many :users, through: :origins_users
+
+  validates :url, uniqueness: { message: "Такой источник уже есть" }
+
 end

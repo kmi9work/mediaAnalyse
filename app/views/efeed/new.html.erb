@@ -12,13 +12,23 @@
 Мониторинг нового источника начинается примерно через 5 минут.
 <table>
 <tbody>
-<%= form_for :origin, url: create_efeed_path do |f| %>
+<%= form_for @origin, url: create_efeed_path do |f| %>
+  <% if @origin.errors.any? %>
+  <div id="errorExplanation">
+    <h2><%= pluralize(@origin.errors.count, "error") %> Невозможно сохранить: </h2>
+    <ul>
+    <% @origin.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+  <% end %>
   <tr>
-    <td>Название:</td>   
+    <td>Название:</td>
     <td><%= f.text_field 'title' %></td>
   </tr>
   <tr>
-    <td>URL:</td>   
+    <td>URL:</td>
     <td><%= f.text_field 'url' %></td>
   </tr>
   <tr>
@@ -32,7 +42,7 @@
     <td>В случае, если источник предполагает вставку запроса</td>
   </tr>
   <tr>
-    <td><%= f.submit 'Создать' %></td>   
+    <td><%= f.submit 'Создать' %></td>
   </tr>
 <% end %>
 </body>
